@@ -2,7 +2,7 @@
   "DEFAULT_CONFIG": [
     "docker": [
       "registry": [
-        "domain": "registry.cn-shenzhen.aliyuncs.com"
+        "domain": "registry-1.docker.io"
       ]
     ]
   ]
