@@ -1,5 +1,5 @@
 package com.daluobai.jenkinslib.steps
-//@Grab('cn.hutool:hutool-all:5.8.11')
+@Grab('cn.hutool:hutool-all:5.8.11')
 
 import cn.hutool.core.lang.Assert
 import cn.hutool.core.util.StrUtil
