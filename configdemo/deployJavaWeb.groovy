@@ -15,7 +15,7 @@ def customConfig = [
                         //是否激活,默认true
                         "enable": true,
                         //app git url 必填.
-                        "gitUrl": "git@codeup.aliyun.com:5fef130e578739320804fdd8/company/liby/dodo/dodo.git",
+                        "gitUrl": "git@codeup.aliyun.com:xxxxxxx",
                         //git 分支
                         "gitBranch": "develop",
                         //子模块目录,如果要构建子模块填入子模块目录，如果没有不填 可选
