@@ -3,6 +3,7 @@ package com.daluobai.jenkinslib.steps
 
 import cn.hutool.core.lang.Assert
 import java.net.URL
+import com.cloudbees.groovy.cps.NonCPS
 class StepsGit implements Serializable {
     def steps
 
