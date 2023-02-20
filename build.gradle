@@ -6,15 +6,30 @@ plugins {
 group 'com.daluobai.jenkinslib'
 version '1.0-SNAPSHOT'
 
-repositories {
-    mavenCentral()
+//noinspection ConfigurationAvoidance
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+allprojects {
+    repositories {
+        mavenLocal()
+        maven { name "alibaba"; url "https://maven.aliyun.com/repository/public" }
+        maven { name "jenkins-ci"; url 'https://repo.jenkins-ci.org/releases/' }
+        mavenCentral()
+    }
+    buildscript {
+        repositories {
+            maven { name "alibaba"; url 'https://maven.aliyun.com/repository/public' }
+        }
+    }
 }
 
 dependencies {
+    implementation 'cn.hutool:hutool-all:5.8.11'
     implementation 'org.apache.groovy:groovy:4.0.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
-    testRuntimeOnly 'cn.hutool:hutool-all:5.8.11'
 }
 
 test {
@@ -24,14 +39,16 @@ test {
 sourceSets {
     main {
         groovy {
-            srcDirs = ['src/main/java','vars']
+            //noinspection GroovyAssignabilityCheck
+            srcDirs = ['src', 'vars']
         }
         resources {
-            srcDirs = ['src/main/resources','resources']
+            srcDirs = ['resources']
         }
     }
     test {
         groovy {
+            //noinspection GroovyAssignabilityCheck
             srcDirs = ['test']
         }
     }
