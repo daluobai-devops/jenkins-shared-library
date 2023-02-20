@@ -1,15 +1,12 @@
 package com.daluobai.jenkinslib.utils
 
 //@Grab('cn.hutool:hutool-all:5.8.11')
-import cn.hutool.core.util.StrUtil
 import cn.hutool.core.lang.Assert
 import cn.hutool.core.io.FileUtil
 import cn.hutool.json.JSONObject
 import cn.hutool.json.JSONUtil
 import com.daluobai.jenkinslib.constant.EConfigType
-import java.io.File;
 import java.nio.charset.Charset;
-import java.util.regex.Pattern;
 import com.daluobai.jenkinslib.utils.MapUtils
 
 class ConfigUtils implements Serializable {
