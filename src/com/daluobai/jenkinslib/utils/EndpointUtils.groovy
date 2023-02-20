@@ -3,10 +3,8 @@ package com.daluobai.jenkinslib.utils
 @Grab('cn.hutool:hutool-all:5.8.11')
 import cn.hutool.http.HttpUtil
 import cn.hutool.core.lang.Assert
-import cn.hutool.json.JSONObject
 import cn.hutool.json.JSONUtil
 import cn.hutool.core.util.StrUtil
-import com.daluobai.jenkinslib.api.KubernetesApi
 
 class EndpointUtils implements Serializable {
     def steps

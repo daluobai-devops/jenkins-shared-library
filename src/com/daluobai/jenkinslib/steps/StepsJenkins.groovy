@@ -4,7 +4,6 @@ package com.daluobai.jenkinslib.steps
 import cn.hutool.core.lang.Assert
 import cn.hutool.core.util.StrUtil
 import com.daluobai.jenkinslib.constant.GlobalShare
-import com.daluobai.jenkinslib.utils.MapUtils
 
 class StepsJenkins implements Serializable {
     def steps

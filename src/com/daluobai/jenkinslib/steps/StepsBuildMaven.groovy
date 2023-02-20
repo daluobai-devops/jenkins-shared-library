@@ -3,7 +3,6 @@ package com.daluobai.jenkinslib.steps
 @Grab('cn.hutool:hutool-all:5.8.11')
 
 import cn.hutool.core.util.StrUtil
-import cn.hutool.core.lang.Validator
 import cn.hutool.core.lang.Assert
 
 class StepsBuildMaven implements Serializable {

@@ -1,7 +1,5 @@
 @Grab('cn.hutool:hutool-all:5.8.11')
 import cn.hutool.core.lang.Assert
-import cn.hutool.core.lang.Validator
-import cn.hutool.core.util.StrUtil
 import com.daluobai.jenkinslib.constant.EConfigType
 import com.daluobai.jenkinslib.constant.GlobalShare
 import com.daluobai.jenkinslib.steps.StepsBuildMaven
@@ -10,7 +8,6 @@ import com.daluobai.jenkinslib.steps.StepsJavaWeb
 import com.daluobai.jenkinslib.utils.ConfigUtils
 import com.daluobai.jenkinslib.utils.MapUtils
 import cn.hutool.core.util.ObjectUtil
-import cn.hutool.json.JSONUtil
 
 def call(Map customConfig) {
 

@@ -6,8 +6,7 @@ import cn.hutool.core.io.FileUtil
 import cn.hutool.json.JSONObject
 import cn.hutool.json.JSONUtil
 import com.daluobai.jenkinslib.constant.EConfigType
-import java.nio.charset.Charset;
-import com.daluobai.jenkinslib.utils.MapUtils
+import java.nio.charset.Charset
 
 class ConfigUtils implements Serializable {
 

@@ -2,7 +2,6 @@ package com.daluobai.jenkinslib.steps
 @Grab('cn.hutool:hutool-all:5.8.11')
 
 import cn.hutool.core.lang.Assert
-import com.daluobai.jenkinslib.steps.StepsJenkins
 import cn.hutool.core.util.ObjectUtil
 import com.daluobai.jenkinslib.constant.GlobalShare
 import com.daluobai.jenkinslib.utils.TemplateUtils
