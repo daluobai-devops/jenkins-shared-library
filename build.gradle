@@ -1,0 +1,38 @@
+plugins {
+    id 'groovy'
+    id 'java'
+}
+
+group 'com.daluobai.jenkinslib'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.apache.groovy:groovy:4.0.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    testRuntimeOnly 'cn.hutool:hutool-all:5.8.11'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+sourceSets {
+    main {
+        groovy {
+            srcDirs = ['src/main/java','vars']
+        }
+        resources {
+            srcDirs = ['src/main/resources','resources']
+        }
+    }
+    test {
+        groovy {
+            srcDirs = ['test']
+        }
+    }
+}

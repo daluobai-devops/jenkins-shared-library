@@ -1,0 +1,15 @@
+[Unit]
+Description=jenkins service
+After=syslog.target network.target
+
+[Service]
+Type=simple
+Restart=always
+ExecStart=/bin/sh -c '/usr/local/bin/java -Dapp.name=${appName} ${runOptions} -jar ${pathRoot}/${appName}/${archiveName} ${runArgs}  >/dev/null 2>&1'
+ExecStop=/bin/kill -15 \$MAINPID
+
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target
