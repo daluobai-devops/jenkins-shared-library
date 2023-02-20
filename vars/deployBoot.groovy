@@ -1,7 +1,7 @@
 //@Grab('cn.hutool:hutool-all:5.8.11')
-import cn.hutool.core.util.StrUtil
 import cn.hutool.core.lang.Assert
 import cn.hutool.core.lang.Validator
+import cn.hutool.core.util.StrUtil
 import com.daluobai.jenkinslib.constant.EConfigType
 import com.daluobai.jenkinslib.constant.GlobalShare
 import com.daluobai.jenkinslib.steps.StepsBuildMaven
@@ -12,9 +12,7 @@ import com.daluobai.jenkinslib.utils.MapUtils
 import cn.hutool.core.util.ObjectUtil
 import cn.hutool.json.JSONUtil
 
-//jenkins-shared-library
 def call(Map customConfig) {
-
 
     /*******************初始化全局对象 开始*****************/
     def stepsBuildMaven = new StepsBuildMaven(this)
