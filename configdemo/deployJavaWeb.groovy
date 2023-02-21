@@ -57,7 +57,7 @@ def customConfig = [
                         //启动参数 [args...] 示例(-–spring.profiles.active=dev)
                         "runArgs"  : "-–spring.profiles.active=dev",
                         //服务发布服务label 必填
-                        "labels"  : ["node-demo"],
+                        "labels"  : ["NODE-DEMO"],
                 ]
         ],
         //默认配置

@@ -27,33 +27,51 @@ war 包方式安装:
 
 # 配置Jenkins Pipeline
 
-1. 密钥管理
+密钥管理
 
-   系统管理>凭据>系统>全局凭据>新建凭据
+系统管理>凭据>系统>全局凭据>新建凭据
 
-   新建ssh-jenkins(用来免密登录服务器)和ssh-git(用来 clone 代码) 两个凭据，类型为SSH Username with private key，填入用户名和私钥
+新建ssh-jenkins(用来免密登录服务器)和ssh-git(用来 clone 代码) 两个凭据，类型为SSH Username with private key，填入用户名和私钥
 
-   新建docker-secret(用来登录 docker 镜像)凭据类型为Username with password，如果没有就随便填一个
+新建docker-secret(用来登录 docker 镜像)凭据类型为Username with password，如果没有就随便填一个
 
-2. 共享库配置
+共享库配置
 
-   系统管理>系统配置> Global Pipeline Libraries
+系统管理>系统配置> Global Pipeline Libraries
 
-   name:jenkins-shared-library
+name:jenkins-shared-library
 
-   Default version:main
+Default version:main
 
-   项目仓库:git@gitee.com:daluobai-devops/jenkins-shared-library.git
+项目仓库:git@gitee.com:daluobai-devops/jenkins-shared-library.git
 
-   凭据:ssh-git
+凭据:ssh-git
 
-3. 节点配置
+节点配置
 
-   构建节点配置:
+配置示例:
 
-   在用来构建的节点添加buildNode标签，也可以直接把 master 节点作为构建节点
+- 名称：节点的名称，唯一值，可以用来设置到发布节点labels参数
 
-   其他节点：
+- Number of executors：一般设置为 cpu 数量，不过我一般设置10
+- 远程工作目录：/path/jenkins/
+- 标签：用来标识节点，多个节点可用同一个标签，比如给节点添加上 docker标签表示这个节点上安装了 docker
+- 启动方式：Launch agents via SSH
+  - 主机：服务器的 ip
+  - Credentials：ssh-jenkins
+  - Host Key Verification Strategy：Manually provided key Verification Strategy
+- 节点属性>环境变量(用来设置环境变量)
+  - JAVA_HOME
+  - /usr/local/jdk/jdk17/
+
+构建节点配置:
+
+- 在用来构建的节点添加buildNode标签，也可以直接把 master 节点作为构建节点
+
+用来测试发布服务的节点：
+
+- 名称：NODE-DEMO
+- 环境变量:键:JAVA_HOME 值:/usr/local/jdk/jdk17/
 
 4. 宿主机配置
 
