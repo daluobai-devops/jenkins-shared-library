@@ -26,4 +26,6 @@ jenkins pipeline 和拓展库介绍:[https://www.jenkins.io/doc/book/pipeline/](
 
 2. 系统管理>系统配置> Global Pipeline Libraries
 
+   ![image-20230221120849884](/Users/wuzhao/Library/Application Support/typora-user-images/image-20230221120849884.png)
+
 未完待续。。。
