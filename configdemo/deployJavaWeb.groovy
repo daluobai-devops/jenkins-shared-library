@@ -15,9 +15,9 @@ def customConfig = [
                         //是否激活,默认true
                         "enable": true,
                         //app git url 必填.
-                        "gitUrl": "git@github.com:spring-projects/spring-data-examples.git",
+                        "gitUrl": "https://github.com/spring-projects/spring-data-examples.git",
                         //git 分支
-                        "gitBranch": "develop",
+                        "gitBranch": "main",
                         //子模块目录,如果要构建子模块填入子模块目录，如果没有不填 可选
                         "subModule"   : "web/example",
                         //是否跳过测试 可选
@@ -25,7 +25,7 @@ def customConfig = [
                         //生命周期 必填
                         "lifecycle"   : "clean package",
                         //用来打包的镜像 可选
-                        "dockerBootPackageImage"   : "wuzhaozhongguo/build-maven:3.8.5-jdk8",
+                        "dockerBootPackageImage"   : "wuzhaozhongguo/build-maven:3.9.0-jdk17",
                         //激活的profile,maven -P参数 可选
                         "activeProfile"   : "dev"
                 ],
@@ -57,7 +57,7 @@ def customConfig = [
                         //启动参数 [args...] 示例(-–spring.profiles.active=dev)
                         "runArgs"  : "-–spring.profiles.active=dev",
                         //服务发布服务label 必填
-                        "labels"  : ["VM-dodo-node1-192.168.1.33","VM-dodo-node2-192.168.1.32"],
+                        "labels"  : ["VM-dodo-node1-192.168.1.33"],
                 ]
         ],
         //默认配置
