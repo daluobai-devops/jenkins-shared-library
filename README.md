@@ -15,7 +15,7 @@ jenkins pipeline 和拓展库介绍:[https://www.jenkins.io/doc/book/pipeline/](
 # 安装 Jenkins
 
 - 需要空白 linux 机器
-- 安装 jdk11以上，推荐安装 jdk17,只用于跑 jenkins
+- 安装 jdk11以上，推荐安装 jdk17,只用于跑 jenkins，创建 jdk 目录 mkdir -p /usr/local/jdk/jdk17下载 jdk17(https://download.oracle.com/java/17/archive/jdk-17.0.6_linux-x64_bin.tar.gz)到这个目录解压,查看java 目录是否为/usr/local/jdk/jdk17/bin/java
 - 安装LTS版本https://www.jenkins.io/download/
 
 war 包方式安装:
