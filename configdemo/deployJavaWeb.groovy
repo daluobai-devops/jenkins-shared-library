@@ -15,17 +15,17 @@ def customConfig = [
                         //是否激活,默认true
                         "enable": true,
                         //app git url 必填.
-                        "gitUrl": "git@codeup.aliyun.com:xxxxxxx",
+                        "gitUrl": "git@github.com:spring-projects/spring-data-examples.git",
                         //git 分支
                         "gitBranch": "develop",
                         //子模块目录,如果要构建子模块填入子模块目录，如果没有不填 可选
-                        "subModule"   : "dodo-web/dodo-admin",
+                        "subModule"   : "web/example",
                         //是否跳过测试 可选
                         "skipTest"   : true,
                         //生命周期 必填
                         "lifecycle"   : "clean package",
                         //用来打包的镜像 可选
-                        "dockerBootPackageImage"   : "wuzhaozhongguo/boot-package:latest",
+                        "dockerBootPackageImage"   : "wuzhaozhongguo/build-maven:3.8.5-jdk8",
                         //激活的profile,maven -P参数 可选
                         "activeProfile"   : "dev"
                 ],
@@ -64,7 +64,7 @@ def customConfig = [
         "DEFAULT_CONFIG": [
                 "docker": [
                         "registry": [
-                                "domain": "registry-1.docker.io"
+                                "domain": "docker.io"
                         ]
                 ]
         ],

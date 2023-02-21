@@ -60,6 +60,7 @@ class StepsBuildMaven implements Serializable {
                         set -eo pipefail
                         mkdir -p ${pathBase}/${pathPackage} && mkdir -p ${pathBase}/${pathCode}
                         cd ${pathBase}/${pathCode}
+                        git config --global http.version HTTP/1.1
                         git clone ${configSteps.gitUrl} --branch ${configSteps.gitBranch} --single-branch --depth 1 --quiet
                         mv ${pathBase}/${pathCode}/\$(ls -A1 ${pathBase}/${pathCode}/) ${pathBase}/${pathCode}/${pathCode}
                         cd ${pathBase}/${pathCode}/${pathCode}
