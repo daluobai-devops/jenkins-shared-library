@@ -26,6 +26,14 @@ jenkins pipeline 和拓展库介绍:[https://www.jenkins.io/doc/book/pipeline/](
 
 2. 系统管理>系统配置> Global Pipeline Libraries
 
-   ![image-20230221120849884](/Users/wuzhao/Library/Application Support/typora-user-images/image-20230221120849884.png)
+   name:jenkins-shared-library
 
-未完待续。。。
+   Default version:main
+
+   项目仓库:git@gitee.com:daluobai-devops/jenkins-shared-library.git
+
+   凭据:ssh-git
+
+   
+
+   未完待续。。。
