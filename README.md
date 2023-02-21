@@ -14,17 +14,30 @@ jenkins pipeline 和拓展库介绍:[https://www.jenkins.io/doc/book/pipeline/](
 
 # 安装 Jenkins
 
-想怎么安装就怎么安装。
+- 需要空白 linux 机器
+- 安装 jdk11以上，推荐安装 jdk17,只用于跑 jenkins
+- 安装LTS版本https://www.jenkins.io/download/
+
+war 包方式安装:
+
+1. 执行 mkdir -p /usr/local/jenkins && mkdir -p /usr/local/jenkins/home
+2. 下载jenkins.war 到/usr/local/jenkins下
+3. 拷贝configdemo/jenkins.service到/etc/systemd/system/下
+4. 启动 jenkins systemctl enable jenkins.service && systemctl start jenkins.service
 
 # 配置Jenkins Pipeline
 
-1. 系统管理>凭据>系统>全局凭据>新建凭据
+1. 密钥管理
+
+   系统管理>凭据>系统>全局凭据>新建凭据
 
    新建ssh-jenkins(用来免密登录服务器)和ssh-git(用来 clone 代码) 两个凭据，类型为SSH Username with private key，填入用户名和私钥
 
    新建docker-secret(用来登录 docker 镜像)凭据类型为Username with password，如果没有就随便填一个
 
-2. 系统管理>系统配置> Global Pipeline Libraries
+2. 共享库配置
+
+   系统管理>系统配置> Global Pipeline Libraries
 
    name:jenkins-shared-library
 
@@ -34,6 +47,29 @@ jenkins pipeline 和拓展库介绍:[https://www.jenkins.io/doc/book/pipeline/](
 
    凭据:ssh-git
 
-   
+3. 节点配置
 
-   未完待续。。。
+   构建节点配置:
+
+   在用来构建的节点添加buildNode标签，也可以直接把 master 节点作为构建节点
+
+   其他节点：
+
+4. 宿主机配置
+
+   构建节点:安装 docker
+
+# 发布第一个服务
+
+新建job>流水线(pipeline)>配置
+勾选:
+
+不允许并发构建&&丢弃先前构建
+
+使用 Groovy 沙盒
+
+流水线>定义>Pipeline script填入configdemo/deployJavaWeb.groovy
+
+
+
+未完待续。。。
