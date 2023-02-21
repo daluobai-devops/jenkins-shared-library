@@ -38,9 +38,9 @@ class StepsBuildMaven implements Serializable {
         steps.sh "mkdir -p ${hostPathPackage}"
 
         def dockerBootPackageImage = StrUtil.isNotBlank(configSteps.dockerBootPackageImage) ? configSteps.dockerBootPackageImage : "wuzhaozhongguo/build-maven:3.8.5-jdk8"
-        def dockerPackageImageUrl = "${configDefault.docker.registry.domain}/${dockerBootPackageImage}"
+        def dockerPackageImageUrl = "${dockerBootPackageImage}"
 
-        steps.withDockerRegistry(credentialsId: 'docker-secret', url: "https://${configDefault.docker.registry.domain}") {
+        steps.withDockerRegistry(credentialsId: "${configDefault.docker.registry.credentialsId}", url: "https://${configDefault.docker.registry.domain}") {
 
             def mavenImage = steps.docker.image("${dockerPackageImageUrl}")
             mavenImage.pull()

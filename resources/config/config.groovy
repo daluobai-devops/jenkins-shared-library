@@ -2,7 +2,8 @@
   "DEFAULT_CONFIG": [
     "docker": [
       "registry": [
-        "domain": "docker.io"
+        "domain": "docker.io",
+        "credentialsId": "docker-secret"
       ]
     ]
   ]
