@@ -25,3 +25,5 @@ jenkins pipeline 和拓展库介绍:[https://www.jenkins.io/doc/book/pipeline/](
    新建docker-secret(用来登录 docker 镜像)凭据类型为Username with password，如果没有就随便填一个
 
 2. 系统管理>系统配置> Global Pipeline Libraries
+
+未完待续。。。
