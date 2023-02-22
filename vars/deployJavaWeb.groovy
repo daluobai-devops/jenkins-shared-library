@@ -23,7 +23,7 @@ def call(Map customConfig) {
         error '没有可用的构建节点'
     }
     def SHARE_PARAM =  customConfig.SHARE_PARAM
-    //设置共享参数
+    //设置共享参数。
     GlobalShare.globalParameterMap = SHARE_PARAM
     //默认在同一个构建节点运行，如果需要在其他节点运行则单独写在node块中
     node(nodeBuildNodeList[0]) {
