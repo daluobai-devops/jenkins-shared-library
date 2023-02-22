@@ -16,7 +16,7 @@ def call(Map customConfig) {
     def stepsJenkins = new StepsJenkins(this)
     def stepsJavaWeb = new StepsJavaWeb(this)
     /*******************初始化全局对象 结束*****************/
-    //用来运行构建的节点.
+    //用来运行构建的节点
     def nodeBuildNodeList = stepsJenkins.getNodeByLabel("buildNode")
     echo "获取到节点:${nodeBuildNodeList}"
     if (ObjectUtil.isEmpty(nodeBuildNodeList)) {
