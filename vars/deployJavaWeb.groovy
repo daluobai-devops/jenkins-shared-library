@@ -15,6 +15,7 @@ def call(Map customConfig) {
     def stepsBuildMaven = new StepsBuildMaven(this)
     def stepsJenkins = new StepsJenkins(this)
     def stepsJavaWeb = new StepsJavaWeb(this)
+    def configUtils = new ConfigUtils(this)
     /*******************初始化全局对象 结束*****************/
     //用来运行构建的节点
     def nodeBuildNodeList = stepsJenkins.getNodeByLabel("buildNode")
@@ -82,13 +83,13 @@ def mergeConfig(Map customConfig) {
     def extendConfig = [:]
     def defaultConfig = [:]
     //读取默认配置文件
-    defaultConfig = ConfigUtils.readConfigFromResource(this, defaultConfigPath(EConfigType.RESOURCES))
+    defaultConfig = configUtils.readConfigFromResource(this, defaultConfigPath(EConfigType.RESOURCES))
     echo "customConfig: ${customConfig.toString()}"
     echo "defaultConfig: ${defaultConfig.getClass()}"
     //读取继承配置文件
     if (ObjectUtil.isNotEmpty(customConfig.CONFIG_EXTEND) && ObjectUtil.isNotEmpty(EConfigType.get(customConfig.CONFIG_EXTEND.configType)) && ObjectUtil.isNotEmpty(customConfig.CONFIG_EXTEND.path)) {
         EConfigType extendConfigType = EConfigType.get(customConfig.CONFIG_EXTEND.configType)
-        extendConfig = ConfigUtils.readConfig(extendConfigType, customConfig.CONFIG_EXTEND.path)
+        extendConfig = configUtils.readConfig(extendConfigType, customConfig.CONFIG_EXTEND.path)
         echo "extendConfig: ${extendConfig.toString()}"
     }
     //合并自定义配置
