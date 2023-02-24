@@ -42,8 +42,9 @@ class StepsBuildMaven implements Serializable {
 
         //如果没有提供登录密钥则不登录
         def dockerLoginDomain = StrUtil.isNotBlank(configDefault.docker.registry.credentialsId) ? "https://${configDefault.docker.registry.domain}" : ""
+        def dockerLoginCredentialsId = StrUtil.isNotBlank(configDefault.docker.registry.credentialsId) ? configDefault.docker.registry.credentialsId : ""
 
-        steps.withDockerRegistry(credentialsId: "${configDefault.docker.registry.credentialsId}", url: dockerLoginDomain) {
+        steps.withDockerRegistry(credentialsId: dockerLoginCredentialsId, url: dockerLoginDomain) {
 
             def mavenImage = steps.docker.image("${dockerPackageImageUrl}")
             mavenImage.pull()
