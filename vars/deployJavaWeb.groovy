@@ -8,14 +8,14 @@ import com.daluobai.jenkinslib.steps.StepsJavaWeb
 import com.daluobai.jenkinslib.utils.ConfigUtils
 import com.daluobai.jenkinslib.utils.MapUtils
 import cn.hutool.core.util.ObjectUtil
-
+def configUtils = new ConfigUtils(this)
 def call(Map customConfig) {
 
     /*******************初始化全局对象 开始*****************/
     def stepsBuildMaven = new StepsBuildMaven(this)
     def stepsJenkins = new StepsJenkins(this)
     def stepsJavaWeb = new StepsJavaWeb(this)
-    def configUtils = new ConfigUtils(this)
+
     /*******************初始化全局对象 结束*****************/
     //用来运行构建的节点
     def nodeBuildNodeList = stepsJenkins.getNodeByLabel("buildNode")
