@@ -3,9 +3,8 @@ package com.daluobai.jenkinslib.utils
 @Grab('cn.hutool:hutool-all:5.8.11')
 import cn.hutool.core.lang.Assert
 import cn.hutool.core.io.FileUtil
+import cn.hutool.core.util.StrUtil
 import cn.hutool.http.HttpUtil
-import cn.hutool.json.JSONObject
-import cn.hutool.json.JSONUtil
 import com.daluobai.jenkinslib.constant.EConfigType
 import java.nio.charset.Charset
 
@@ -14,6 +13,20 @@ class ConfigUtils implements Serializable {
     def steps
 
     ConfigUtils(steps) { this.steps = steps }
+
+    /**
+     * 从完整路径读取配置
+     * @param configFullPath
+     * @return
+     */
+    def readConfigFromFullPath(String configFullPath) {
+        Assert.notBlank(configFullPath, "configFullPath为空");
+        def configType = StrUtil.subBefore(configFullPath, ":", false)
+        //获取后缀
+        def path = StrUtil.subAfter(configFullPath, ":", false)
+        EConfigType extendConfigType = EConfigType.get(configType)
+        return this.readConfig(extendConfigType, path)
+    }
 
 /**
  * 修改文件
@@ -41,13 +54,5 @@ class ConfigUtils implements Serializable {
         }
         Assert.notNull(configMap, "配置文件读取失败");
         return configMap
-    }
-
-    static def readConfigFromResource(def steps, String path) {
-        Assert.notNull(steps, "steps为空");
-        Assert.notBlank(path, "path为空");
-        def configFromResourceString = steps.libraryResource path
-        def configFromResourceMap = MapUtils.mapString2Map(configFromResourceString)
-        return configFromResourceMap
     }
 }

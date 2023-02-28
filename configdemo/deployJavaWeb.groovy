@@ -69,12 +69,10 @@ def customConfig = [
                 ]
         ],
 //        //继承配置
-//        "CONFIG_EXTEND"    : [
-//                //配置文件读取方式，支持URL，HOST_PATH，RESOURCES，默认HOST_PATH, 必填.
-//                "configType"        : "HOST_PATH",
-//                //文件路径 必填.
-//                "path": "/usr/local/workspace/config/jenkins-pipeline/jenkins-pipeline-config/extendConfig.json",
-//        ]
+        "CONFIG_EXTEND"    : [
+                //配置文件完整路径configType:path,支持URL，HOST_PATH，RESOURCES，默认RESOURCES. 必填.
+                "configFullPath": "RESOURCES:config/config.groovy",
+        ]
 ]
 @Library('jenkins-shared-library') _
 deployJavaWeb(customConfig)
