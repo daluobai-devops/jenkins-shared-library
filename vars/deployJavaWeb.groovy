@@ -9,6 +9,7 @@ import com.daluobai.jenkinslib.utils.ConfigUtils
 import com.daluobai.jenkinslib.utils.MapUtils
 import cn.hutool.core.util.ObjectUtil
 
+
 def call(Map customConfig) {
 
     /*******************初始化全局对象 开始*****************/
