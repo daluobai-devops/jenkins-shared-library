@@ -5,7 +5,7 @@ import cn.hutool.core.lang.Assert
 import cn.hutool.core.io.FileUtil
 import cn.hutool.core.util.StrUtil
 import cn.hutool.http.HttpUtil
-import com.daluobai.jenkinslib.constant.EConfigType
+import com.daluobai.jenkinslib.constant.EFileReadType
 import java.nio.charset.Charset
 
 class ConfigUtils implements Serializable {
@@ -24,7 +24,7 @@ class ConfigUtils implements Serializable {
         def configType = StrUtil.subBefore(configFullPath, ":", false)
         //获取后缀
         def path = StrUtil.subAfter(configFullPath, ":", false)
-        EConfigType extendConfigType = EConfigType.get(configType)
+        EFileReadType extendConfigType = EFileReadType.get(configType)
         return this.readConfig(extendConfigType, path)
     }
 
@@ -33,23 +33,19 @@ class ConfigUtils implements Serializable {
  * @param path 文件路径
  * @return
  */
-    def readConfig(EConfigType eConfigType, String path) {
+    def readConfig(EFileReadType eConfigType, String path) {
         Assert.notNull(eConfigType, "配置类型为空");
         Assert.notBlank(path, "path为空");
         def configMap = [:]
-        if (eConfigType == EConfigType.HOST_PATH) {
+        def configStr = new FileUtils(steps).readString(eConfigType, path)
+        if (eConfigType == EFileReadType.HOST_PATH) {
             def file = new File(path)
             boolean isFile = FileUtil.isFile(file)
             Assert.isTrue(isFile, "配置文件不存在")
-            def configStr = FileUtil.readString(file, Charset.forName("utf-8"))
             configMap = MapUtils.mapJsonString2Map(configStr)
-        } else if (eConfigType == EConfigType.RESOURCES) {
-            def configFromResourceString = steps.libraryResource path
-            steps.echo "configFromResourceString:${configFromResourceString}"
-            configMap = MapUtils.mapJsonString2Map(configFromResourceString)
-            steps.echo "configFromResourceString2:${configMap}"
-        } else if (eConfigType == EConfigType.URL) {
-            def configStr = HttpUtil.get(path)
+        } else if (eConfigType == EFileReadType.RESOURCES) {
+            configMap = MapUtils.mapJsonString2Map(configStr)
+        } else if (eConfigType == EFileReadType.URL) {
             configMap = MapUtils.mapJsonString2Map(configStr)
         } else {
             throw new Exception("暂不支持的配置类型")

@@ -1,6 +1,6 @@
 @Grab('cn.hutool:hutool-all:5.8.11')
 import cn.hutool.core.lang.Assert
-import com.daluobai.jenkinslib.constant.EConfigType
+import com.daluobai.jenkinslib.constant.EFileReadType
 import com.daluobai.jenkinslib.constant.GlobalShare
 import com.daluobai.jenkinslib.steps.StepsBuildMaven
 import com.daluobai.jenkinslib.steps.StepsJenkins
@@ -62,12 +62,12 @@ def call(Map customConfig) {
 }
 
 //获取默认配置路径
-def defaultConfigPath(EConfigType eConfigType) {
+def defaultConfigPath(EFileReadType eConfigType) {
     Assert.notNull(eConfigType, "配置类型为空")
     def configPath = null
-    if (eConfigType == EConfigType.HOST_PATH) {
+    if (eConfigType == EFileReadType.HOST_PATH) {
         configPath = "/usr/local/workspace/config/jenkins-pipeline/jenkins-pipeline-config/config.json"
-    } else if (eConfigType == EConfigType.RESOURCES) {
+    } else if (eConfigType == EFileReadType.RESOURCES) {
         configPath = "config/config.json"
     }  else {
         throw new Exception("暂无默认配置类型")
@@ -82,11 +82,11 @@ def mergeConfig(Map customConfig) {
     def extendConfig = [:]
     def defaultConfig = [:]
     //读取默认配置文件
-    defaultConfig = new ConfigUtils(this).readConfig(EConfigType.RESOURCES, defaultConfigPath(EConfigType.RESOURCES))
+    defaultConfig = new ConfigUtils(this).readConfig(EFileReadType.RESOURCES, defaultConfigPath(EFileReadType.RESOURCES))
     echo "customConfig: ${customConfig.toString()}"
     echo "defaultConfig: ${defaultConfig.toString()}"
     //读取继承配置文件
-    if (ObjectUtil.isNotEmpty(customConfig.CONFIG_EXTEND) && ObjectUtil.isNotEmpty(EConfigType.get(customConfig.CONFIG_EXTEND.configFullPath))) {
+    if (ObjectUtil.isNotEmpty(customConfig.CONFIG_EXTEND) && ObjectUtil.isNotEmpty(EFileReadType.get(customConfig.CONFIG_EXTEND.configFullPath))) {
         extendConfig = new ConfigUtils(this).readConfigFromFullPath(customConfig.CONFIG_EXTEND.configFullPath)
         echo "extendConfig: ${extendConfig.toString()}"
     }

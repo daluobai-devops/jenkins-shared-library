@@ -1,6 +1,6 @@
 package com.daluobai.jenkinslib.constant
 
-enum EConfigType{
+enum EFileReadType {
 
     URL("URL", "从URL获取"),
     HOST_PATH("HOST_PATH", "从宿主机目录获取"),
@@ -10,14 +10,14 @@ enum EConfigType{
 
     private String message;
 
-    EConfigType(String code, String message) {
+    EFileReadType(String code, String message) {
         this.code = code;
         this.message = message;
     }
 
-    static EConfigType get(String code) {
-        EConfigType[] values = EConfigType.values();
-        for (EConfigType object : values) {
+    static EFileReadType get(String code) {
+        EFileReadType[] values = EFileReadType.values();
+        for (EFileReadType object : values) {
             if (object.code == code) {
                 return object;
             }
