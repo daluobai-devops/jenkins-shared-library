@@ -15,11 +15,11 @@ def customConfig = [
                         //是否激活,默认true
                         "enable": true,
                         //app git url 必填.
-                        "gitUrl": "https://github.com/spring-projects/spring-data-examples.git",
+                        "gitUrl": "https://gitee.com/wuzhao_open/spring-boot-examples.git",
                         //git 分支
-                        "gitBranch": "main",
+                        "gitBranch": "master",
                         //子模块目录,如果要构建子模块填入子模块目录，如果没有不填 可选
-                        "subModule"   : "web/example",
+                        "subModule"   : "spring-boot-web/",
                         //是否跳过测试 可选
                         "skipTest"   : true,
                         //生命周期 必填
