@@ -23,9 +23,9 @@ class StepsBuildMaven implements Serializable {
         //流程配置
         def configSteps = configMap.DEPLOY_PIPELINE.stepsBuildMaven
 
-        Assert.notEmpty(configDefault, "DEFAULT_CONFIG为空")
-        Assert.notEmpty(configShare, "SHARE_PARAM为空")
-        Assert.notEmpty(configSteps, "DEPLOY_PIPELINE.stepsBuildMaven为空")
+        Assert.notNull(configDefault, "DEFAULT_CONFIG为空")
+        Assert.notNull(configShare, "SHARE_PARAM为空")
+        Assert.notNull(configSteps, "DEPLOY_PIPELINE.stepsBuildMaven为空")
 
         def pathBase = "/app"
         //docker-构建产物目录
