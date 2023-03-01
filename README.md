@@ -7,6 +7,8 @@ jenkins pipeline 和拓展库介绍:[https://www.jenkins.io/doc/book/pipeline/](
 
 # 特点
 
+- 可以通过pipeline做任何事情
+
 - 通过封装pipeline，使用一个配置文件即可发布服务。
 
 - 不依赖官方以外的 jenkins 插件。
