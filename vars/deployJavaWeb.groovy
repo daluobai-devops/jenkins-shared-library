@@ -84,7 +84,7 @@ def mergeConfig(Map customConfig) {
     //读取默认配置文件
     defaultConfig = new ConfigUtils(this).readConfig(EConfigType.RESOURCES, defaultConfigPath(EConfigType.RESOURCES))
     echo "customConfig: ${customConfig.toString()}"
-    echo "defaultConfig: ${defaultConfig.getClass()}"
+    echo "defaultConfig: ${defaultConfig.toString()}"
     //读取继承配置文件
     if (ObjectUtil.isNotEmpty(customConfig.CONFIG_EXTEND) && ObjectUtil.isNotEmpty(EConfigType.get(customConfig.CONFIG_EXTEND.configFullPath))) {
         extendConfig = new ConfigUtils(this).readConfigFromFullPath(customConfig.CONFIG_EXTEND.configFullPath)
