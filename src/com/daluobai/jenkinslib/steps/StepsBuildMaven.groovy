@@ -70,6 +70,7 @@ class StepsBuildMaven implements Serializable {
                         cd ${pathBase}/${pathCode}/${pathCode}
                         git config core.ignorecase false
                         mvn -Dmaven.test.skip=${configSteps.skipTest} ${configSteps.lifecycle} -Dmaven.compile.fork=true -U -B ${mvnCMDSubMod} ${mvnCMDActiveProfile}
+                        ls -al ${pathBase}/${pathCode}/${pathCode}/${configSteps.subModule}/target
                         cp -r ${pathBase}/${pathCode}/${pathCode}/${configSteps.subModule}/target/* ${pathBase}/${pathPackage}/
                     """
             }
