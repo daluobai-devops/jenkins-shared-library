@@ -71,7 +71,9 @@ class StepsBuildMaven implements Serializable {
                         touch /root/.m2/settings.xml
                         """
                 steps.sh """
-                        cat > /root/.m2/settings.xml <<-'EOF' ${settingsXmlStr} EOF
+                        cat > /root/.m2/settings.xml <<-'EOF'
+${settingsXmlStr}
+EOF
                         """
                 steps.sh """
                         #! /bin/bash -eu
