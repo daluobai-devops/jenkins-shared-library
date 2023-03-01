@@ -15,11 +15,11 @@ def customConfig = [
                         //是否激活,默认true
                         "enable": true,
                         //app git url 必填.
-                        "gitUrl": "https://gitee.com/wuzhao_open/spring-boot-examples.git",
+                        "gitUrl": "https://gitee.com/wuzhaozhongguo/spring-data-examples.git",
                         //git 分支
-                        "gitBranch": "master",
+                        "gitBranch": "main",
                         //子模块目录,如果要构建子模块填入子模块目录，如果没有不填 可选
-                        "subModule"   : "spring-boot-web/",
+                        "subModule"   : "web/example",
                         //是否跳过测试 可选
                         "skipTest"   : true,
                         //生命周期 必填
@@ -71,7 +71,7 @@ def customConfig = [
 //        //继承配置
         "CONFIG_EXTEND"    : [
                 //配置文件完整路径configType:path,支持URL，HOST_PATH，RESOURCES，默认RESOURCES. 必填.
-                "configFullPath": "RESOURCES:config/config.groovy",
+                "configFullPath": "RESOURCES:config/config.json",
         ]
 ]
 @Library('jenkins-shared-library') _
