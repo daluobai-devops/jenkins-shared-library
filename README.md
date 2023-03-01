@@ -3,6 +3,8 @@ Jenkins Pipeline Extending with Shared Libraries
 # 简介
 jenkins pipeline 和拓展库介绍:[https://www.jenkins.io/doc/book/pipeline/]()
 
+加我微信:HELLO-WUZHAO
+
 # 特点
 
 - 通过封装pipeline，使用一个配置文件即可发布服务。
