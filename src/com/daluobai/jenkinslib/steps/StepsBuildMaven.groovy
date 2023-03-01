@@ -70,6 +70,11 @@ class StepsBuildMaven implements Serializable {
                         #! /bin/bash -eu
                         set -eo pipefail
                         settingsXmlStr = ${settingsXmlStr}
+                        if [ "\$settingsXmlStr" ]; then
+                            cat > \${MAVEN_CONFIG}/settings.xml << EOF
+                              \${settingsXmlStr}
+                            EOF
+                        fi
                         mkdir -p ${pathBase}/${pathPackage} && mkdir -p ${pathBase}/${pathCode}
                         cd ${pathBase}/${pathCode}
                         git config --global http.version HTTP/1.1
