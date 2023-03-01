@@ -13,6 +13,6 @@
                 //钉钉 token
                 "dingdingToken"  : "111",
                 //飞书 token
-                "feishuToken"  : "2222"
+                "feishuToken"  : "3333"
         ]
 ]
