@@ -47,6 +47,7 @@ class ConfigUtils implements Serializable {
             def configFromResourceString = steps.libraryResource path
             steps.echo "configFromResourceString:${configFromResourceString}"
             configMap = MapUtils.mapString2Map(configFromResourceString)
+            steps.echo "configFromResourceString2:${configMap}"
         } else if (eConfigType == EConfigType.URL) {
             def configStr = HttpUtil.get(path)
             configMap = MapUtils.mapString2Map(configStr)
