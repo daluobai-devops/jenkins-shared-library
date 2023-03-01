@@ -69,7 +69,9 @@ class StepsBuildMaven implements Serializable {
                 steps.sh """
                         #! /bin/bash -eu
                         set -eo pipefail
-                        echo ${settingsXmlStr} >> /root/.m2/settings.xml
+                        cat>/root/.m2/settings.xml<<EOF
+                        ${settingsXmlStr}
+                        EOF
                         mkdir -p ${pathBase}/${pathPackage} && mkdir -p ${pathBase}/${pathCode}
                         cd ${pathBase}/${pathCode}
                         git config --global http.version HTTP/1.1
