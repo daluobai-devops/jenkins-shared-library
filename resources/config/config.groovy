@@ -11,8 +11,8 @@
                 //app 名称
                 "appName": "test1",
                 //钉钉 token
-                "dingdingToken"  : "",
+                "dingdingToken"  : "111",
                 //飞书 token
-                "feishuToken"  : ""
+                "feishuToken"  : "2222"
         ]
 ]
