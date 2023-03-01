@@ -1,0 +1,15 @@
+{
+  "DEFAULT_CONFIG": {
+    "docker": {
+      "registry": {
+        "domain": "docker.io",
+        "credentialsId": "docker-secret"
+      }
+    }
+  },
+  "SHARE_PARAM": {
+    "appName": "test1",
+    "dingdingToken": "111",
+    "feishuToken": "3333"
+  }
+}

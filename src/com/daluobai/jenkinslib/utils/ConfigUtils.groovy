@@ -42,15 +42,15 @@ class ConfigUtils implements Serializable {
             boolean isFile = FileUtil.isFile(file)
             Assert.isTrue(isFile, "配置文件不存在")
             def configStr = FileUtil.readString(file, Charset.forName("utf-8"))
-            configMap = MapUtils.mapString2Map(configStr)
+            configMap = MapUtils.mapJsonString2Map(configStr)
         } else if (eConfigType == EConfigType.RESOURCES) {
             def configFromResourceString = steps.libraryResource path
             steps.echo "configFromResourceString:${configFromResourceString}"
-            configMap = MapUtils.mapString2Map(configFromResourceString)
+            configMap = MapUtils.mapJsonString2Map(configFromResourceString)
             steps.echo "configFromResourceString2:${configMap}"
         } else if (eConfigType == EConfigType.URL) {
             def configStr = HttpUtil.get(path)
-            configMap = MapUtils.mapString2Map(configStr)
+            configMap = MapUtils.mapJsonString2Map(configStr)
         } else {
             throw new Exception("暂不支持的配置类型")
         }
