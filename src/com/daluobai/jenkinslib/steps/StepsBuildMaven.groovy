@@ -65,13 +65,16 @@ class StepsBuildMaven implements Serializable {
                     steps.sh "mkdir -p ~/.ssh && chmod 700 ~/.ssh && rm -f ~/.ssh/id_rsa && cp \${SSH_KEY_PATH} ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa"
                 }
                 //生成known_hosts
-                stepsGit.sshKeyscan("${configSteps.gitUrl}","~/.ssh/known_hosts")
+                stepsGit.sshKeyscan("${configSteps.gitUrl}", "~/.ssh/known_hosts")
                 steps.sh """
-                        #! /bin/bash -eu
-                        set -eo pipefail
                         cat>/root/.m2/settings.xml<<EOF
                             ${settingsXmlStr}
                         EOF
+                        """
+                steps.sh """
+                        #! /bin/bash -eu
+                        set -eo pipefail
+                        
                         mkdir -p ${pathBase}/${pathPackage} && mkdir -p ${pathBase}/${pathCode}
                         cd ${pathBase}/${pathCode}
                         git config --global http.version HTTP/1.1
