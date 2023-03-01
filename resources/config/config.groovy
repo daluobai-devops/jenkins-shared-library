@@ -6,5 +6,13 @@
                                      "credentialsId": "docker-secret"//在 jenkins密钥管理中的id
                         ]
                 ]
+        ],
+        "SHARE_PARAM"    : [
+                //app 名称
+                "appName": "test1",
+                //钉钉 token
+                "dingdingToken"  : "",
+                //飞书 token
+                "feishuToken"  : ""
         ]
 ]
