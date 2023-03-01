@@ -71,7 +71,7 @@ class StepsBuildMaven implements Serializable {
                         set -eo pipefail
                         cat > /root/.m2/settings.xml << EOF\
                           "11111"\
-                        EOF
+                        EOF\
                         mkdir -p ${pathBase}/${pathPackage} && mkdir -p ${pathBase}/${pathCode}
                         cd ${pathBase}/${pathCode}
                         git config --global http.version HTTP/1.1
