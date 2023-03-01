@@ -66,9 +66,9 @@ def defaultConfigPath(EConfigType eConfigType) {
     Assert.notNull(eConfigType, "配置类型为空")
     def configPath = null
     if (eConfigType == EConfigType.HOST_PATH) {
-        configPath = "/usr/local/workspace/config/jenkins-pipeline/jenkins-pipeline-config/config.groovy"
+        configPath = "/usr/local/workspace/config/jenkins-pipeline/jenkins-pipeline-config/config.json"
     } else if (eConfigType == EConfigType.RESOURCES) {
-        configPath = "config/config.groovy"
+        configPath = "config/config.json"
     }  else {
         throw new Exception("暂无默认配置类型")
     }
