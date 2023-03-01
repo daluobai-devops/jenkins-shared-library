@@ -67,9 +67,9 @@ class StepsBuildMaven implements Serializable {
                 //生成known_hosts
                 stepsGit.sshKeyscan("${configSteps.gitUrl}", "~/.ssh/known_hosts")
                 steps.sh """
-                        cat>/root/.m2/settings.xml<<EOF \
-                            \"${settingsXmlStr}\" \
-                        EOF \
+                        cat > /root/.m2/settings.xml << EOF 
+${settingsXmlStr}
+                        EOF 
                         """
                 steps.sh """
                         #! /bin/bash -eu
