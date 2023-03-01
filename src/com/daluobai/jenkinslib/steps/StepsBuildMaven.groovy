@@ -67,11 +67,13 @@ class StepsBuildMaven implements Serializable {
                 //生成known_hosts
                 stepsGit.sshKeyscan("${configSteps.gitUrl}", "~/.ssh/known_hosts")
                 steps.sh """
-                        #! /bin/bash -eu
-                        set -eo pipefail
-                        cat /root/.m2/settings.xml <<-'EOF'
+                        cat /root/.m2/settings.xml <-'EOF'
                             ${settingsXmlStr}
                         EOF
+                        """
+                steps.sh """
+                        #! /bin/bash -eu
+                        set -eo pipefail
                         mkdir -p ${pathBase}/${pathPackage} && mkdir -p ${pathBase}/${pathCode}
                         cd ${pathBase}/${pathCode}
                         git config --global http.version HTTP/1.1
