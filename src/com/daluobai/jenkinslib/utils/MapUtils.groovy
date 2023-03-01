@@ -1,5 +1,6 @@
 package com.daluobai.jenkinslib.utils
 
+import groovy.json.JsonSlurper
 import groovy.json.JsonSlurperClassic
 
 class MapUtils implements Serializable {
@@ -137,18 +138,19 @@ class MapUtils implements Serializable {
      * @param mapString [key1:value1, key2:value2]
      */
     static def mapString2Map(String mapString) {
-        def map =
-                // Take the String value between
-                // the [ and ] brackets.
-                mapString[1..-2]
-                // Split on , to get a List.
-                        .split(', ')
-                // Each list item is transformed
-                // to a Map entry with key/value.
-                        .collectEntries { entry ->
-                            def pair = entry.split(':')
-                            [(pair.first()): pair.last()]
-                        }
+//        def map =
+//                // Take the String value between
+//                // the [ and ] brackets.
+//                mapString[1..-2]
+//                // Split on , to get a List.
+//                        .split(', ')
+//                // Each list item is transformed
+//                // to a Map entry with key/value.
+//                        .collectEntries { entry ->
+//                            def pair = entry.split(':')
+//                            [(pair.first()): pair.last()]
+//                        }
+        def map = new JsonSlurper().parseText(mapString)
         return map
     }
 
