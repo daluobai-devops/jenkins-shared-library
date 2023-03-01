@@ -70,7 +70,7 @@ class StepsBuildMaven implements Serializable {
                         #! /bin/bash -eu
                         set -eo pipefail
                         if [ -n "$settingsXmlStr" ]; then
-                            echo "${settingsXmlStr}" > ${MAVEN_CONFIG}/settings.xml
+                            echo "${settingsXmlStr}" > \${MAVEN_CONFIG}/settings.xml
                         fi
                         mkdir -p ${pathBase}/${pathPackage} && mkdir -p ${pathBase}/${pathCode}
                         cd ${pathBase}/${pathCode}
