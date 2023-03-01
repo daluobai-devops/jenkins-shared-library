@@ -70,7 +70,7 @@ def defaultConfigPath(EConfigType eConfigType) {
     } else if (eConfigType == EConfigType.RESOURCES) {
         configPath = "config/config.groovy"
     }  else {
-        throw new Exception("暂不支持的配置类型")
+        throw new Exception("暂无默认配置类型")
     }
     return configPath
 }
