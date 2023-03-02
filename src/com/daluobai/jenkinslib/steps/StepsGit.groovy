@@ -2,17 +2,16 @@ package com.daluobai.jenkinslib.steps
 @Grab('cn.hutool:hutool-all:5.8.11')
 
 import cn.hutool.core.lang.Assert
-import java.net.URL
 import com.cloudbees.groovy.cps.NonCPS
 class StepsGit implements Serializable {
     def steps
 
     StepsGit(steps) { this.steps = steps }
 
-//    git@172.21.8.95:2200/test/test1.git
+//    git@127.21.8.1:2200/test/test1.git
 //    git@github.com:xxxxx/test.git
 //    https://github.com/xxxxxx/test.git
-//    http://172.21.8.95:80/test/test1.git
+//    http://127.21.8.1:80/test/test1.git
 
     /**
      * ssh-keyscan生成到known_hosts
@@ -20,6 +19,7 @@ class StepsGit implements Serializable {
      * @param path 路径，一般是~/.ssh/known_hosts
      * @return
      */
+    @NonCPS
     def sshKeyscan(String gitUrl,String path) {
         def domainByUrl = this.getDomainByGitUrl(gitUrl)
         steps.echo "domainByUrl:${domainByUrl}"
@@ -41,6 +41,7 @@ class StepsGit implements Serializable {
      * @param gitUrl
      * @return
      */
+    @NonCPS
     def getDomainByGitUrl(String gitUrl){
         def pattern = /(?<=@|:\/\/)([^\/:]+)/
         def matcher = (gitUrl =~ pattern)
