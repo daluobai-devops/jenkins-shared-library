@@ -20,7 +20,6 @@ class StepsGit implements Serializable {
      * @param path 路径，一般是~/.ssh/known_hosts
      * @return
      */
-    @NonCPS
     def sshKeyscan(String gitUrl,String path) {
         def domainByUrl = this.getDomainByGitUrl(gitUrl)
         steps.echo "domainByUrl:${domainByUrl}"
@@ -42,7 +41,6 @@ class StepsGit implements Serializable {
      * @param gitUrl
      * @return
      */
-    @NonCPS
     def getDomainByGitUrl(String gitUrl){
         def pattern = /(?<=@|:\/\/)([^\/:]+)/
         def matcher = (gitUrl =~ pattern)

@@ -24,7 +24,7 @@ def customConfig = [
                         "skipTest"   : true,
                         //生命周期 必填
                         "lifecycle"   : "clean package",
-                        //settings.xml文件路径 可选
+                        //settings.xml文件路径，支持URL，HOST_PATH，RESOURCES 可选
                         "settingsFullPath"   : "RESOURCES:config/settings.xml",
                         //用来打包的镜像 可选
                         "dockerBootPackageImage"   : "wuzhaozhongguo/build-maven:3.9.0-jdk17",

@@ -52,4 +52,19 @@ class FileUtils implements Serializable {
         }
         return fileString
     }
+
+    /**
+     * 通过sh写文件
+     * @param path
+     * @param content
+     * @return
+     */
+    def writeFileBySH(String path, String content) {
+        //这个格式不能动，不然无法报错，content 和 EOF结束必须靠最前面
+        steps.sh """
+                        cat > ${path} <<-'EOF'
+${content}
+EOF
+                        """
+    }
 }
