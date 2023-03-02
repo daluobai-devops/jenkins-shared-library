@@ -41,7 +41,7 @@ class StepsBuildMaven implements Serializable {
 
         steps.sh "mkdir -p ${hostPathPackage}"
 
-        def dockerBootPackageImage = StrUtil.isNotBlank(configSteps.dockerBootPackageImage) ? configSteps.dockerBootPackageImage : "wuzhaozhongguo/build-maven:3.8.5-jdk8"
+        def dockerBootPackageImage = StrUtil.isNotBlank(configSteps.dockerBootPackageImage) ? configSteps.dockerBootPackageImage : "registry.cn-hangzhou.aliyuncs.com/wuzhaozhongguo/build-maven:3.8.5-jdk8"
         def dockerPackageImageUrl = "${dockerBootPackageImage}"
 
         //获取settings.xml配置，如果没有设置则为空
