@@ -1,16 +1,16 @@
 package com.daluobai.jenkinslib.steps
 
+import cn.hutool.core.lang.Assert
 @Grab('cn.hutool:hutool-all:5.8.11')
 
 import cn.hutool.core.util.StrUtil
-import cn.hutool.core.lang.Assert
 import com.daluobai.jenkinslib.utils.ConfigUtils
 import com.daluobai.jenkinslib.utils.FileUtils
 
-class StepsBuildMaven implements Serializable {
+class StepsBuildNpm implements Serializable {
     def steps
 
-    StepsBuildMaven(steps) { this.steps = steps }
+    StepsBuildNpm(steps) { this.steps = steps }
 
     /*******************初始化全局对象 开始*****************/
     def stepsGit = new StepsGit(steps)
@@ -25,7 +25,7 @@ class StepsBuildMaven implements Serializable {
         //共享配置
         def configShare = configMap["SHARE_PARAM"]
         //流程配置
-        def configSteps = configMap.DEPLOY_PIPELINE.stepsBuildMaven
+        def configSteps = configMap.DEPLOY_PIPELINE.stepsBuildNpm
 
         Assert.notNull(configDefault, "DEFAULT_CONFIG为空")
         Assert.notNull(configShare, "SHARE_PARAM为空")
@@ -41,11 +41,8 @@ class StepsBuildMaven implements Serializable {
 
         steps.sh "mkdir -p ${hostPathPackage}"
 
-        def dockerBuildImage = StrUtil.isNotBlank(configSteps.dockerBuildImage) ? configSteps.dockerBuildImage : "registry.cn-hangzhou.aliyuncs.com/wuzhaozhongguo/build-maven:3.8.5-jdk8"
+        def dockerBuildImage = StrUtil.isNotBlank(configSteps.dockerBuildImage) ? configSteps.dockerBuildImage : "registry.cn-hangzhou.aliyuncs.com/wuzhaozhongguo/build-npm:10.16.0"
         def dockerBuildImageUrl = "${dockerBuildImage}"
-
-        //获取settings.xml配置，如果没有设置则为空
-        def settingsXmlStr = StrUtil.isNotBlank(configSteps.settingsFullPath) ? fileUtils.readStringFromFullPath(configSteps.settingsFullPath) : null
 
         //如果没有提供登录密钥则不登录
         def dockerLoginDomain = StrUtil.isNotBlank(configDefault.docker.registry.credentialsId) ? "https://${configDefault.docker.registry.domain}" : ""
@@ -66,10 +63,6 @@ class StepsBuildMaven implements Serializable {
                 }
                 //生成known_hosts
                 stepsGit.sshKeyscan("${configSteps.gitUrl}", "~/.ssh/known_hosts")
-                //如果有settings.xml配置则写入用户自定义配置
-                if (StrUtil.isNotBlank(settingsXmlStr)){
-                    fileUtils.writeFileBySH("~/.m2/settings.xml", settingsXmlStr)
-                }
                 steps.sh """
                         #! /bin/bash -eu
                         set -eo pipefail
@@ -80,9 +73,9 @@ class StepsBuildMaven implements Serializable {
                         mv ${pathBase}/${pathCode}/\$(ls -A1 ${pathBase}/${pathCode}/) ${pathBase}/${pathCode}/${pathCode}
                         cd ${pathBase}/${pathCode}/${pathCode}
                         git config core.ignorecase false
-                        mvn -Dmaven.test.skip=${configSteps.skipTest} ${configSteps.lifecycle} -Dmaven.compile.fork=true -U -B ${mvnCMDSubMod} ${mvnCMDActiveProfile}
-                        ls -al ${pathBase}/${pathCode}/${pathCode}/${configSteps.subModule}/target
-                        cp -r ${pathBase}/${pathCode}/${pathCode}/${configSteps.subModule}/target/* ${pathBase}/${pathPackage}/
+                        ${configSteps.buildCMD}
+                        ls -al ${pathBase}/${pathCode}/${pathCode}/dist
+                        cp -r ${pathBase}/${pathCode}/${pathCode}/dist ${pathBase}/${pathPackage}/
                     """
             }
         }

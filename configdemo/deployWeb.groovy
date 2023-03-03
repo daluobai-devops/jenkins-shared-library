@@ -11,25 +11,17 @@ def customConfig = [
         //发布流程
         "DEPLOY_PIPELINE": [
                 //构建
-                "stepsBuildMaven": [
+                "stepsBuildNpm": [
                         //是否激活,默认true
                         "enable": true,
                         //app git url 必填.
                         "gitUrl": "https://gitee.com/wuzhaozhongguo/spring-data-examples.git",
                         //git 分支
                         "gitBranch": "main",
-                        //子模块目录,如果要构建子模块填入子模块目录，如果没有不填 可选
-                        "subModule"   : "web/example",
-                        //是否跳过测试 可选
-                        "skipTest"   : true,
-                        //生命周期 必填
-                        "lifecycle"   : "clean package",
-                        //settings.xml文件路径，支持URL，HOST_PATH，RESOURCES 可选
-                        "settingsFullPath"   : "RESOURCES:config/settings.xml",
+                        //构建命令 必填
+                        "buildCMD"   : "npm install && npm run build",
                         //用来打包的镜像 可选
-                        "dockerBuildImage"   : "registry.cn-hangzhou.aliyuncs.com/wuzhaozhongguo/build-maven:3.9.0-jdk17",
-                        //激活的profile,maven -P参数 可选
-                        "activeProfile"   : "dev"
+                        "dockerBuildImage"   : "registry.cn-hangzhou.aliyuncs.com/wuzhaozhongguo/build-npm:10.16.0"
                 ],
                 //存储
                 "stepsStorage"  : [
@@ -49,17 +41,13 @@ def customConfig = [
 
                 ],
                 //发布
-                "stepsJavaWebDeploy"  : [
+                "stepsJavaWebDeployToWebServer"  : [
                         //是否激活,默认true
                         "enable": true,
-                        //服务发布路径 必填
-                        "pathRoot"  : "/apps/application/",
-                        //启动参数 [-options] 示例(-Dfile.encoding=UTF-8 -Xms128M -Xmx128M -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005)
-                        "runOptions"  : "-Xms128M -Xmx128M",
-                        //启动参数 [args...] 示例(-–spring.profiles.active=dev)
-                        "runArgs"  : "-–spring.profiles.active=dev",
+                        //服务发布根目录 必填
+                        "pathRoot"  : "/apps/application/projectGroup/web/",
                         //服务发布服务label 必填
-                        "labels"  : ["NODE-DEMO"],
+                        "labels"  : ["NODE-DEMO"]
                 ]
         ],
         //默认配置
@@ -77,4 +65,4 @@ def customConfig = [
         ]
 ]
 @Library('jenkins-shared-library') _
-deployJavaWeb(customConfig)
+deployWeb(customConfig)

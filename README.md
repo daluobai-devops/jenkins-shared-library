@@ -5,7 +5,7 @@ jenkins pipeline 和拓展库介绍:[https://www.jenkins.io/doc/book/pipeline/](
 
 加我微信:HELLO-WUZHAO
 
-# 特点
+# 特性
 
 - 可以通过pipeline做任何事情
 

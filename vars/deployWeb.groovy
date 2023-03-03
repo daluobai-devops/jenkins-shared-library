@@ -47,12 +47,12 @@ def call(Map customConfig) {
                         return
                     }
                     echo "开始执行流程: ${it.key}"
-                    if (it.key == "stepsBuildMaven") {
-                        stepsBuildMaven.build(fullConfig)
+                    if (it.key == "stepsBuildNpm") {
+                        stepsBuildNpm.build(fullConfig)
                     } else if (it.key == "stepsStorage") {
                         stepsJenkins.stash(fullConfig.DEPLOY_PIPELINE.stepsStorage)
-                    } else if (it.key == "stepsJavaWebDeployToService") {
-                        stepsJavaWeb.deploy(fullConfig.DEPLOY_PIPELINE.stepsJavaWebDeployToService)
+                    } else if (it.key == "stepsJavaWebDeployToWebServer") {
+                        stepsJavaWeb.deploy(fullConfig.DEPLOY_PIPELINE.stepsJavaWebDeployToWebServer)
                     }
                 }
                 echo "结束执行流程: ${it.key}"
