@@ -57,7 +57,7 @@ class StepsBuildNpm implements Serializable {
             def mvnCMDActiveProfile = "-P ${configSteps.activeProfile}"
 
             mavenImage.inside("--entrypoint '' -v maven-repo:/root/.m2/repository -v ${steps.env.WORKSPACE}/${pathPackage}:/app/package") {
-                //从 jenkins 凭据管理中获取密钥文件路径并且拷贝到~/.ssh/id_rsa
+                //从 jenkins 凭据管理中获取密钥文件路径并且拷贝到~/.ssh/id_rsa.
                 steps.withCredentials([steps.sshUserPrivateKey(credentialsId: 'ssh-git', keyFileVariable: 'SSH_KEY_PATH')]) {
                     steps.sh "mkdir -p ~/.ssh && chmod 700 ~/.ssh && rm -f ~/.ssh/id_rsa && cp \${SSH_KEY_PATH} ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa"
                 }
