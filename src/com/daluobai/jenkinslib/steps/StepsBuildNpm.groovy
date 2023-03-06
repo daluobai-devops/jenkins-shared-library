@@ -56,7 +56,11 @@ class StepsBuildNpm implements Serializable {
             def mvnCMDSubMod = "-pl ${configSteps.subModule} -am -amd"
             def mvnCMDActiveProfile = "-P ${configSteps.activeProfile}"
 
-            mavenImage.inside("--entrypoint '' -v maven-repo:/root/.m2/repository -v ${steps.env.WORKSPACE}/${pathPackage}:/app/package") {
+            //容器中缓存modules文件夹的根路径
+            def dockerModulesPath = "/root/modules"
+            //容器中缓存modules文件夹的项目路径
+            def dockerModulesProjectPath = "${dockerModulesPath}/${steps.env.projectName}"
+            mavenImage.inside("--entrypoint '' -v npm-repo:${dockerModulesPath} -v ${steps.env.WORKSPACE}/${pathPackage}:/app/package") {
                 //从 jenkins 凭据管理中获取密钥文件路径并且拷贝到~/.ssh/id_rsa.
                 steps.withCredentials([steps.sshUserPrivateKey(credentialsId: 'ssh-git', keyFileVariable: 'SSH_KEY_PATH')]) {
                     steps.sh "mkdir -p ~/.ssh && chmod 700 ~/.ssh && rm -f ~/.ssh/id_rsa && cp \${SSH_KEY_PATH} ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa"
@@ -66,7 +70,8 @@ class StepsBuildNpm implements Serializable {
                 steps.sh """
                         #! /bin/bash -eu
                         set -eo pipefail
-                        mkdir -p ${pathBase}/${pathPackage} && mkdir -p ${pathBase}/${pathCode}
+                        mkdir -p ${pathBase}/${pathPackage} && mkdir -p ${pathBase}/${pathCode} && mkdir -p ${dockerModulesProjectPath}
+                        \\cp -rf ${dockerModulesProjectPath}/node_modules/ . || true
                         cd ${pathBase}/${pathCode}
                         git config --global http.version HTTP/1.1
                         git clone ${configSteps.gitUrl} --branch ${configSteps.gitBranch} --single-branch --depth 1 --quiet
@@ -76,6 +81,8 @@ class StepsBuildNpm implements Serializable {
                         ${configSteps.buildCMD}
                         ls -al ${pathBase}/${pathCode}/${pathCode}/dist
                         cp -r ${pathBase}/${pathCode}/${pathCode}/dist ${pathBase}/${pathPackage}/
+                        rm -rf ${dockerModulesProjectPath}/node_modules || true
+                        \\cp -rf ./node_modules ${dockerModulesProjectPath}/ || true
                     """
             }
         }

@@ -3,7 +3,7 @@ import cn.hutool.core.lang.Assert
 import cn.hutool.core.util.StrUtil
 import com.daluobai.jenkinslib.constant.EFileReadType
 import com.daluobai.jenkinslib.constant.GlobalShare
-import com.daluobai.jenkinslib.steps.StepsBuildMaven
+import com.daluobai.jenkinslib.steps.StepsBuildNpm
 import com.daluobai.jenkinslib.steps.StepsJenkins
 import com.daluobai.jenkinslib.steps.StepsJavaWeb
 import com.daluobai.jenkinslib.utils.ConfigUtils
@@ -14,7 +14,7 @@ import cn.hutool.core.util.ObjectUtil
 def call(Map customConfig) {
 
     /*******************初始化全局对象 开始*****************/
-    def stepsBuildMaven = new StepsBuildMaven(this)
+    def stepsBuildNpm = new StepsBuildNpm(this)
     def stepsJenkins = new StepsJenkins(this)
     def stepsJavaWeb = new StepsJavaWeb(this)
     def configUtils = new ConfigUtils(this)
@@ -50,9 +50,9 @@ def call(Map customConfig) {
                     if (it.key == "stepsBuildNpm") {
                         stepsBuildNpm.build(fullConfig)
                     } else if (it.key == "stepsStorage") {
-                        stepsJenkins.stash(fullConfig.DEPLOY_PIPELINE.stepsStorage)
+//                        stepsJenkins.stash(fullConfig.DEPLOY_PIPELINE.stepsStorage)
                     } else if (it.key == "stepsJavaWebDeployToWebServer") {
-                        stepsJavaWeb.deploy(fullConfig.DEPLOY_PIPELINE.stepsJavaWebDeployToWebServer)
+//                        stepsJavaWeb.deploy(fullConfig.DEPLOY_PIPELINE.stepsJavaWebDeployToWebServer)
                     }
                 }
                 echo "结束执行流程: ${it.key}"
