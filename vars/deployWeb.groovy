@@ -25,7 +25,7 @@ def call(Map customConfig) {
     if (ObjectUtil.isEmpty(nodeBuildNodeList)) {
         error '没有可用的构建节点'
     }
-    //初始化参数
+    //初始化参数.
     //如果没传项目名称，则使用jenkins项目名称
     if (StrUtil.isBlank(customConfig.SHARE_PARAM.appName)){
         customConfig.SHARE_PARAM.appName = currentBuild.projectName
