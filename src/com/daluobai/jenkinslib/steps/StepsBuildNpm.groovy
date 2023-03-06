@@ -59,7 +59,7 @@ class StepsBuildNpm implements Serializable {
             //容器中缓存modules文件夹的根路径
             def dockerModulesPath = "/root/modules"
             //容器中缓存modules文件夹的项目路径
-            def dockerModulesProjectPath = "${dockerModulesPath}/${steps.env.projectName}"
+            def dockerModulesProjectPath = "${dockerModulesPath}/${steps.currentBuild.projectName}"
             mavenImage.inside("--entrypoint '' -v npm-repo:${dockerModulesPath} -v ${steps.env.WORKSPACE}/${pathPackage}:/app/package") {
                 //从 jenkins 凭据管理中获取密钥文件路径并且拷贝到~/.ssh/id_rsa.
                 steps.withCredentials([steps.sshUserPrivateKey(credentialsId: 'ssh-git', keyFileVariable: 'SSH_KEY_PATH')]) {

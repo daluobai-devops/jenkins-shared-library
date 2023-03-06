@@ -15,9 +15,9 @@ def customConfig = [
                         //是否激活,默认true
                         "enable": true,
                         //app git url 必填.
-                        "gitUrl": "https://gitee.com/wuzhaozhongguo/spring-data-examples.git",
+                        "gitUrl": "https://github.com/renrenio/renren-fast-vue.git",
                         //git 分支
-                        "gitBranch": "main",
+                        "gitBranch": "master",
                         //构建命令 必填
                         "buildCMD"   : "npm install && npm run build",
                         //用来打包的镜像 可选
@@ -61,7 +61,7 @@ def customConfig = [
 //        //继承配置
         "CONFIG_EXTEND"    : [
                 //配置文件完整路径configType:path,支持URL，HOST_PATH，RESOURCES，默认RESOURCES. 必填.
-                "configFullPath": "RESOURCES:config/config.json",
+                "configFullPath": "RESOURCES:config/extendConfigWeb.json",
         ]
 ]
 @Library('jenkins-shared-library') _
