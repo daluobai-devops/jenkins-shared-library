@@ -31,20 +31,22 @@ class StepsJenkins implements Serializable {
             includes = "package/app.jar"
         } else if (archiveType == "WAR") {
             archiveName = "app.war"
+            steps.sh "mv package/*.war package/app.war"
             includes = "package/app.war"
         } else if (archiveType == "ZIP") {
             archiveName = "app.zip"
+            steps.sh "mv package/*.zip package/app.zip"
             includes = "package/app.zip"
-        } else {
+        }else if (archiveType == "FOLDER"){
+            archiveName = "app"
+            includes = "package/app/**/*"
+        }else {
             throw new Exception("archiveType不支持")
         }
         steps.sh "ls package -l"
 
         if (jenkinsStash.enable) {
-            steps.stash name: "appPackage", includes: "${includes}"
-        }
-        if (dockerRegistry.enable) {
-
+            steps.stash name: "appPackage", includes: ${includes}
         }
         GlobalShare.globalParameterMap.put("archiveName",archiveName)
     }

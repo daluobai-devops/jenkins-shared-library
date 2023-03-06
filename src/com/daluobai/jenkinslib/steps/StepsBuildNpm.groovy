@@ -80,7 +80,7 @@ class StepsBuildNpm implements Serializable {
                         git config core.ignorecase false
                         ${configSteps.buildCMD}
                         ls -al ${pathBase}/${pathCode}/${pathCode}/dist
-                        cp -r ${pathBase}/${pathCode}/${pathCode}/dist ${pathBase}/${pathPackage}/
+                        zip -r ${pathBase}/${pathPackage}/app.zip ${pathBase}/${pathCode}/${pathCode}/dist/*
                         rm -rf ${dockerModulesProjectPath}/node_modules || true
                         \\cp -rf ./node_modules ${dockerModulesProjectPath}/ || true
                     """

@@ -50,7 +50,7 @@ def call(Map customConfig) {
                     if (it.key == "stepsBuildNpm") {
                         stepsBuildNpm.build(fullConfig)
                     } else if (it.key == "stepsStorage") {
-//                        stepsJenkins.stash(fullConfig.DEPLOY_PIPELINE.stepsStorage)
+                        stepsJenkins.stash(fullConfig.DEPLOY_PIPELINE.stepsStorage)
                     } else if (it.key == "stepsJavaWebDeployToWebServer") {
 //                        stepsJavaWeb.deploy(fullConfig.DEPLOY_PIPELINE.stepsJavaWebDeployToWebServer)
                     }
