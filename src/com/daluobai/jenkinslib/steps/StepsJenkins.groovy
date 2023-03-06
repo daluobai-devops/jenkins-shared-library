@@ -27,15 +27,15 @@ class StepsJenkins implements Serializable {
         if (archiveType == "JAR") {
             archiveName = "app.jar"
             steps.sh "rm -f package/*-sources.jar"
-            steps.sh "mv package/*.jar package/app.jar"
+            steps.sh "mv package/*.jar package/app.jar || true"
             includes = "package/app.jar"
         } else if (archiveType == "WAR") {
             archiveName = "app.war"
-            steps.sh "mv package/*.war package/app.war"
+            steps.sh "mv package/*.war package/app.war || true"
             includes = "package/app.war"
         } else if (archiveType == "ZIP") {
             archiveName = "app.zip"
-            steps.sh "mv package/*.zip package/app.zip"
+            steps.sh "mv package/*.zip package/app.zip || true"
             includes = "package/app.zip"
         }else if (archiveType == "FOLDER"){
             archiveName = "app"

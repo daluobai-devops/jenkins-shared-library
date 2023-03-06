@@ -15,7 +15,7 @@ def customConfig = [
                         //是否激活,默认true
                         "enable": true,
                         //app git url 必填.
-                        "gitUrl": "https://github.com/renrenio/renren-fast-vue.git",
+                        "gitUrl": "https://gitee.com/renrenio/renren-fast-vue.git",
                         //git 分支
                         "gitBranch": "master",
                         //构建命令 必填
