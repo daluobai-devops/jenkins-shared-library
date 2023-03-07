@@ -46,7 +46,7 @@ class StepsJenkins implements Serializable {
         steps.sh "ls package -l"
 
         if (jenkinsStash.enable) {
-            steps.stash name: "appPackage", includes: ${includes}
+            steps.stash name: "appPackage", includes: "${includes}"
         }
         GlobalShare.globalParameterMap.put("archiveName",archiveName)
     }
