@@ -27,8 +27,8 @@ def customConfig = [
                 "stepsStorage"  : [
                         //是否激活,默认true
                         "enable": true,
-                        //构建产物类型 JAR,WAR,ZIP,FOLDER 必填
-                        "archiveType":"ZIP",
+                        //构建产物类型 JAR,WAR,TAR,FOLDER 必填
+                        "archiveType":"TAR",
                         //存储类型 jenkinsStash,dockerRegistry 必填
                         "jenkinsStash"  : [
                                 //是否激活,默认false
