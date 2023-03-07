@@ -15,13 +15,13 @@ def customConfig = [
                         //是否激活,默认true
                         "enable": true,
                         //app git url 必填.
-                        "gitUrl": "https://gitee.com/renrenio/renren-fast-vue.git",
+                        "gitUrl": "https://gitee.com/log4j/pig-ui.git",
                         //git 分支
                         "gitBranch": "master",
                         //构建命令 必填
                         "buildCMD"   : "npm install && npm run build",
                         //用来打包的镜像 可选
-                        "dockerBuildImage"   : "registry.cn-hangzhou.aliyuncs.com/wuzhaozhongguo/build-npm:10.16.0"
+                        "dockerBuildImage"   : "registry.cn-hangzhou.aliyuncs.com/wuzhaozhongguo/build-npm:18"
                 ],
                 //存储
                 "stepsStorage"  : [
