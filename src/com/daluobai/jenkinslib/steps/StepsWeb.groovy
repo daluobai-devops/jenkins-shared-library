@@ -60,11 +60,10 @@ class StepsWeb implements Serializable {
                     //创建一个 app 文件夹把包解压到里面
                     steps.sh "rm -rf ${pathRoot}/${appName}/app || true"
                     steps.sh "mkdir -p ${pathRoot}/${appName}/app"
-                    steps.sh "cp ${archiveName} ${pathRoot}/${appName}/app"
                     //切换到发布目录
-                    steps.dir("${pathRoot}/${appName}/app"){
-                        steps.sh "tar -zxvf ${archiveName}"
-                        steps.sh "ls -l"
+                    steps.dir("${pathRoot}/${appName}/"){
+                        steps.sh "tar -zxvf ${archiveName} -C app/"
+                        steps.sh "ls -l app"
                     }
                 }
             }
