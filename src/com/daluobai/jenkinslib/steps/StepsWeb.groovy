@@ -8,7 +8,13 @@ import cn.hutool.core.util.ObjectUtil
 import cn.hutool.core.util.StrUtil
 import com.daluobai.jenkinslib.constant.GlobalShare
 import com.daluobai.jenkinslib.utils.TemplateUtils
-
+/**
+ * @author daluobai@outlook.com
+ * version 1.0.0
+ * @title 
+ * @description https://github.com/daluobai-devops/jenkins-shared-library
+ * @create 2023/4/25 12:10
+ */
 class StepsWeb implements Serializable {
     def steps
 

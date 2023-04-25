@@ -1,7 +1,13 @@
 package com.daluobai.jenkinslib.steps
 @Grab('cn.hutool:hutool-all:5.8.11')
 
-import cn.hutool.core.lang.Assert
+import cn.hutool.core.lang.Assert/**
+ * @author wuzhao
+ * version 1.0.0
+ * @title
+ * @description <TODO description class purpose>
+ * @create 2023/4/25 12:10
+ */
 class StepsDocker implements Serializable {
     def steps
 

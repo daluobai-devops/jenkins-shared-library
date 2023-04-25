@@ -7,7 +7,13 @@ import cn.hutool.core.util.StrUtil
 import cn.hutool.http.HttpUtil
 import com.daluobai.jenkinslib.constant.EFileReadType
 import java.nio.charset.Charset
-
+/**
+ * @author daluobai@outlook.com
+ * version 1.0.0
+ * @title 
+ * @description https://github.com/daluobai-devops/jenkins-shared-library
+ * @create 2023/4/25 12:10
+ */
 class ConfigUtils implements Serializable {
 
     def steps

@@ -2,7 +2,13 @@ package com.daluobai.jenkinslib.steps
 @Grab('cn.hutool:hutool-all:5.8.11')
 
 import cn.hutool.core.lang.Assert
-import com.cloudbees.groovy.cps.NonCPS
+import com.cloudbees.groovy.cps.NonCPS/**
+ * @author daluobai@outlook.com
+ * version 1.0.0
+ * @title 
+ * @description https://github.com/daluobai-devops/jenkins-shared-library
+ * @create 2023/4/25 12:10
+ */
 class StepsGit implements Serializable {
     def steps
 

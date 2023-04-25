@@ -2,7 +2,13 @@ package com.daluobai.jenkinslib.utils
 
 import groovy.json.JsonSlurper
 import groovy.json.JsonSlurperClassic
-
+/**
+ * @author daluobai@outlook.com
+ * version 1.0.0
+ * @title 
+ * @description 参考https://github.com/SAP/jenkins-library
+ * @create 2023/4/25 12:10
+ */
 class MapUtils implements Serializable {
     static boolean isMap(object){
         return object in Map

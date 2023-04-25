@@ -11,7 +11,13 @@ import com.daluobai.jenkinslib.utils.ConfigUtils
 import com.daluobai.jenkinslib.utils.MapUtils
 import cn.hutool.core.util.ObjectUtil
 
-
+/**
+ * @author daluobai@outlook.com
+ * version 1.0.0
+ * @title
+ * @description https://github.com/daluobai-devops/jenkins-shared-library
+ * @create 2023/4/25 12:10
+ */
 def call(Map customConfig) {
 
     /*******************初始化全局对象 开始*****************/
