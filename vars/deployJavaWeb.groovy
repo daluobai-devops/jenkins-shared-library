@@ -37,14 +37,14 @@ def call(Map customConfig) {
         customConfig.SHARE_PARAM.appName = currentBuild.projectName
     }
     def SHARE_PARAM =  customConfig.SHARE_PARAM
-    //设置共享参数。
-    GlobalShare.globalParameterMap = SHARE_PARAM
     //默认在同一个构建节点运行，如果需要在其他节点运行则单独写在node块中
     node(nodeBuildNodeList[0]) {
         try {
             //获取并合并配置
             def fullConfig = mergeConfig(customConfig)
             echo "fullConfig: ${fullConfig.toString()}"
+            //设置共享参数。
+            GlobalShare.globalParameterMap = fullConfig
             //执行流程
             fullConfig["DEPLOY_PIPELINE"].each {
                 stage("${it.key}") {
@@ -56,6 +56,12 @@ def call(Map customConfig) {
                     if (it.key == "stepsBuildMaven") {
                         stepsBuildMaven.build(fullConfig)
                     } else if (it.key == "stepsStorage") {
+                        def stepsStorage =  fullConfig.DEPLOY_PIPELINE.stepsStorage
+                        if (ObjectUtil.isNotEmpty(fullConfig.DEPLOY_PIPELINE.stepsStorage)) {
+                            error "stepsStorage配置为空"
+                        }
+                        def dockerfileARG = """--build-arg BUILD_EXPOSE=8080 --build-arg appName="${customConfig.SHARE_PARAM.appName}" --build-arg runOptions="" --build-arg runArgs="""""
+                        fullConfig.DEPLOY_PIPELINE.stepsStorage.dockerfileARG = dockerfileARG
                         stepsJenkins.stash(fullConfig.DEPLOY_PIPELINE.stepsStorage)
                     } else if (it.key == "stepsJavaWebDeployToService") {
                         stepsJavaWeb.deploy(fullConfig.DEPLOY_PIPELINE.stepsJavaWebDeployToService)

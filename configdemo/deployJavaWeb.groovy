@@ -2,68 +2,73 @@ def customConfig = [
         //公共参数
         "SHARE_PARAM"    : [
                 //app 名称,如果没填则使用jenkins job名称。可选
-                "appName": "test",
+                "appName"      : "test",
                 //钉钉 token
-                "dingdingToken"  : "",
+                "dingdingToken": "",
                 //飞书 token
                 "feishuToken"  : ""
         ],
         //发布流程
         "DEPLOY_PIPELINE": [
                 //构建
-                "stepsBuildMaven": [
+                "stepsBuildMaven"   : [
                         //是否激活,默认true
-                        "enable": true,
+                        "enable"          : true,
                         //app git url 必填.
-                        "gitUrl": "https://gitee.com/wuzhaozhongguo/spring-data-examples.git",
+                        "gitUrl"          : "https://gitee.com/wuzhaozhongguo/spring-data-examples.git",
                         //git 分支
-                        "gitBranch": "main",
+                        "gitBranch"       : "main",
                         //子模块目录,如果要构建子模块填入子模块目录，如果没有不填 可选
-                        "subModule"   : "web/example",
+                        "subModule"       : "web/example",
                         //是否跳过测试 可选
-                        "skipTest"   : true,
+                        "skipTest"        : true,
                         //生命周期 必填
-                        "lifecycle"   : "clean package",
+                        "lifecycle"       : "clean package",
                         //settings.xml文件路径，支持URL，HOST_PATH，RESOURCES 可选
-                        "settingsFullPath"   : "RESOURCES:config/settings.xml",
+                        "settingsFullPath": "RESOURCES:config/settings.xml",
                         //用来打包的镜像 可选
-                        "dockerBuildImage"   : "registry.cn-hangzhou.aliyuncs.com/wuzhaozhongguo/build-maven:3.9.0-jdk17",
+                        "dockerBuildImage": "registry.cn-hangzhou.aliyuncs.com/wuzhaozhongguo/build-maven:3.9.0-jdk17",
                         //激活的profile,maven -P参数 可选
                         "activeProfile"   : "dev"
                 ],
                 //存储
-                "stepsStorage"  : [
+                "stepsStorage"      : [
                         //是否激活,默认true
-                        "enable": true,
+                        "enable"        : true,
                         //构建产物类型 JAR,WAR,ZIP 必填
-                        "archiveType":"JAR",
+                        "archiveType"   : "JAR",
                         //存储类型 jenkinsStash,dockerRegistry 必填
                         "jenkinsStash"  : [
                                 //是否激活,默认false
                                 "enable": true,
                         ],
-                        "dockerRegistry"  : [
+                        "dockerRegistry": [
                                 //是否激活,默认false
-                                "enable": true,
+                                "enable"       : false,
+                                "imageUrl"       : "registry.cn-hangzhou.aliyuncs.com/wuzhaozhongguo/build-maven:3.9.0-jdk17",
+                                "dockerfile": [
+                                        "url" : "git@github.com:daluobai-devops/docker-library.git",
+                                        "path": "package-javaweb/openjdk8"
+                                ],
                         ],
 
                 ],
                 //发布
-                "stepsJavaWebDeploy"  : [
+                "stepsJavaWebDeploy": [
                         //是否激活,默认true
-                        "enable": true,
+                        "enable"    : true,
                         //服务发布路径 必填
                         "pathRoot"  : "/apps/application/",
                         //启动参数 [-options] 示例(-Dfile.encoding=UTF-8 -Xms128M -Xmx128M -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005)
-                        "runOptions"  : "-Xms128M -Xmx128M",
+                        "runOptions": "-Xms128M -Xmx128M",
                         //启动参数 [args...] 示例(-–spring.profiles.active=dev)
-                        "runArgs"  : "-–spring.profiles.active=dev",
+                        "runArgs"   : "-–spring.profiles.active=dev",
                         //服务发布服务label 必填
-                        "labels"  : ["NODE-DEMO"],
+                        "labels"    : ["NODE-DEMO"],
                 ]
         ],
         //默认配置
-        "DEFAULT_CONFIG": [
+        "DEFAULT_CONFIG" : [
                 "docker": [
                         "registry": [
                                 "domain": "docker.io"
@@ -71,7 +76,7 @@ def customConfig = [
                 ]
         ],
 //        //继承配置
-        "CONFIG_EXTEND"    : [
+        "CONFIG_EXTEND"  : [
                 //配置文件完整路径configType:path,支持URL，HOST_PATH，RESOURCES，默认RESOURCES. 必填.
                 "configFullPath": "RESOURCES:config/config.json",
         ]

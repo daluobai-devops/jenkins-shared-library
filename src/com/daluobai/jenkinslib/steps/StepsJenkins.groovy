@@ -29,10 +29,13 @@ class StepsJenkins implements Serializable {
         def archiveType = parameterMap.archiveType
         def jenkinsStash = parameterMap.jenkinsStash
         def dockerRegistry = parameterMap.dockerRegistry
+        def dockerfile = parameterMap.dockerfile
         Assert.notBlank(archiveType,"archiveType为空")
         def includes
         def archiveName
         steps.sh "ls package -l"
+        steps.sh "mkdir -p stash"
+
         //根据文件类型处理文件
         if (archiveType == "JAR") {
             archiveName = "app.jar"
@@ -59,15 +62,15 @@ class StepsJenkins implements Serializable {
             steps.stash name: "appPackage", includes: "${includes}"
         }
         if (dockerRegistry.enable) {
+            steps.sh "mkdir -p stash/dockerRegistry/code"
+            steps.dir("stash/dockerRegistry/code") {
+                steps.git credentialsId: 'ssh-git', url: "${dockerfile.url}"
+            }
+            steps.sh '''mv stash/dockerRegistry/code/\$(ls -A1 stash/dockerRegistry/code/) stash/dockerRegistry/code/code/'''
 
-            steps.git credentialsId: 'ssh-git', url: "${ENV_DOCKER_BUILD_APP_IMAGE_GIT_URL}"
-            sh "mkdir -p build"
-            sh "cp ${ENV_DOCKER_BUILD_PACKAGE_BASE_PATH}/${ENV_DOCKER_BUILD_ID}/app.jar ./build/"
-            sh "docker build \
-                        --build-arg PARAM_JAVA_ARGS='${PARAM_JAVA_ARGS}' \
-                        --build-arg PARAM_JAVA_OPTS='${_TEMP_DOCKER_JAVA_OPTS_PARAM}' \
-                        -t=${_TEMP_DOCKER_BUILD_APP_IMAGE_FULL_NAME} \
-                        ."
+            steps.sh "mkdir -p stash/dockerRegistry/code/code/build/package"
+            steps.sh "cp -r ${includes} stash/dockerRegistry/code/code/build/package/"
+            sh "docker build -t=${_TEMP_DOCKER_BUILD_APP_IMAGE_FULL_NAME} ."
             sh "docker push ${_TEMP_DOCKER_BUILD_APP_IMAGE_FULL_NAME}"
 
         }
