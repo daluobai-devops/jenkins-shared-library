@@ -16,6 +16,10 @@ class StepsJenkins implements Serializable {
 
     StepsJenkins(steps) { this.steps = steps }
 
+    /*******************初始化全局对象 开始*****************/
+    def stepsGit = new StepsGit(steps)
+    /*******************初始化全局对象 结束*****************/
+
     /**
      * 存储
      *
@@ -54,7 +58,20 @@ class StepsJenkins implements Serializable {
         if (jenkinsStash.enable) {
             steps.stash name: "appPackage", includes: "${includes}"
         }
-        GlobalShare.globalParameterMap.put("archiveName",archiveName)
+        if (dockerRegistry.enable) {
+
+            steps.git credentialsId: 'ssh-git', url: "${ENV_DOCKER_BUILD_APP_IMAGE_GIT_URL}"
+            sh "mkdir -p build"
+            sh "cp ${ENV_DOCKER_BUILD_PACKAGE_BASE_PATH}/${ENV_DOCKER_BUILD_ID}/app.jar ./build/"
+            sh "docker build \
+                        --build-arg PARAM_JAVA_ARGS='${PARAM_JAVA_ARGS}' \
+                        --build-arg PARAM_JAVA_OPTS='${_TEMP_DOCKER_JAVA_OPTS_PARAM}' \
+                        -t=${_TEMP_DOCKER_BUILD_APP_IMAGE_FULL_NAME} \
+                        ."
+            sh "docker push ${_TEMP_DOCKER_BUILD_APP_IMAGE_FULL_NAME}"
+
+        }
+        GlobalShare.globalParameterMap.SHARE_PARAM.put("archiveName",archiveName)
     }
 
     /**

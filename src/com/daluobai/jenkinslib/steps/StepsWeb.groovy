@@ -30,8 +30,8 @@ class StepsWeb implements Serializable {
         Assert.notEmpty(parameterMap,"参数为空")
         def labels = parameterMap.labels
         def pathRoot = parameterMap.pathRoot
-        def appName = GlobalShare.globalParameterMap.appName
-        def archiveName = GlobalShare.globalParameterMap.archiveName
+        def appName = GlobalShare.globalParameterMap.SHARE_PARAM.appName
+        def archiveName = GlobalShare.globalParameterMap.SHARE_PARAM.archiveName
         //获取文件名后缀
         def archiveSuffix = StrUtil.subAfter(archiveName, ".", true)
         Assert.notEmpty(labels,"labels为空")

@@ -5,6 +5,18 @@
         "domain": "docker.io",
         "credentialsId": "docker-secret"
       }
+    },
+    "git": {
+      "credentialsId": "ssh-git"
+    },
+    "agent": {
+      "credentialsId": "ssh-jenkins"
+    },
+    "repository": {
+      "gitUrlDockerfileJavaWeb": {
+        "url": "git@github.com:daluobai-devops/docker-library.git",
+        "path": "package-javaweb/openjdk8"
+      }
     }
   },
   "SHARE_PARAM": {

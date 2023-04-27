@@ -27,16 +27,16 @@ class StepsJavaWeb implements Serializable {
         Assert.notEmpty(parameterMap,"参数为空")
         def labels = parameterMap.labels
         def pathRoot = parameterMap.pathRoot
-        def appName = GlobalShare.globalParameterMap.appName
-        def archiveName = GlobalShare.globalParameterMap.archiveName
+        def appName = GlobalShare.globalParameterMap.SHARE_PARAM.appName
+        def archiveName = GlobalShare.globalParameterMap.SHARE_PARAM.archiveName
         //获取文件名后缀
         def archiveSuffix = StrUtil.subAfter(archiveName, ".", true)
         Assert.notEmpty(labels,"labels为空")
 
         def backAppName = "app-" + System.currentTimeMillis() + "." + archiveSuffix
-        steps.withCredentials([steps.sshUserPrivateKey(credentialsId: 'ssh-jenkins', keyFileVariable: 'SSH_KEY_PATH')]) {
-            steps.sh "mkdir -p ~/.ssh && chmod 700 ~/.ssh && rm -f ~/.ssh/id_rsa && cp \${SSH_KEY_PATH} ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa"
-        }
+//        steps.withCredentials([steps.sshUserPrivateKey(credentialsId: 'ssh-jenkins', keyFileVariable: 'SSH_KEY_PATH')]) {
+//            steps.sh "mkdir -p ~/.ssh && chmod 700 ~/.ssh && rm -f ~/.ssh/id_rsa && cp \${SSH_KEY_PATH} ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa"
+//        }
         labels.each{ c ->
             def label = c
             steps.echo "发布第一个标签:${label}"

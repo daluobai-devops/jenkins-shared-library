@@ -29,7 +29,7 @@ class StepsGit implements Serializable {
     def sshKeyscan(String gitUrl,String path) {
         def domainByUrl = this.getDomainByGitUrl(gitUrl)
         steps.echo "domainByUrl:${domainByUrl}"
-        Assert.notBlank(domainByUrl,"链接格式不正确")
+        Assert.notBlank(domainByUrl,"链接为空")
         //获取到域名和端口
         def matcher = (domainByUrl =~ /^([a-zA-Z0-9.-]+)(?::([0-9]+))?/)
         if (matcher.matches()) {
@@ -39,6 +39,18 @@ class StepsGit implements Serializable {
             steps.sh "ssh-keyscan ${portStr} ${host} >> ${path}"
         }else {
             steps.error "链接格式不正确"
+        }
+    }
+
+    /**
+     * 保存ssh-key到~/.ssh/.ssh目录
+     * @param credentialsId
+     * @return
+     */
+    def saveJenkinsSSHKey(String credentialsId){
+        Assert.notBlank(credentialsId,"credentialsId为空")
+        steps.withCredentials([steps.sshUserPrivateKey(credentialsId: "${credentialsId}", keyFileVariable: 'SSH_KEY_PATH')]) {
+            steps.sh "mkdir -p ~/.ssh && chmod 700 ~/.ssh && rm -f ~/.ssh/id_rsa && cp \${SSH_KEY_PATH} ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa"
         }
     }
 
