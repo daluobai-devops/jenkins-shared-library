@@ -45,7 +45,7 @@ def customConfig = [
                         "dockerRegistry": [
                                 //是否激活,默认false
                                 "enable"       : false,
-                                "imageUrl"       : "registry.cn-hangzhou.aliyuncs.com/wuzhaozhongguo/build-maven:3.9.0-jdk17",
+                                "imagePrefix"       : "registry.cn-hangzhou.aliyuncs.com/wuzhaozhongguo-app/",
                                 "dockerfile": [
                                         "url" : "git@github.com:daluobai-devops/docker-library.git",
                                         "path": "package-javaweb/openjdk8"
