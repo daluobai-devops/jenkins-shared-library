@@ -5,10 +5,12 @@ package com.daluobai.jenkinslib.constant
  * version 1.0.0
  * @title
  * @description https://github.com/daluobai-devops/jenkins-shared-library
+ *
  * @create 2023/4/25 12:10
  */
 enum EFileReadType {
 
+    //URL:https://nacos.xxxx.com/nacos/v1/cs/configs?dataId=settings.xml&group=DEFAULT_GROUP
     URL("URL", "从URL获取"),
     HOST_PATH("HOST_PATH", "从宿主机目录获取"),
     RESOURCES("RESOURCES", "从resources目录获取")

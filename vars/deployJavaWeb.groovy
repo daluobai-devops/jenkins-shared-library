@@ -114,19 +114,4 @@ def mergeConfig(Map customConfig) {
     return MapUtils.deepCopy(fullConfig)
 }
 
-post {
-    always {
-        // 总是执行的步骤
-        echo "总是执行的步骤"
-    }
-    success {
-        // 构建成功时执行的步骤
-    }
-    unstable {
-        // 构建不稳定时执行的步骤
-    }
-    failure {
-        // 构建失败时执行的步骤
-    }
-}
 
