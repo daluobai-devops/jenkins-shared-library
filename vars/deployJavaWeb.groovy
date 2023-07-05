@@ -76,6 +76,7 @@ def call(Map customConfig) {
             currentBuild.result = "FAILURE"
             throw e
         } finally {
+            echo "构建完成: ${currentBuild.currentResult}"
             if (ObjectUtil.isNotEmpty(customConfig.SHARE_PARAM.token)){
                 wecomApi.sendMsg(customConfig.SHARE_PARAM.token, "构建完成: ${currentBuild.fullDisplayName}")
             }
