@@ -9,7 +9,10 @@ import cn.hutool.core.lang.Assert
 import cn.hutool.core.util.ObjectUtil
 import com.daluobai.jenkinslib.constant.GlobalShare
 import com.daluobai.jenkinslib.utils.TemplateUtils
-import cn.hutool.core.util.StrUtil/**
+import cn.hutool.core.util.StrUtil
+import org.apache.groovy.runtime.ObjectUtil
+
+/**
  * @author daluobai@outlook.com
  * version 1.0.0
  * @title 
@@ -64,10 +67,8 @@ class StepsJavaWeb implements Serializable {
                     }
                     //拷贝新的包到发布目录
                     steps.sh "cp package/${archiveName} ${pathRoot}/${appName}"
-                    steps.echo "开始===systemctlRe"
                     //判断是否有systemctl命令
                     def systemctlRe = steps.sh returnStatus: true, script: 'command -v systemctl'
-                    steps.echo "结束===systemctlRe:${systemctlRe}"
                     if (systemctlRe == 0) {
                         steps.echo "通过systemctl重启"
                         //systemctl重启
@@ -92,11 +93,13 @@ class StepsJavaWeb implements Serializable {
         def archiveName = GlobalShare.globalParameterMap.SHARE_PARAM.archiveName
         def labels = parameterMap.labels
         def pathRoot = parameterMap.pathRoot
+        def javaPath = ObjectUtil.isEmpty(parameterMap.javaPath) ? "/usr/local/bin/java" : parameterMap.javaPath
         //生成服务文件
         steps.sh "systemctl stop ${appName}.service || true"
-        steps.sh "rm -f /etc/systemd/system/${appName}.service || true"
+        steps.sh "rm -f /etc/systemd/systemO/${appName}.service || true"
         def serviceTemplate = steps.libraryResource 'template/service/JavaWeb.service'
         def templateData = [
+                javaPath: javaPath,
                 runOptions: parameterMap.runOptions,
                 pathRoot: parameterMap.pathRoot,
                 appName: appName,
@@ -118,20 +121,20 @@ class StepsJavaWeb implements Serializable {
         def archiveName = GlobalShare.globalParameterMap.SHARE_PARAM.archiveName
         def labels = parameterMap.labels
         def pathRoot = parameterMap.pathRoot
+        def javaPath = ObjectUtil.isEmpty(parameterMap.javaPath) ? "/usr/local/bin/java" : parameterMap.javaPath
         def shellPath = "${pathRoot}/${appName}/service.sh"
-        if (!FileUtil.exist(shellPath)){
-            //生成脚本文件
-            def serviceTemplate = steps.libraryResource 'template/shell/javaWeb/service.sh'
-            def templateData = [
-                    runOptions: parameterMap.runOptions,
-                    pathRoot: parameterMap.pathRoot,
-                    appName: appName,
-                    archiveName: archiveName,
-                    runArgs: parameterMap.runArgs
-            ]
-            steps.writeFile file: "${shellPath}", text: TemplateUtils.makeTemplate(serviceTemplate,templateData)
-            steps.sh "chmod +x ${shellPath}"
-        }
+        //生成脚本文件
+        def serviceTemplate = steps.libraryResource 'template/shell/javaWeb/service.sh'
+        def templateData = [
+                javaPath: javaPath,
+                runOptions: parameterMap.runOptions,
+                pathRoot: parameterMap.pathRoot,
+                appName: appName,
+                archiveName: archiveName,
+                runArgs: parameterMap.runArgs
+        ]
+        steps.writeFile file: "${shellPath}", text: TemplateUtils.makeTemplate(serviceTemplate,templateData)
+        steps.sh "chmod +x ${shellPath}"
         steps.dir("${pathRoot}/${appName}"){
             steps.withEnv(["JENKINS_NODE_COOKIE=dontKillMe"]) {
                 steps.sh "$shellPath restart"
