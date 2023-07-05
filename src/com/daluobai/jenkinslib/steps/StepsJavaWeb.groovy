@@ -132,9 +132,12 @@ class StepsJavaWeb implements Serializable {
             steps.writeFile file: "${shellPath}", text: TemplateUtils.makeTemplate(serviceTemplate,templateData)
             steps.sh "chmod +x ${shellPath}"
         }
-        steps.withEnv(["JENKINS_NODE_COOKIE=dontKillMe"]) {
-            steps.sh "$shellPath restart"
+        steps.dir("${pathRoot}/${appName}"){
+            steps.withEnv(["JENKINS_NODE_COOKIE=dontKillMe"]) {
+                steps.sh "$shellPath restart"
+            }
         }
+
     }
 
 }
