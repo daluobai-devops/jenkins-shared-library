@@ -69,9 +69,10 @@ class StepsJavaWeb implements Serializable {
                     if (ObjectUtil.isNotEmpty(systemctlRe)) {
                         steps.echo "通过systemctl重启"
                         //systemctl重启
-                        reStartByShell(parameterMap)
+                        reStartBySystemctl(parameterMap)
                     } else {
                         steps.echo "通过shell重启"
+                        reStartByShell(parameterMap)
                     }
                 }
             }
