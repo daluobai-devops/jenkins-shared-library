@@ -10,8 +10,6 @@ import cn.hutool.core.util.ObjectUtil
 import com.daluobai.jenkinslib.constant.GlobalShare
 import com.daluobai.jenkinslib.utils.TemplateUtils
 import cn.hutool.core.util.StrUtil
-import org.apache.groovy.runtime.ObjectUtil
-
 /**
  * @author daluobai@outlook.com
  * version 1.0.0
