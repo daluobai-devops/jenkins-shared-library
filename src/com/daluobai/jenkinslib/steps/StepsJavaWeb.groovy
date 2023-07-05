@@ -133,7 +133,7 @@ class StepsJavaWeb implements Serializable {
             steps.sh "chmod +x ${shellPath}"
         }
         steps.withEnv(["JENKINS_NODE_COOKIE=dontKillMe"]) {
-            steps.sh "sh $shellPath restart"
+            steps.sh ".$shellPath restart"
         }
     }
 
