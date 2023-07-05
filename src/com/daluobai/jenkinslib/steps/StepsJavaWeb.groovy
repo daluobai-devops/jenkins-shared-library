@@ -61,26 +61,41 @@ class StepsJavaWeb implements Serializable {
                     //拷贝新的包到发布目录
                     steps.sh "cp package/${archiveName} ${pathRoot}/${appName}"
 
-                    //生成服务文件
-                    steps.sh "systemctl stop ${appName}.service || true"
-                    steps.sh "rm -f /etc/systemd/system/${appName}.service || true"
-                    def serviceTemplate = steps.libraryResource 'template/service/JavaWeb.service'
-                    def templateData = [
-                            runOptions: parameterMap.runOptions,
-                            pathRoot: parameterMap.pathRoot,
-                            appName: appName,
-                            archiveName: archiveName,
-                            runArgs: parameterMap.runArgs
-                    ]
-                    steps.writeFile file: "/etc/systemd/system/${appName}.service", text: TemplateUtils.makeTemplate(serviceTemplate,templateData)
-                    steps.sh "systemctl daemon-reload"
-                    //切换到发布目录
-                    steps.dir("${pathRoot}/${appName}"){
-                        steps.sh "systemctl enable ${appName}.service"
-                        steps.sh "systemctl start ${appName}.service"
-                    }
+                    //重启
+                    reStartBySystemctl(parameterMap)
                 }
             }
+        }
+    }
+
+    /**
+     * Systemctl重启
+     * @param parameterMap
+     * @return
+     */
+    def reStartBySystemctl(Map parameterMap){
+        Assert.notEmpty(parameterMap,"参数为空")
+        def appName = GlobalShare.globalParameterMap.SHARE_PARAM.appName
+        def archiveName = GlobalShare.globalParameterMap.SHARE_PARAM.archiveName
+        def labels = parameterMap.labels
+        def pathRoot = parameterMap.pathRoot
+        //生成服务文件
+        steps.sh "systemctl stop ${appName}.service || true"
+        steps.sh "rm -f /etc/systemd/system/${appName}.service || true"
+        def serviceTemplate = steps.libraryResource 'template/service/JavaWeb.service'
+        def templateData = [
+                runOptions: parameterMap.runOptions,
+                pathRoot: parameterMap.pathRoot,
+                appName: appName,
+                archiveName: archiveName,
+                runArgs: parameterMap.runArgs
+        ]
+        steps.writeFile file: "/etc/systemd/system/${appName}.service", text: TemplateUtils.makeTemplate(serviceTemplate,templateData)
+        steps.sh "systemctl daemon-reload"
+        //切换到发布目录
+        steps.dir("${pathRoot}/${appName}"){
+            steps.sh "systemctl enable ${appName}.service"
+            steps.sh "systemctl start ${appName}.service"
         }
     }
 
