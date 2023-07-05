@@ -26,6 +26,7 @@ start() {
   fi
   # 启动服务，并将进程号写入pid文件
   echo "Starting \$SERVICE_NAME ..."
+  echo "Starting \${SERVICE_DIR} ..."
   nohup /usr/local/bin/java -Dapp.name=${appName} ${runOptions} -jar \${SERVICE_DIR}/${archiveName} ${runArgs}  >/dev/null 2>&1 &
   echo \$! > \$PID_FILE
   echo "\$SERVICE_NAME started"
