@@ -1,4 +1,7 @@
 package com.daluobai.jenkinslib.steps
+
+import cn.hutool.core.io.FileUtil
+
 //@Grab('cn.hutool:hutool-all:5.8.11')
 
 import cn.hutool.core.lang.Assert
@@ -112,16 +115,23 @@ class StepsJavaWeb implements Serializable {
         def archiveName = GlobalShare.globalParameterMap.SHARE_PARAM.archiveName
         def labels = parameterMap.labels
         def pathRoot = parameterMap.pathRoot
-        //生成脚本文件
-        def serviceTemplate = steps.libraryResource 'template/shell/javaWeb/service.sh'
-        def templateData = [
-                runOptions: parameterMap.runOptions,
-                pathRoot: parameterMap.pathRoot,
-                appName: appName,
-                archiveName: archiveName,
-                runArgs: parameterMap.runArgs
-        ]
-        steps.writeFile file: "${pathRoot}/${appName}/service.sh", text: TemplateUtils.makeTemplate(serviceTemplate,templateData)
+        def shellPath = "${pathRoot}/${appName}/service.sh"
+        if (!FileUtil.exist(shellPath)){
+            //生成脚本文件
+            def serviceTemplate = steps.libraryResource 'template/shell/javaWeb/service.sh'
+            def templateData = [
+                    runOptions: parameterMap.runOptions,
+                    pathRoot: parameterMap.pathRoot,
+                    appName: appName,
+                    archiveName: archiveName,
+                    runArgs: parameterMap.runArgs
+            ]
+            steps.writeFile file: "${shellPath}", text: TemplateUtils.makeTemplate(serviceTemplate,templateData)
+            steps.sh "chmod +x ${shellPath}"
+        }
+        steps.withEnv(["JENKINS_NODE_COOKIE=dontKillMe"]) {
+            steps.sh "sh $shellPath restart"
+        }
     }
 
 }
