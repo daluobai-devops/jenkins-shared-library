@@ -61,8 +61,15 @@ class StepsJavaWeb implements Serializable {
                     //拷贝新的包到发布目录
                     steps.sh "cp package/${archiveName} ${pathRoot}/${appName}"
 
-                    //重启
-                    reStartBySystemctl(parameterMap)
+                    //判断是否有systemctl命令
+                    def systemctlRe = steps.sh(returnStdout: true, script: "command -v systemctl")
+                    if (ObjectUtil.isNotEmpty(systemctlRe)) {
+                        steps.echo "通过systemctl重启"
+                        //systemctl重启
+                        reStartBySystemctl(parameterMap)
+                    } else {
+                        steps.echo "通过shell重启"
+                    }
                 }
             }
         }
@@ -97,6 +104,15 @@ class StepsJavaWeb implements Serializable {
             steps.sh "systemctl enable ${appName}.service"
             steps.sh "systemctl start ${appName}.service"
         }
+    }
+
+    def reStartByShell(Map parameterMap){
+        Assert.notEmpty(parameterMap,"参数为空")
+        def appName = GlobalShare.globalParameterMap.SHARE_PARAM.appName
+        def archiveName = GlobalShare.globalParameterMap.SHARE_PARAM.archiveName
+        def labels = parameterMap.labels
+        def pathRoot = parameterMap.pathRoot
+
     }
 
 }
