@@ -1,5 +1,6 @@
 package com.daluobai.jenkinslib.steps
 
+import cn.hutool.core.date.DateUtil
 import cn.hutool.core.lang.Assert
 
 //@Grab('cn.hutool:hutool-all:5.8.11')
@@ -36,7 +37,7 @@ class StepsWeb implements Serializable {
         def archiveSuffix = StrUtil.subAfter(archiveName, ".", true)
         Assert.notEmpty(labels,"labels为空")
 
-        def backAppName = "app-" + System.currentTimeMillis() + "." + archiveSuffix
+        def backAppName = "app-" + DateUtil.format(new Date(), "yyyyMMddHHmmss") + "." + archiveSuffix
         steps.withCredentials([steps.sshUserPrivateKey(credentialsId: 'ssh-jenkins', keyFileVariable: 'SSH_KEY_PATH')]) {
             steps.sh "mkdir -p ~/.ssh && chmod 700 ~/.ssh && rm -f ~/.ssh/id_rsa && cp \${SSH_KEY_PATH} ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa"
         }
