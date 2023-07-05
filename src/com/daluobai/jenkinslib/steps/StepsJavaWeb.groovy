@@ -66,7 +66,7 @@ class StepsJavaWeb implements Serializable {
                     if (ObjectUtil.isNotEmpty(systemctlRe)) {
                         steps.echo "通过systemctl重启"
                         //systemctl重启
-                        reStartBySystemctl(parameterMap)
+                        reStartByShell(parameterMap)
                     } else {
                         steps.echo "通过shell重启"
                     }
@@ -112,7 +112,16 @@ class StepsJavaWeb implements Serializable {
         def archiveName = GlobalShare.globalParameterMap.SHARE_PARAM.archiveName
         def labels = parameterMap.labels
         def pathRoot = parameterMap.pathRoot
-
+        //生成脚本文件
+        def serviceTemplate = steps.libraryResource 'template/shell/javaWeb/service.sh'
+        def templateData = [
+                runOptions: parameterMap.runOptions,
+                pathRoot: parameterMap.pathRoot,
+                appName: appName,
+                archiveName: archiveName,
+                runArgs: parameterMap.runArgs
+        ]
+        steps.writeFile file: "${pathRoot}/${appName}/service.sh", text: TemplateUtils.makeTemplate(serviceTemplate,templateData)
     }
 
 }
