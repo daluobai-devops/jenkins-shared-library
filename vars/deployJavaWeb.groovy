@@ -1,6 +1,7 @@
 @Grab('cn.hutool:hutool-all:5.8.11')
 import cn.hutool.core.lang.Assert
 import cn.hutool.core.util.StrUtil
+import com.daluobai.jenkinslib.api.WecomApi
 import com.daluobai.jenkinslib.constant.EFileReadType
 import com.daluobai.jenkinslib.constant.GlobalShare
 import com.daluobai.jenkinslib.steps.StepsBuildMaven
@@ -24,6 +25,7 @@ def call(Map customConfig) {
     def stepsJenkins = new StepsJenkins(this)
     def stepsJavaWeb = new StepsJavaWeb(this)
     def configUtils = new ConfigUtils(this)
+    def wecomApi = new WecomApi(this)
     /*******************初始化全局对象 结束*****************/
     //用来运行构建的节点
     def nodeBuildNodeList = stepsJenkins.getNodeByLabel("buildNode")
@@ -74,6 +76,9 @@ def call(Map customConfig) {
             currentBuild.result = "FAILURE"
             throw e
         } finally {
+            if (ObjectUtil.isNotEmpty(customConfig.SHARE_PARAM.token)){
+                wecomApi.sendMsg(customConfig.SHARE_PARAM.token, "构建完成: ${currentBuild.fullDisplayName}")
+            }
             deleteDir()
         }
     }
