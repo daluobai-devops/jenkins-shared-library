@@ -2,11 +2,7 @@ def customConfig = [
         //公共参数
         "SHARE_PARAM"    : [
                 //app 名称,如果没填则使用jenkins job名称。可选
-                "appName": "test",
-                //钉钉 token
-                "dingdingToken"  : "",
-                //飞书 token
-                "feishuToken"  : ""
+                "appName": "test"
         ],
         //发布流程
         "DEPLOY_PIPELINE": [

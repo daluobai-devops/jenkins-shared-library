@@ -3,7 +3,7 @@
     "docker": {
       "registry": {
         "domain": "docker.io",
-        "credentialsId": "docker-secret"
+        "credentialsId": ""
       }
     },
     "git": {
@@ -20,8 +20,6 @@
     }
   },
   "SHARE_PARAM": {
-    "appName": "test1",
-    "dingdingToken": "111",
-    "feishuToken": "3333"
+    "appName": "test1"
   }
 }

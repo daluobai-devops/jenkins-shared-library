@@ -57,10 +57,10 @@ def call(Map customConfig) {
                         stepsBuildMaven.build(fullConfig)
                     } else if (it.key == "stepsStorage") {
                         def stepsStorage =  fullConfig.DEPLOY_PIPELINE.stepsStorage
-                        if (ObjectUtil.isNotEmpty(fullConfig.DEPLOY_PIPELINE.stepsStorage)) {
+                        if (ObjectUtil.isEmpty(fullConfig.DEPLOY_PIPELINE.stepsStorage)) {
                             error "stepsStorage配置为空"
                         }
-                        def dockerfileARG = """--build-arg BUILD_EXPOSE=8080 --build-arg appName="${customConfig.SHARE_PARAM.appName}" --build-arg runOptions="" --build-arg runArgs="""""
+                        def dockerfileARG = '--build-arg BUILD_EXPOSE=8080 --build-arg appName="${customConfig.SHARE_PARAM.appName}" --build-arg runOptions="" --build-arg runArgs=""'
                         fullConfig.DEPLOY_PIPELINE.stepsStorage.dockerfileARG = dockerfileARG
                         stepsJenkins.stash(fullConfig.DEPLOY_PIPELINE.stepsStorage)
                     } else if (it.key == "stepsJavaWebDeployToService") {
@@ -112,5 +112,21 @@ def mergeConfig(Map customConfig) {
     fullConfig = MapUtils.merge([defaultConfig, extendConfig, customConfig])
 
     return MapUtils.deepCopy(fullConfig)
+}
+
+post {
+    always {
+        // 总是执行的步骤
+        echo "总是执行的步骤"
+    }
+    success {
+        // 构建成功时执行的步骤
+    }
+    unstable {
+        // 构建不稳定时执行的步骤
+    }
+    failure {
+        // 构建失败时执行的步骤
+    }
 }
 
