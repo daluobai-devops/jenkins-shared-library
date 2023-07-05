@@ -17,7 +17,7 @@ start() {
     pid=\$(cat \$PID_FILE)
     # 检查进程是否存在
     if kill -0 \$pid >/dev/null 2>&1; then
-      echo "$SERVICE_NAME is already running (pid: $pid)"
+      echo "\$SERVICE_NAME is already running (pid: \$pid)"
       return
     else
       # 如果进程不存在，删除pid文件
@@ -25,10 +25,10 @@ start() {
     fi
   fi
   # 启动服务，并将进程号写入pid文件
-  echo "Starting $SERVICE_NAME ..."
+  echo "Starting \$SERVICE_NAME ..."
   nohup /usr/local/bin/java -Dapp.name=${appName} ${runOptions} -jar ${SERVICE_DIR}/${archiveName} ${runArgs}  >/dev/null 2>&1 &
   echo \$! > \$PID_FILE
-  echo "$SERVICE_NAME started"
+  echo "\$SERVICE_NAME started"
 }
 
 stop() {
@@ -39,18 +39,18 @@ stop() {
     # 检查进程是否存在
     if kill -0 \$pid >/dev/null 2>&1; then
       # 停止服务，并删除pid文件
-      echo "Stopping $SERVICE_NAME ..."
+      echo "Stopping \$SERVICE_NAME ..."
       kill -9 \$pid
       rm -f \$PID_FILE
-      echo "$SERVICE_NAME stopped"
+      echo "\$SERVICE_NAME stopped"
     else
       # 如果进程不存在，删除pid文件，并提示服务没有运行
       rm -f \$PID_FILE
-      echo "$SERVICE_NAME is not running"
+      echo "\$SERVICE_NAME is not running"
     fi
   else
     # 如果pid文件不存在，提示服务没有运行
-    echo "$SERVICE_NAME is not running"
+    echo "\$SERVICE_NAME is not running"
   fi
 }
 
@@ -61,7 +61,7 @@ restart() {
 }
 
 # 根据传入的参数执行相应的函数
-case "$1" in
+case "\$1" in
   start)
     start
     ;;
@@ -73,7 +73,7 @@ case "$1" in
     ;;
   *)
     # 如果没有传入参数或者参数不合法，打印帮助信息
-    echo "Usage: $0 {start|stop|restart}"
+    echo "Usage: \$0 {start|stop|restart}"
 esac
 
 exit 0
