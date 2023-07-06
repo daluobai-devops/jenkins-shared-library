@@ -100,7 +100,8 @@ class EndpointUtils implements Serializable {
         for (int i = 0; i < failureThreshold; i++) {
             steps.echo "健康检查-第${i}次"
             sleep period
-            int portListeningNum = steps.sh returnStdout: true, script: """netstat -an | egrep ":${localTCPPort}" | awk '\$1 ~ /tcp/ && \$NF == "LISTEN" {print \$0}' | wc -l"""
+            def portListening = steps.sh returnStdout: true, script: """netstat -an | egrep ":${localTCPPort}" | awk '\$1 ~ /tcp/ && \$NF == "LISTEN" {print \$0}' | wc -l"""
+            int portListeningNum = portListening.trim()
             if (portListeningNum > 0){
                 isOnline = true
                 break
