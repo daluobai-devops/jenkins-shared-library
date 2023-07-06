@@ -64,7 +64,7 @@ Default version:main
 - 启动方式：Launch agents via SSH
   - 主机：服务器的 ip
   - Credentials：ssh-jenkins
-  - Host Key Verification Strategy：Manually provided key Verification Strategy
+  - Host Key Verification Strategy：Manually trusted key Verification Strategy
 - 节点属性>环境变量(用来设置环境变量)
   - JAVA_HOME
   - /usr/local/jdk/jdk17/
