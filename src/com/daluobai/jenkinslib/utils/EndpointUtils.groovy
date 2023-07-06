@@ -1,5 +1,6 @@
 package com.daluobai.jenkinslib.utils
 
+import cn.hutool.core.util.ObjectUtil
 @Grab('cn.hutool:hutool-all:5.8.11')
 import cn.hutool.http.HttpUtil
 import cn.hutool.core.lang.Assert
@@ -78,6 +79,33 @@ class EndpointUtils implements Serializable {
             }
         }
 
+        return isOnline;
+    }
+
+    /**
+     * 检查本地端口是否监听
+     * @param localTCPPort
+     * @return
+     */
+    def healthCheckWithLocalTCPPort(def localTCPPort,def period,def failureThreshold) {
+        Assert.notNull(localTCPPort,"端口为空")
+        if (ObjectUtil.isNull(period)){
+            period = 0
+        }
+        if (ObjectUtil.isNull(failureThreshold) || failureThreshold < 1){
+            period = 1
+        }
+        steps.echo "检查本地端口是否监听:${localTCPPort}"
+        boolean isOnline = false
+        for (int i = 0; i < failureThreshold; i++) {
+            steps.echo "健康检查-第${i}次"
+            sleep period
+            def portListeningNum = steps.sh returnStdout: true, script: """netstat -an | egrep ":${localTCPPort}" | awk '\$1 ~ /tcp/ && \$NF == "LISTEN" {print \$0}' | wc -l"""
+            if (portListeningNum != null && portListeningNum > 0){
+                isOnline = true
+                break
+            }
+        }
         return isOnline;
     }
 }

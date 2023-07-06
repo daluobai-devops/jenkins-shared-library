@@ -8,6 +8,7 @@ import cn.hutool.core.io.FileUtil
 import cn.hutool.core.lang.Assert
 import cn.hutool.core.util.ObjectUtil
 import com.daluobai.jenkinslib.constant.GlobalShare
+import com.daluobai.jenkinslib.utils.EndpointUtils
 import com.daluobai.jenkinslib.utils.TemplateUtils
 import cn.hutool.core.util.StrUtil
 /**
@@ -24,6 +25,7 @@ class StepsJavaWeb implements Serializable {
 
     /*******************初始化全局对象 开始*****************/
     def stepsJenkins = new StepsJenkins(steps)
+    def endpointUtils = new EndpointUtils(steps)
     /*******************初始化全局对象 结束*****************/
 
     //发布
@@ -42,6 +44,8 @@ class StepsJavaWeb implements Serializable {
 //        steps.withCredentials([steps.sshUserPrivateKey(credentialsId: 'ssh-jenkins', keyFileVariable: 'SSH_KEY_PATH')]) {
 //            steps.sh "mkdir -p ~/.ssh && chmod 700 ~/.ssh && rm -f ~/.ssh/id_rsa && cp \${SSH_KEY_PATH} ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa"
 //        }
+        //预处理发布用的参数
+        def readinessProbeMap = parameterMap.readinessProbe
         labels.each{ c ->
             def label = c
             steps.echo "发布第一个标签:${label}"
@@ -74,6 +78,17 @@ class StepsJavaWeb implements Serializable {
                     } else {
                         steps.echo "通过shell重启"
                         reStartByShell(parameterMap)
+                    }
+                    //健康检查
+                    if (readinessProbeMap != null && readinessProbeMap.type != null){
+                        if (readinessProbeMap.type == "tcp"){
+                            def portListening = endpointUtils.healthCheckWithLocalTCPPort(readinessProbeMap.port,readinessProbeMap.period,readinessProbeMap.failureThreshold)
+                            if (!portListening){
+                                steps.error '服务未启动'
+                            }
+                        }else {
+                            steps.error '暂不支持的探针类型'
+                        }
                     }
                 }
             }

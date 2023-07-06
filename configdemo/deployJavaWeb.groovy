@@ -63,6 +63,23 @@ def customConfig = [
                         "runArgs"   : "--spring.profiles.active=dev",
                         //服务发布服务label 必填
                         "labels"    : ["NODE-DEMO"],
+                        //就绪探针 可选，检查服务是否启动成功，如果启动成功则认为服务发布成功，如果不填则不检查
+                        "readinessProbe"          : [
+                                //探针类型，支持http,tcp,cmd,默认http 可选
+                                "type"   : "tcp",
+                                //探针路径，如果type为http则必填 可选
+                                "path"   : "/actuator/health",
+                                //探针端口，如果type为http或者tcp则必填 可选
+                                "port"   : 8080,
+                                //探针命令，如果type为cmd则必填 可选
+                                "command": "curl -s -o /dev/null -w %{http_code} http://localhost:8080/actuator/health",
+                                //探针超时时间，单位秒，默认10秒 可选
+                                "timeout": 10,
+                                //探针间隔时间，单位秒，默认5秒 可选
+                                "period" : 5,
+                                //探针失败次数，如果失败次数达到该值则认为发布失败，默认3次 可选
+                                "failureThreshold": 60
+                        ],
                 ]
         ],
         //默认配置

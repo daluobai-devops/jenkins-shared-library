@@ -28,6 +28,7 @@ war 包方式安装:
 2. 下载jenkins.war 到/usr/local/jenkins下
 3. 拷贝configdemo/jenkins.service到/etc/systemd/system/下
 4. 启动 jenkins systemctl enable jenkins.service && systemctl start jenkins.service
+5. 安装插件Docker、Docker Pipeline、Docker Api、Pipeline Utility Steps
 
 # 配置Jenkins Pipeline
 
