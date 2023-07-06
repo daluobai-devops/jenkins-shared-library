@@ -103,6 +103,7 @@ class EndpointUtils implements Serializable {
             def portListening = steps.sh returnStdout: true, script: """netstat -an | egrep ":${localTCPPort}" | awk '\$1 ~ /tcp/ && \$NF == "LISTEN" {print \$0}' | wc -l"""
             int portListeningNum = portListening.trim()
             if (portListeningNum > 0){
+                steps.echo "端口监听成功:${localTCPPort}"
                 isOnline = true
                 break
             }
