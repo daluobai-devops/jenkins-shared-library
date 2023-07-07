@@ -95,7 +95,7 @@ def customConfig = [
                                 //探针间隔时间，单位秒，默认5秒 可选
                                 "period" : 5,
                                 //探针失败次数，如果失败次数达到该值则认为发布失败，默认3次 可选
-                                "failureThreshold": 60
+                                "failureThreshold": 30
                         ],
                 ]
         ],
