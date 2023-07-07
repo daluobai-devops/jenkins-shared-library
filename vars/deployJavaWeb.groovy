@@ -73,7 +73,7 @@ def call(Map customConfig) {
             }
         } catch (Exception e) {
             echo "执行异常: ${e.toString()}"
-            currentBuild.result = "FAILURE"
+//            currentBuild.result = "FAILURE"
             throw e
         } finally {
             echo "构建完成: ${currentBuild.currentResult}"
