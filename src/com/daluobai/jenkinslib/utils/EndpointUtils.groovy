@@ -100,12 +100,12 @@ class EndpointUtils implements Serializable {
         for (int i = 0; i < failureThreshold; i++) {
             steps.echo "健康检查-第${i}次"
             sleep period
-            def portListening = steps.sh returnStdout: true, script: """netstat -an | egrep '^.*9000\\s' | awk '\$1 ~ /tcp/ && \$6 == "LISTEN" {print \$0}'"""
-            steps.echo "端口监听成功1:${portListening},${localTCPPort}"
-            int portListeningNum = portListening.trim()
+            def portListeningStr = steps.sh returnStdout: true, script: """netstat -an | egrep '^.*9000\\s' | awk '\$1 ~ /tcp/ && \$6 == "LISTEN" {print \$0}'"""
 
-            if (portListeningNum > 0){
-                steps.echo "端口监听成功:${portListeningNum},${localTCPPort}"
+            boolean portListening = ObjectUtil.isNotEmpty(portListeningStr) && ObjectUtil.isNotEmpty(portListeningStr.trim())
+
+            if (portListening){
+                steps.echo "端口监听成功:${portListeningStr},${localTCPPort}"
                 isOnline = true
                 break
             }
