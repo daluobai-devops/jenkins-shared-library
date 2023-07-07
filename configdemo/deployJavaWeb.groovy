@@ -2,7 +2,15 @@ def customConfig = [
         //公共参数
         "SHARE_PARAM"    : [
                 //app 名称,如果没填则使用jenkins job名称。可选
-                "appName"      : "test"
+                "appName"      : "test",
+                //消息通知，可选
+                "message": [
+                        //企业微信通知 可选
+                        "wecom": [
+                                //企业微信机器人token 必填
+                                "key": ""
+                        ]
+                ]
         ],
         //发布流程
         "DEPLOY_PIPELINE": [
