@@ -101,7 +101,7 @@ class EndpointUtils implements Serializable {
             steps.echo "健康检查-第${i}次"
             sleep period
             def portListening = steps.sh returnStdout: true, script: """#!/bin/sh
-netstat -an | egrep '^.*900\\s' | awk '\\\$1 ~ /tcp/ && \\\$6 == "LISTEN" {print \\\$0}' | wc -l"""
+netstat -an | egrep '^.*900\\s' | awk '\$1 ~ /tcp/ && \$6 == "LISTEN" {print \$0}' | wc -l"""
             int portListeningNum = portListening.trim()
             if (portListeningNum > 0){
                 steps.echo "端口监听成功:${portListeningNum},${localTCPPort}"
