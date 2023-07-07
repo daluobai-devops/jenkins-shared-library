@@ -101,7 +101,7 @@ class EndpointUtils implements Serializable {
             steps.echo "健康检查-第${i}次"
             sleep period
             //加上wc -l会导致结果不对，所以按照是否有返回值判断
-            def portListeningStr = steps.sh returnStdout: true, script: """netstat -an | egrep '^.*9000\\s' | awk '\$1 ~ /tcp/ && \$6 == "LISTEN" {print \$0}'"""
+            def portListeningStr = steps.sh returnStdout: true, script: """netstat -an | egrep '^.*${localTCPPort}\\s' | awk '\$1 ~ /tcp/ && \$6 == "LISTEN" {print \$0}'"""
 
             boolean portListening = ObjectUtil.isNotEmpty(portListeningStr) && ObjectUtil.isNotEmpty(portListeningStr.trim())
 
