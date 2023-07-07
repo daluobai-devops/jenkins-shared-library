@@ -102,9 +102,7 @@ class EndpointUtils implements Serializable {
             sleep period
             //加上wc -l会导致结果不对，所以按照是否有返回值判断
             def portListeningStr = steps.sh returnStdout: true, script: """netstat -an | egrep '^.*${localTCPPort}\\s' | awk '\$1 ~ /tcp/ && \$6 == "LISTEN" {print \$0}'"""
-
             boolean portListening = ObjectUtil.isNotEmpty(portListeningStr) && ObjectUtil.isNotEmpty(portListeningStr.trim())
-
             if (portListening){
                 steps.echo "端口监听成功:${portListeningStr},${localTCPPort}"
                 isOnline = true
