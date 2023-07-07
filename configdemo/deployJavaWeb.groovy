@@ -63,18 +63,35 @@ def customConfig = [
                         "runArgs"   : "--spring.profiles.active=dev",
                         //服务发布服务label 必填
                         "labels"    : ["NODE-DEMO"],
-                        //就绪探针 可选，检查服务是否启动成功，如果启动成功则认为服务发布成功，如果不填则不检查
+                        //就绪探针 可选，检查服务是否启动成功，如果启动成功则认为服务发布成功，如果不填则不检查.探针类型，支持http,tcp,cmd.
                         "readinessProbe"          : [
-                                //探针类型，支持http,tcp,cmd,默认http 可选.现在暂时只支持了tcp(支持参数type,port,period,failureThreshold)
-                                "type"   : "tcp",
-                                //探针路径，如果type为http则必填 可选
-                                "path"   : "/actuator/health",
-                                //探针端口，如果type为http或者tcp则必填 可选
-                                "port"   : 8080,
-                                //探针命令，如果type为cmd则必填 可选
-                                "command": "curl -s -o /dev/null -w %{http_code} http://localhost:8080/actuator/health",
-                                //探针超时时间，单位秒，默认10秒 可选
-                                "timeout": 10,
+                                //检查端口是否监听，如果监听则认为发布成功，如果不填则不检查 可选
+                                tcp: [
+                                        //是否激活,默认true
+                                        "enable"        : true,
+                                        //探针端口
+                                        "port"   : 8080
+                                ],
+                                //访问http地址，http状态码返回200则认为发布成功，如果不填则不检查 可选
+                                http: [
+                                        //是否激活,默认true
+                                        "enable"        : false,
+                                        //探针路径， 必填
+                                        "path"   : "/actuator/health",
+                                        //探针端口， 必填
+                                        "port"   : 8080,
+                                        //探针超时时间，单位秒，默认10秒 可选
+                                        "timeout": 10
+                                ],
+                                //执行命令，以退出状态码判断是否成功 可选
+                                cmd: [
+                                        //是否激活,默认true
+                                        "enable"        : false,
+                                        //探针命令，如果type为cmd则必填 必填
+                                        "command": "curl -s -o /dev/null -w %{http_code} http://localhost:8080/actuator/health",
+                                        //探针超时时间，单位秒，默认10秒 可选
+                                        "timeout": 10
+                                ],
                                 //探针间隔时间，单位秒，默认5秒 可选
                                 "period" : 5,
                                 //探针失败次数，如果失败次数达到该值则认为发布失败，默认3次 可选

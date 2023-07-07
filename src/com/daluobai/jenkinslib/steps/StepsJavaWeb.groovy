@@ -80,9 +80,9 @@ class StepsJavaWeb implements Serializable {
                         reStartByShell(parameterMap)
                     }
                     //健康检查
-                    if (readinessProbeMap != null && readinessProbeMap.type != null){
-                        if (readinessProbeMap.type == "tcp"){
-                            def portListening = endpointUtils.healthCheckWithLocalTCPPort(readinessProbeMap.port,readinessProbeMap.period,readinessProbeMap.failureThreshold)
+                    if (readinessProbeMap != null){
+                        if (ObjectUtil.isNotEmpty(readinessProbeMap.tcp) && (readinessProbeMap.enable == null || readinessProbeMap.enable)){
+                            def portListening = endpointUtils.healthCheckWithLocalTCPPort(readinessProbeMap.tcp.port,readinessProbeMap.period,readinessProbeMap.failureThreshold)
                             if (!portListening){
                                 steps.error '服务未启动'
                             }
