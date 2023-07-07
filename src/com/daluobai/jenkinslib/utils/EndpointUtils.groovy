@@ -87,20 +87,21 @@ class EndpointUtils implements Serializable {
      * @param localTCPPort
      * @return
      */
-    def healthCheckWithLocalTCPPort(def localTCPPort,def period,def failureThreshold) {
+    def healthCheckWithLocalTCPPort(def localTCPPort,def periodSec,def failureThreshold) {
         Assert.notNull(localTCPPort,"端口为空")
-        steps.echo "检查本地端口是否监听-参数${localTCPPort}，间隔${period}，重试次数${failureThreshold}"
-        if (ObjectUtil.isNull(period)){
-            period = 0
+        steps.echo "检查本地端口是否监听-参数${localTCPPort}，间隔${periodSec}，重试次数${failureThreshold}"
+        if (ObjectUtil.isNull(periodSec) || periodSec < 0){
+            periodSec = 0
         }
         if (ObjectUtil.isNull(failureThreshold) || failureThreshold < 1){
-            period = 1
+            failureThreshold = 1
         }
+        def periodMS = periodSec * 1000
         steps.echo "检查本地端口是否监听:${localTCPPort}"
         boolean isOnline = false
         for (int i = 0; i < failureThreshold; i++) {
             steps.echo "健康检查-第${i}次"
-            sleep period
+            sleep periodMS
             //加上wc -l会导致结果不对，所以按照是否有返回值判断
             def portListeningStr = steps.sh returnStdout: true, script: """netstat -an | egrep '^.*${localTCPPort}\\s' | awk '\$1 ~ /tcp/ && \$6 == "LISTEN" {print \$0}'"""
             boolean portListening = ObjectUtil.isNotEmpty(portListeningStr) && ObjectUtil.isNotEmpty(portListeningStr.trim())
