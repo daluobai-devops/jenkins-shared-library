@@ -87,7 +87,7 @@ def call(Map customConfig) {
                     if (currentBuild.currentResult == "SUCCESS"){
                         messageContent = "构建成功: ${currentBuild.fullDisplayName}"
                     }else{
-                        messageContent = "构建完成: ${currentBuild.fullDisplayName},异常信息: ${errMessage}"
+                        messageContent = "构建失败: ${currentBuild.fullDisplayName},异常信息: ${errMessage}"
                     }
                     wecomApi.sendMsg(customConfig.SHARE_PARAM.message.wecom.key, messageContent)
                 }
