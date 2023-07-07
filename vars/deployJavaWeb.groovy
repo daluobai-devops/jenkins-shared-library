@@ -72,14 +72,15 @@ def call(Map customConfig) {
                 echo "结束执行流程: ${it.key}"
             }
         } catch (Exception e) {
-            echo "执行异常信息: ${e.getStackTrace().toString()}"
+            echo "执行异常信息: ${e.getMessage()}"
             currentBuild.result = "FAILURE"
+            currentBuild.errMessage = e.getMessage()
             throw e
         } finally {
             echo "构建完成: ${currentBuild.currentResult}"
             if (ObjectUtil.isNotEmpty(customConfig.SHARE_PARAM.message)){
                 if (ObjectUtil.isNotEmpty(customConfig.SHARE_PARAM.message.wecom) && ObjectUtil.isNotEmpty(customConfig.SHARE_PARAM.message.wecom.key)){
-                    wecomApi.sendMsg(customConfig.SHARE_PARAM.message.wecom.key, "构建完成: ${currentBuild.fullDisplayName},异常信息: ${currentBuild.currentResult}")
+                    wecomApi.sendMsg(customConfig.SHARE_PARAM.message.wecom.key, "构建完成: ${currentBuild.fullDisplayName},异常信息: ${currentBuild.errMessage}")
                 }
             }
             deleteDir()
