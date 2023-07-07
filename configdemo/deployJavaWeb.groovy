@@ -65,7 +65,7 @@ def customConfig = [
                         "labels"    : ["NODE-DEMO"],
                         //就绪探针 可选，检查服务是否启动成功，如果启动成功则认为服务发布成功，如果不填则不检查
                         "readinessProbe"          : [
-                                //探针类型，支持http,tcp,cmd,默认http 可选
+                                //探针类型，支持http,tcp,cmd,默认http 可选.现在暂时只支持了tcp(支持参数type,port,period,failureThreshold)
                                 "type"   : "tcp",
                                 //探针路径，如果type为http则必填 可选
                                 "path"   : "/actuator/health",
