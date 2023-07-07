@@ -86,8 +86,6 @@ class StepsJavaWeb implements Serializable {
                             if (!portListening){
                                 steps.error '服务未启动'
                             }
-                        }else {
-                            steps.error '暂不支持的探针类型'
                         }
                     }
                 }
