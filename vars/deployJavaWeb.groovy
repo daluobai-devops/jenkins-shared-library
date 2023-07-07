@@ -79,7 +79,7 @@ def call(Map customConfig) {
             echo "构建完成: ${currentBuild.currentResult}"
             if (ObjectUtil.isNotEmpty(customConfig.SHARE_PARAM.message)){
                 if (ObjectUtil.isNotEmpty(customConfig.SHARE_PARAM.message.wecom) && ObjectUtil.isNotEmpty(customConfig.SHARE_PARAM.message.wecom.key)){
-                    wecomApi.sendMsg(customConfig.SHARE_PARAM.message.wecom.key, "构建完成: ${currentBuild.fullDisplayName}")
+                    wecomApi.sendMsg(customConfig.SHARE_PARAM.message.wecom.key, "构建完成: ${currentBuild.fullDisplayName},异常信息: ${currentBuild.currentResult}")
                 }
             }
             deleteDir()
