@@ -32,13 +32,15 @@ def call(Map customConfig) {
     if (ObjectUtil.isEmpty(nodeBuildNodeList)) {
         error '没有可用的构建节点'
     }
-    //初始化参数.
+    /***初始化参数 开始**/
+    //错误信息
+    def errMessage = ""
     //如果没传项目名称，则使用jenkins项目名称
     if (StrUtil.isBlank(customConfig.SHARE_PARAM.appName)){
         customConfig.SHARE_PARAM.appName = currentBuild.projectName
     }
     def SHARE_PARAM =  customConfig.SHARE_PARAM
-
+    /***初始化参数 结束**/
     //默认在同一个构建节点运行，如果需要在其他节点运行则单独写在node块中
     node(nodeBuildNodeList[0]) {
         try {
@@ -65,11 +67,24 @@ def call(Map customConfig) {
                 }
                 echo "结束执行流程: ${it.key}"
             }
-        } catch (Exception e) {
-            echo "执行异常: ${e.toString()}"
+        }  catch (Exception e) {
+            echo "执行异常信息: ${e.getMessage()}"
             currentBuild.result = "FAILURE"
+            errMessage = e.getMessage()
             throw e
         } finally {
+            echo "构建完成: ${currentBuild.currentResult}"
+            if (ObjectUtil.isNotEmpty(customConfig.SHARE_PARAM.message)){
+                if (ObjectUtil.isNotEmpty(customConfig.SHARE_PARAM.message.wecom) && ObjectUtil.isNotEmpty(customConfig.SHARE_PARAM.message.wecom.key)){
+                    def messageContent = "构建完成: ${currentBuild.fullDisplayName}"
+                    if (currentBuild.currentResult == "SUCCESS"){
+                        messageContent = "构建成功: ${currentBuild.fullDisplayName}"
+                    }else{
+                        messageContent = "构建失败: ${currentBuild.fullDisplayName},异常信息: ${errMessage},构建日志:(${BUILD_URL}console)"
+                    }
+                    wecomApi.sendMsg(customConfig.SHARE_PARAM.message.wecom.key, messageContent)
+                }
+            }
             deleteDir()
         }
     }
