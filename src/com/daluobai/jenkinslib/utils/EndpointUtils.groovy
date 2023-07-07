@@ -89,6 +89,7 @@ class EndpointUtils implements Serializable {
      */
     def healthCheckWithLocalTCPPort(def localTCPPort,def period,def failureThreshold) {
         Assert.notNull(localTCPPort,"端口为空")
+        steps.echo "检查本地端口是否监听-参数${localTCPPort}，间隔${period}，重试次数${failureThreshold}"
         if (ObjectUtil.isNull(period)){
             period = 0
         }
