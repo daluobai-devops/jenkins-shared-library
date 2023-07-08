@@ -134,6 +134,8 @@ class StepsJavaWeb implements Serializable {
         def pathRoot = parameterMap.pathRoot
         def javaPath = ObjectUtil.isEmpty(parameterMap.javaPath) ? "/usr/local/bin/java" : parameterMap.javaPath
         def shellPath = "${pathRoot}/${appName}/service.sh"
+        //先删掉原来的脚本文件
+        steps.sh "rm -f ${shellPath} || true"
         //生成脚本文件
         def serviceTemplate = steps.libraryResource 'template/shell/javaWeb/service.sh'
         def templateData = [
