@@ -19,6 +19,8 @@ start() {
 
 # Stop the java project
 stop() {
+  #为了处理启动多个实力的情况，先全杀掉.但是这里没有判断是否已经停止，所以继续走下面的逻辑
+  ps -ef | grep "\-Dapp.name=${appName}\s" | grep -v grep | awk '{print \$2}' | xargs kill
   # Check if the java process is running
   PID=\$(ps -ef | grep "\-Dapp.name=${appName}\s" | grep -v grep | awk '{print \$2}')
   if [ -n "\$PID" ]; then
@@ -30,8 +32,7 @@ stop() {
     echo "The app is stopped, pid: \$PID"
     return 0
   fi
-  # The process is not running, do nothing
-  echo "The app is not running"
+  echo "The app is stopped"
 }
 
 # Restart the java project

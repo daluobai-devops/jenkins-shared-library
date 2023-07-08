@@ -73,14 +73,14 @@ def call(Map customConfig) {
             errMessage = e.getMessage()
             throw e
         } finally {
-            echo "构建完成: ${currentBuild.currentResult}"
+            echo "发布完成: ${currentBuild.currentResult}"
             if (ObjectUtil.isNotEmpty(customConfig.SHARE_PARAM.message)){
                 if (ObjectUtil.isNotEmpty(customConfig.SHARE_PARAM.message.wecom) && ObjectUtil.isNotEmpty(customConfig.SHARE_PARAM.message.wecom.key)){
-                    def messageContent = "构建完成: ${currentBuild.fullDisplayName}"
+                    def messageContent = "发布完成: ${currentBuild.fullDisplayName}"
                     if (currentBuild.currentResult == "SUCCESS"){
-                        messageContent = "构建成功: ${currentBuild.fullDisplayName}"
+                        messageContent = "发布成功: ${currentBuild.fullDisplayName}"
                     }else{
-                        messageContent = "构建失败: ${currentBuild.fullDisplayName},异常信息: ${errMessage},构建日志:(${BUILD_URL}console)"
+                        messageContent = "发布失败: ${currentBuild.fullDisplayName},异常信息: ${errMessage},构建日志:(${BUILD_URL}console)"
                     }
                     wecomApi.sendMsg(customConfig.SHARE_PARAM.message.wecom.key, messageContent)
                 }
