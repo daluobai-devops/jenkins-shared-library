@@ -19,7 +19,7 @@ start() {
 
 # Stop the java project
 stop() {
-  PIDS=\$(ps -ef | grep "\-Dapp.name=${appName}s" | grep -v grep | awk '{print \$2}')
+  PIDS=\$(ps -ef | grep "\-Dapp.name=${appName}\s" | grep -v grep | awk '{print \$2}')
   if [ -n "\$PIDS" ]; then
     for PID in \$PIDS; do
       # Kill the process with SIGTERM signal
