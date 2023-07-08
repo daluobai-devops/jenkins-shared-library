@@ -70,6 +70,8 @@ def call(Map customConfig) {
                         stepsJenkins.stash(fullConfig.DEPLOY_PIPELINE.stepsStorage)
                     } else if (it.key == "stepsJavaWebDeployToService") {
                         stepsJavaWeb.deploy(fullConfig.DEPLOY_PIPELINE.stepsJavaWebDeployToService)
+                    }else if (it.key == "stepsJavaWebDeployToTomcat") {
+                        stepsJavaWeb.deployToTomcat(fullConfig.DEPLOY_PIPELINE.stepsJavaWebDeployToTomcat)
                     }
                 }
                 echo "结束执行流程: ${it.key}"

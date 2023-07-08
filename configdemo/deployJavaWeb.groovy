@@ -105,6 +105,17 @@ def customConfig = [
                                 //探针失败次数，如果失败次数达到该值则认为发布失败，默认3次 可选
                                 "failureThreshold": 10
                         ],
+                ],
+                //发布到tomcat
+                "stepsTomcatDeploy":[
+                        //是否激活,默认true
+                        "enable"    : false,
+                        //工作目录 必选。备份用
+                        "tomcatHome"  : "/usr/local/tomcat",
+                        //包发布路径 必填
+                        "deployPath"  : "/usr/local/tomcat/webapps/",
+                        //重启脚本,可选
+                        "command": "cd /usr/local/tomcat/bin/ && ./shutdown.sh && sleep 1000 && ./startup.sh"
                 ]
         ],
         //默认配置
