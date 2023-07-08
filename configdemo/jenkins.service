@@ -4,7 +4,6 @@ After=syslog.target network.target
 
 [Service]
 Type=simple
-Restart=
 ExecStart=/bin/sh -c '/usr/local/jdk/jdk17/bin/java -DJENKINS_HOME=/usr/local/jenkins/home/ -Dorg.apache.commons.jelly.tags.fmt.timeZone=Asia/Shanghai -jar /usr/local/jenkins/jenkins.war --prefix=/jenkins --httpPort=9000  >> /usr/local/jenkins/jenkins.log 2>&1'
 ExecStop=/bin/kill -15 $MAINPID
 
