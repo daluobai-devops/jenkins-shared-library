@@ -3,7 +3,7 @@
 # Start the java project
 start() {
   # Check if the java process is running
-  PID=\$(ps -ef | grep "\\-Dapp.name=${appName}\s" | grep -v grep | awk '{print \$2}')
+  PID=\$(ps -ef | grep "\\-Dapp.name=${appName}\\s" | grep -v grep | awk '{print \$2}')
   if [ -n "\$PID" ]; then
     # The process is already running, do nothing
     echo "The app is already running, pid: \$PID"
@@ -19,7 +19,7 @@ start() {
 
 # Stop the java project
 stop() {
-  PIDS=\$(ps -ef | grep "\\-Dapp.name=${appName}\s" | grep -v grep | awk '{print \$2}')
+  PIDS=\$(ps -ef | grep "\\-Dapp.name=${appName}\\s" | grep -v grep | awk '{print \$2}')
   if [ -n "\$PIDS" ]; then
     for PID in \$PIDS; do
       # Kill the process with SIGTERM signal
