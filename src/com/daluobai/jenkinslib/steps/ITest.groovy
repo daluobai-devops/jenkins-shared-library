@@ -9,5 +9,5 @@ package com.daluobai.jenkinslib.steps
  */
 interface ITest {
 
-    def call()
+    def call(def steps)
 }

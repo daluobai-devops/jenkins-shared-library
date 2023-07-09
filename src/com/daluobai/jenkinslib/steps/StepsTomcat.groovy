@@ -33,7 +33,8 @@ class StepsTomcat implements Serializable {
         def interfaceType = com.daluobai.jenkinslib.steps.ITest
         def instances = new Reflections('com.daluobai.jenkinslib.steps').getSubTypesOf(interfaceType).collect { Activator.CreateInstance(it) }
         for (final def ins in instances) {
-            ins.test()
+            steps.echo"1111"
+            ins.test(steps)
 
         }
         steps.echo "StepsTomcat:test"

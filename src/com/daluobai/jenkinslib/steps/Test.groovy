@@ -9,7 +9,7 @@ package com.daluobai.jenkinslib.steps
  */
 class Test implements ITest {
     @Override
-    def call() {
-        print("test111111")
+    def call(def steps) {
+        steps.echo "test111111"
     }
 }
