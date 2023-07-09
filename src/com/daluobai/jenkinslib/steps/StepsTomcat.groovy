@@ -28,6 +28,10 @@ class StepsTomcat implements Serializable {
     def endpointUtils = new EndpointUtils(steps)
     /*******************初始化全局对象 结束*****************/
 
+    def test() {
+        steps.echo "StepsTomcat:test"
+    }
+
     //发布
     def deploy(Map parameterMap) {
         steps.echo "StepsJavaWeb:${parameterMap}"

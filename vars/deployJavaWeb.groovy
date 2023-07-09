@@ -7,9 +7,11 @@ import com.daluobai.jenkinslib.constant.GlobalShare
 import com.daluobai.jenkinslib.steps.StepsBuildMaven
 import com.daluobai.jenkinslib.steps.StepsJenkins
 import com.daluobai.jenkinslib.steps.StepsJavaWeb
+import com.daluobai.jenkinslib.steps.StepsTomcat
 import com.daluobai.jenkinslib.utils.ConfigUtils
 import com.daluobai.jenkinslib.utils.MapUtils
 import cn.hutool.core.util.ObjectUtil
+import com.daluobai.jenkinslib.steps.*
 
 /**
  * @author daluobai@outlook.com
@@ -26,6 +28,7 @@ def call(Map customConfig) {
     def stepsJavaWeb = new StepsJavaWeb(this)
     def configUtils = new ConfigUtils(this)
     def wecomApi = new WecomApi(this)
+    def stepsTomcat = new StepsTomcat(this)
     /*******************初始化全局对象 结束*****************/
     //用来运行构建的节点
     def nodeBuildNodeList = stepsJenkins.getNodeByLabel("buildNode")
@@ -33,6 +36,7 @@ def call(Map customConfig) {
     if (ObjectUtil.isEmpty(nodeBuildNodeList)) {
         error '没有可用的构建节点'
     }
+
     /***初始化参数 开始**/
     //错误信息
     def errMessage = ""
@@ -71,7 +75,9 @@ def call(Map customConfig) {
                     } else if (it.key == "stepsJavaWebDeployToService") {
                         stepsJavaWeb.deploy(fullConfig.DEPLOY_PIPELINE.stepsJavaWebDeployToService)
                     }else if (it.key == "stepsJavaWebDeployToTomcat") {
-                        stepsJavaWeb.deployToTomcat(fullConfig.DEPLOY_PIPELINE.stepsJavaWebDeployToTomcat)
+                        stepsTomcat.deploy(fullConfig.DEPLOY_PIPELINE.stepsJavaWebDeployToTomcat)
+                    }else if (it.key == "stepsDeploy") {
+                        stepsTomcat.deploy(fullConfig.DEPLOY_PIPELINE.stepsDeploy)
                     }
                 }
                 echo "结束执行流程: ${it.key}"
