@@ -1,10 +1,9 @@
 package com.daluobai.jenkinslib.steps
 
 @Grab('org.reflections:reflections:0.9.9-RC1')
+@Grab('cn.hutool:hutool-all:5.8.11')
 import cn.hutool.core.date.DateUtil
 import cn.hutool.core.lang.Assert
-
-//@Grab('cn.hutool:hutool-all:5.8.11')
 
 import cn.hutool.core.util.ObjectUtil
 import cn.hutool.core.util.StrUtil
