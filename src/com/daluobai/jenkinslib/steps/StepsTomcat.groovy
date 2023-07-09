@@ -30,8 +30,8 @@ class StepsTomcat implements Serializable {
     /*******************初始化全局对象 结束*****************/
 
     def test() {
-        def interfaceType = com.daluobai.jenkinslib.steps.ITest
-        def instances = new Reflections('com.daluobai.jenkinslib.steps').getSubTypesOf(interfaceType).each {
+        def interfaceType = ITest
+        def instances = new Reflections('com.daluobai.jenkinslib').getSubTypesOf(interfaceType).each {
             steps.echo it.name
         }
 //        for (final def ins in instances) {
