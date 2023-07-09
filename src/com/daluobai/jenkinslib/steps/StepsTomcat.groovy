@@ -1,5 +1,6 @@
 package com.daluobai.jenkinslib.steps
 
+@Grab('org.reflections:reflections:0.9.9-RC1')
 import cn.hutool.core.date.DateUtil
 import cn.hutool.core.lang.Assert
 
@@ -10,6 +11,7 @@ import cn.hutool.core.util.StrUtil
 import com.daluobai.jenkinslib.constant.GlobalShare
 import com.daluobai.jenkinslib.utils.EndpointUtils
 import com.daluobai.jenkinslib.utils.TemplateUtils
+import org.reflections.*
 
 /**
  * @author daluobai@outlook.com
@@ -29,6 +31,8 @@ class StepsTomcat implements Serializable {
     /*******************初始化全局对象 结束*****************/
 
     def test() {
+        def interfaceType = com.daluobai.jenkinslib.steps.ITest
+        def instances = new Reflections('com.daluobai.jenkinslib.steps').getSubTypesOf(interfaceType).collect { Activator.CreateInstance(it) }
         steps.echo "StepsTomcat:test"
     }
 
