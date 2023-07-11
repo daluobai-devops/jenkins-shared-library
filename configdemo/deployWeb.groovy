@@ -25,7 +25,7 @@ def customConfig = [
                         //构建命令 必填
                         "buildCMD"   : "npm install && npm run build",
                         //用来打包的镜像 可选
-                        "dockerBuildImage"   : "registry.cn-hangzhou.aliyuncs.com/wuzhaozhongguo/build-npm:18"
+                        "dockerBuildImage"   : "registry.cn-hangzhou.aliyuncs.com/wuzhaozhongguo/build-npm:10.16.0"
                 ],
                 //存储
                 "stepsStorage"  : [
