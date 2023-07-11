@@ -29,6 +29,7 @@ def call(Map customConfig) {
     def configUtils = new ConfigUtils(this)
     def wecomApi = new WecomApi(this)
     def stepsTomcat = new StepsTomcat(this)
+    def stepsDeploy = new StepsDeploy(this)
     /*******************初始化全局对象 结束*****************/
     //用来运行构建的节点
     def nodeBuildNodeList = stepsJenkins.getNodeByLabel("buildNode")
@@ -72,12 +73,8 @@ def call(Map customConfig) {
                         def dockerfileARG = '--build-arg BUILD_EXPOSE=8080 --build-arg appName="${customConfig.SHARE_PARAM.appName}" --build-arg runOptions="" --build-arg runArgs=""'
                         fullConfig.DEPLOY_PIPELINE.stepsStorage.dockerfileARG = dockerfileARG
                         stepsJenkins.stash(fullConfig.DEPLOY_PIPELINE.stepsStorage)
-                    } else if (it.key == "stepsJavaWebDeployToService") {
-                        stepsJavaWeb.deploy(fullConfig.DEPLOY_PIPELINE.stepsJavaWebDeployToService)
-                    }else if (it.key == "stepsJavaWebDeployToTomcat") {
-                        stepsTomcat.deploy(fullConfig.DEPLOY_PIPELINE.stepsJavaWebDeployToTomcat)
-                    }else if (it.key == "stepsDeploy") {
-                        stepsTomcat.deploy(fullConfig.DEPLOY_PIPELINE.stepsDeploy)
+                    } else if (it.key == "stepsDeploy") {
+                        stepsDeploy.deploy(fullConfig.DEPLOY_PIPELINE.stepsDeploy)
                     }
                 }
                 echo "结束执行流程: ${it.key}"

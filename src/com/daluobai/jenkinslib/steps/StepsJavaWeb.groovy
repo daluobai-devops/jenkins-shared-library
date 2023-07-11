@@ -32,64 +32,37 @@ class StepsJavaWeb implements Serializable {
     def deploy(Map parameterMap) {
         steps.echo "StepsJavaWeb:${parameterMap}"
         Assert.notEmpty(parameterMap,"参数为空")
-        def labels = parameterMap.labels
         def pathRoot = parameterMap.pathRoot
         def appName = GlobalShare.globalParameterMap.SHARE_PARAM.appName
         def archiveName = GlobalShare.globalParameterMap.SHARE_PARAM.archiveName
         //获取文件名后缀
         def archiveSuffix = StrUtil.subAfter(archiveName, ".", true)
-        Assert.notEmpty(labels,"labels为空")
 
         def backAppName = "app-" + DateUtil.format(new Date(), "yyyyMMddHHmmss") + "." + archiveSuffix
 //        steps.withCredentials([steps.sshUserPrivateKey(credentialsId: 'ssh-jenkins', keyFileVariable: 'SSH_KEY_PATH')]) {
 //            steps.sh "mkdir -p ~/.ssh && chmod 700 ~/.ssh && rm -f ~/.ssh/id_rsa && cp \${SSH_KEY_PATH} ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa"
 //        }
-        //预处理发布用的参数
-        def readinessProbeMap = parameterMap.readinessProbe
-        labels.each{ c ->
-            def label = c
-            steps.echo "发布第一个标签:${label}"
-            def nodeDeployNodeList = stepsJenkins.getNodeByLabel(label)
-            steps.echo "获取到发布节点:${nodeDeployNodeList}"
-            if (ObjectUtil.isEmpty(nodeDeployNodeList)) {
-                steps.error '没有可用的发布节点'
-            }
-            nodeDeployNodeList.each{ d ->
-                def nodeDeployNode = d
-                steps.echo "开始发布:${nodeDeployNode}"
-                steps.node(nodeDeployNode) {
-                    steps.unstash("appPackage")
-                    steps.sh "hostname"
-                    steps.sh "ls -l package"
-                    steps.sh "mkdir -p ${pathRoot}/${appName} && mkdir -p ${pathRoot}/${appName}/backup"
-                    //备份
-                    steps.sh "mv ${pathRoot}/${appName}/${archiveName} ${pathRoot}/${appName}/backup/${backAppName} || true"
-                    steps.dir("${pathRoot}/${appName}/backup/"){
-                        steps.sh "find . -mtime +3 -delete"
-                    }
-                    //拷贝新的包到发布目录
-                    steps.sh "cp package/${archiveName} ${pathRoot}/${appName}"
-                    //判断是否有systemctl命令
-                    def systemctlRe = steps.sh returnStatus: true, script: 'command -v systemctl'
-                    if (systemctlRe == 1) {
-                        steps.echo "通过systemctl重启"
-                        //systemctl重启
-                        reStartBySystemctl(parameterMap)
-                    } else {
-                        steps.echo "通过shell重启"
-                        reStartByShell(parameterMap)
-                    }
-                    //健康检查
-                    if (readinessProbeMap != null){
-                        if (ObjectUtil.isNotEmpty(readinessProbeMap.tcp) && (readinessProbeMap.tcp.enable == null || readinessProbeMap.tcp.enable)){
-                            def portListening = endpointUtils.healthCheckWithLocalTCPPort(readinessProbeMap.tcp.port,readinessProbeMap.period,readinessProbeMap.failureThreshold)
-                            if (!portListening){
-                                steps.error '服务未启动'
-                            }
-                        }
-                    }
-                }
-            }
+        steps.unstash("appPackage")
+        steps.sh "hostname"
+        steps.sh "ls -l package"
+        steps.sh "mkdir -p ${pathRoot}/${appName} && mkdir -p ${pathRoot}/${appName}/backup"
+        //备份
+        steps.sh "mv ${pathRoot}/${appName}/${archiveName} ${pathRoot}/${appName}/backup/${backAppName} || true"
+        steps.dir("${pathRoot}/${appName}/backup/"){
+            steps.sh "find . -mtime +3 -delete"
+        }
+        //拷贝新的包到发布目录
+        steps.sh "cp package/${archiveName} ${pathRoot}/${appName}"
+        //判断是否有systemctl命令，返回0表示有，返回1表示没有
+        def systemctlRe = steps.sh returnStatus: true, script: 'command -v systemctl'
+        //todo 这里改成0
+        if (systemctlRe == 1) {
+            steps.echo "通过systemctl重启"
+            //systemctl重启
+            reStartBySystemctl(parameterMap)
+        } else {
+            steps.echo "通过shell重启"
+            reStartByShell(parameterMap)
         }
     }
 
