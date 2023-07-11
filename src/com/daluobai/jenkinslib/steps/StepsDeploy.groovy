@@ -24,8 +24,8 @@ class StepsDeploy implements Serializable {
     /*******************初始化全局对象 开始*****************/
     def stepsJenkins = new StepsJenkins(steps)
     def endpointUtils = new EndpointUtils(steps)
-    def stepsTomcat = new StepsTomcat(this)
-    def stepsJavaWeb = new StepsJavaWeb(this)
+    def stepsTomcat = new StepsTomcat(steps)
+    def stepsJavaWeb = new StepsJavaWeb(steps)
     /*******************初始化全局对象 结束*****************/
 
     //发布
