@@ -55,8 +55,7 @@ class StepsJavaWeb implements Serializable {
         steps.sh "cp package/${archiveName} ${pathRoot}/${appName}"
         //判断是否有systemctl命令，返回0表示有，返回1表示没有
         def systemctlRe = steps.sh returnStatus: true, script: 'command -v systemctl'
-        //todo 这里改成0
-        if (systemctlRe == 1) {
+        if (systemctlRe == 0) {
             steps.echo "通过systemctl重启"
             //systemctl重启
             reStartBySystemctl(parameterMap)
