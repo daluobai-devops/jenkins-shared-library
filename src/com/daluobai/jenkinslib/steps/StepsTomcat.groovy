@@ -30,13 +30,14 @@ class StepsTomcat implements Serializable {
     /*******************初始化全局对象 结束*****************/
 
     def test() {
+        steps.echo "StepsTomcat:1test${steps.class}"
         def classLoader = this.class.classLoader
         def contentEntryClass = classLoader.loadClass("com.daluobai.jenkinslib.steps.Test")
         def constructor = contentEntryClass.getConstructor(this.steps.getClass())
         def contentEntry = constructor.newInstance(this.steps)
 
         contentEntry.call()
-        steps.echo "StepsTomcat:test"
+        steps.echo "StepsTomcat:test${steps.class}"
     }
 
     //发布
