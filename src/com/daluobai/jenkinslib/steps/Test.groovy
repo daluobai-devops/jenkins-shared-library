@@ -13,6 +13,6 @@ class Test implements Serializable {
     Test(steps) { this.steps = steps }
 
     def call() {
-        steps.echo "test111111"
+        this.steps.echo "test111111"
     }
 }
