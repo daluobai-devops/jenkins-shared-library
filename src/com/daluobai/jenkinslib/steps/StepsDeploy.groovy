@@ -31,7 +31,7 @@ class StepsDeploy implements Serializable {
     //发布
     def deploy(Map parameterMap) {
         steps.echo "StepsJavaWeb:${parameterMap}"
-        Assert.notEmpty(parameterMap,"参数为空")
+        Assert.notEmpty(parameterMap, "参数为空")
         def labels = parameterMap.labels
         def enable = parameterMap.enable
         def readinessProbeMap = parameterMap.readinessProbe
@@ -41,13 +41,13 @@ class StepsDeploy implements Serializable {
         def archiveSuffix = StrUtil.subAfter(archiveName, ".", true)
         //获取文件名
         def archiveOnlyName = StrUtil.subBefore(archiveName, ".", true)
-        Assert.notEmpty(labels,"labels为空")
+        Assert.notEmpty(labels, "labels为空")
 
         def backAppName = "app-" + DateUtil.format(new Date(), "yyyyMMddHHmmss") + "." + archiveSuffix
         steps.withCredentials([steps.sshUserPrivateKey(credentialsId: 'ssh-jenkins', keyFileVariable: 'SSH_KEY_PATH')]) {
             steps.sh "mkdir -p ~/.ssh && chmod 700 ~/.ssh && rm -f ~/.ssh/id_rsa && cp \${SSH_KEY_PATH} ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa"
         }
-        labels.each{ c ->
+        labels.each { c ->
             def label = c
             steps.echo "发布第一个标签:${label}"
             def nodeDeployNodeList = stepsJenkins.getNodeByLabel(label)
@@ -55,21 +55,31 @@ class StepsDeploy implements Serializable {
             if (ObjectUtil.isEmpty(nodeDeployNodeList)) {
                 steps.error '没有可用的发布节点'
             }
-            nodeDeployNodeList.each{ d ->
+            nodeDeployNodeList.each { d ->
                 def nodeDeployNode = d
                 steps.echo "开始发布:${nodeDeployNode}"
                 steps.node(nodeDeployNode) {
                     if (ObjectUtil.isNotEmpty(parameterMap.stepsJavaWebDeployToService)) {
                         stepsJavaWeb.deploy(parameterMap.stepsJavaWebDeployToService)
-                    }else if (ObjectUtil.isNotEmpty(parameterMap.stepsTomcatDeploy)) {
+                    } else if (ObjectUtil.isNotEmpty(parameterMap.stepsTomcatDeploy)) {
                         stepsTomcat.deploy(parameterMap.stepsJavaWebDeployToTomcat)
                     }
                     //健康检查
-                    if (readinessProbeMap != null){
-                        if (ObjectUtil.isNotEmpty(readinessProbeMap.tcp) && (readinessProbeMap.tcp.enable == null || readinessProbeMap.tcp.enable)){
-                            def portListening = endpointUtils.healthCheckWithLocalTCPPort(readinessProbeMap.tcp.port,readinessProbeMap.period,readinessProbeMap.failureThreshold)
-                            if (!portListening){
-                                steps.error '服务未启动'
+                    if (readinessProbeMap != null) {
+                        if (ObjectUtil.isNotEmpty(readinessProbeMap.tcp) && (readinessProbeMap.tcp.enable == null || readinessProbeMap.tcp.enable)) {
+                            def healthCheck = endpointUtils.healthCheckWithLocalTCPPort(readinessProbeMap.tcp.port, readinessProbeMap.period, readinessProbeMap.failureThreshold)
+                            if (!healthCheck) {
+                                steps.error '服务未就绪'
+                            }
+                        } else if (ObjectUtil.isNotEmpty(readinessProbeMap.http) && (readinessProbeMap.http.enable == null || readinessProbeMap.http.enable)) {
+                            def healthCheck = endpointUtils.healthCheckWithHttp("http://localhost:${readinessProbeMap.http.path}:${readinessProbeMap.http.port}", readinessProbeMap.http.timeout, readinessProbeMap.period, readinessProbeMap.failureThreshold)
+                            if (!healthCheck) {
+                                steps.error '服务未就绪'
+                            }
+                        }else if (ObjectUtil.isNotEmpty(readinessProbeMap.cmd) && (readinessProbeMap.cmd.enable == null || readinessProbeMap.cmd.enable)) {
+                            def healthCheck = endpointUtils.healthCheckWithCMD(readinessProbeMap.cmd.command, readinessProbeMap.cmd.timeout, readinessProbeMap.period, readinessProbeMap.failureThreshold)
+                            if (!healthCheck) {
+                                steps.error '服务未就绪'
                             }
                         }
                     }
@@ -77,5 +87,4 @@ class StepsDeploy implements Serializable {
             }
         }
     }
-
 }

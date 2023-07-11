@@ -113,4 +113,64 @@ class EndpointUtils implements Serializable {
         }
         return isOnline;
     }
+
+    /**
+     * 检查http接口是否正常
+     * @param localTCPPort
+     * @return
+     */
+    def healthCheckWithHttp(def url,def timeout,def periodSec,def failureThreshold) {
+        Assert.notNull(url,"url为空")
+        steps.echo "检查http是能访问-参数${url}，${timeout}，间隔${periodSec}，重试次数${failureThreshold}"
+        if (ObjectUtil.isNull(periodSec) || periodSec < 0){
+            periodSec = 0
+        }
+        if (ObjectUtil.isNull(failureThreshold) || failureThreshold < 1){
+            failureThreshold = 1
+        }
+        def periodMS = periodSec * 1000
+        boolean isOnline = false
+        for (int i = 0; i < failureThreshold; i++) {
+            steps.echo "健康检查-第${i}次"
+            sleep periodMS
+            def httpCode = steps.sh returnStdout: true, script: """curl -s -o /dev/null -w '%{http_code}' --connect-timeout ${timeout} ${url}"""
+            boolean httpListening = ObjectUtil.isNotEmpty(httpCode) && httpCode.trim() == "200"
+            if (httpListening){
+                steps.echo "url访问成功:${url},${timeout}"
+                isOnline = true
+                break
+            }
+        }
+        return isOnline;
+    }
+
+    /**
+     * 检查http接口是否正常
+     * @param localTCPPort
+     * @return
+     */
+    def healthCheckWithCMD(def command,def timeout,def periodSec,def failureThreshold) {
+        Assert.notNull(command,"command为空")
+        steps.echo "检查http是能访问-参数${command}，${timeout}，间隔${periodSec}，重试次数${failureThreshold}"
+        if (ObjectUtil.isNull(periodSec) || periodSec < 0){
+            periodSec = 0
+        }
+        if (ObjectUtil.isNull(failureThreshold) || failureThreshold < 1){
+            failureThreshold = 1
+        }
+        def periodMS = periodSec * 1000
+        boolean isOnline = false
+        for (int i = 0; i < failureThreshold; i++) {
+            steps.echo "健康检查-第${i}次"
+            sleep periodMS
+            def exitCode = steps.sh label: '执行command参数', returnStatus: true, script: command
+            boolean isSuccess = ObjectUtil.isNotEmpty(exitCode) && exitCode.trim() == "0"
+            if (isSuccess){
+                steps.echo "CMD执行成功:${command},${timeout}"
+                isOnline = true
+                break
+            }
+        }
+        return isOnline;
+    }
 }
