@@ -33,7 +33,7 @@ class StepsTomcat implements Serializable {
         steps.echo "StepsTomcat:1test${steps.class}"
         def classLoader = this.class.classLoader
         def contentEntryClass = classLoader.loadClass("com.daluobai.jenkinslib.steps.Test")
-        def constructor = contentEntryClass.getConstructor(this.steps.getClass())
+        def constructor = contentEntryClass.getConstructor(steps.class)
         def contentEntry = constructor.newInstance(this.steps)
 
         contentEntry.call()
