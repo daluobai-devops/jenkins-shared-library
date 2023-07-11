@@ -128,6 +128,9 @@ class EndpointUtils implements Serializable {
         if (ObjectUtil.isNull(failureThreshold) || failureThreshold < 1){
             failureThreshold = 1
         }
+        if (ObjectUtil.isNull(timeout) || timeout < 1){
+            timeout = 5
+        }
         def periodMS = periodSec * 1000
         boolean isOnline = false
         for (int i = 0; i < failureThreshold; i++) {
@@ -158,12 +161,22 @@ class EndpointUtils implements Serializable {
         if (ObjectUtil.isNull(failureThreshold) || failureThreshold < 1){
             failureThreshold = 1
         }
+        if (ObjectUtil.isNull(timeout) || timeout < 1){
+            timeout = 5
+        }
         def periodMS = periodSec * 1000
         boolean isOnline = false
         for (int i = 0; i < failureThreshold; i++) {
             steps.echo "健康检查-第${i}次"
             sleep periodMS
-            def exitCode = steps.sh label: '执行command参数', returnStatus: true, script: command
+            def exitCode = 1
+            try {
+                steps.timeout(time: timeout, unit: 'SECONDS') {
+                    exitCode = steps.sh label: '执行command参数', returnStatus: true, script: command
+                }
+            } catch (Exception e) {
+                exitCode = 1
+            }
             boolean isSuccess = ObjectUtil.isNotEmpty(exitCode) && exitCode.trim() == "0"
             if (isSuccess){
                 steps.echo "CMD执行成功:${command},${timeout}"

@@ -104,8 +104,8 @@ def customConfig = [
                                         "path"   : "/actuator/health",
                                         //探针端口， 必填
                                         "port"   : 8080,
-                                        //探针超时时间，单位秒，默认10秒 可选
-                                        "timeout": 10
+                                        //探针超时时间，单位秒，默认5秒 可选
+                                        "timeout": 5
                                 ],
                                 //执行命令，以退出状态码判断是否成功 可选
                                 cmd: [
@@ -113,8 +113,8 @@ def customConfig = [
                                         "enable"        : false,
                                         //探针命令，如果type为cmd则必填 必填
                                         "command": "curl -s -o /dev/null -w %{http_code} http://localhost:8080/actuator/health",
-                                        //探针超时时间，单位秒，默认10秒 可选
-                                        "timeout": 10
+                                        //探针超时时间，单位秒，默认5秒 可选
+                                        "timeout": 5
                                 ],
                                 //探针间隔时间，单位秒，默认5秒 可选
                                 "period" : 5,
