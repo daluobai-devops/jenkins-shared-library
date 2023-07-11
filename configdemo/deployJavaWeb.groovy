@@ -55,7 +55,6 @@ def customConfig = [
                                         "path": "package-javaweb/openjdk8"
                                 ],
                         ],
-
                 ],
                 //发布
                 "stepsDeploy": [
