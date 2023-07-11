@@ -7,9 +7,12 @@ package com.daluobai.jenkinslib.steps
  *  version 1.0.0
  * @create 2023/7/9 22:55
  */
-class Test implements ITest {
-    @Override
-    def call(def steps) {
+class Test implements Serializable {
+    def steps
+
+    Test(steps) { this.steps = steps }
+
+    def call() {
         steps.echo "test111111"
     }
 }
