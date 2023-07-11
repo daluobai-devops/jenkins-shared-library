@@ -31,7 +31,7 @@ class StepsTomcat implements Serializable {
 
     def test() {
         def classLoader = this.class.classLoader
-        def helloWorldClass = classLoader.loadClass ("Test")
+        def helloWorldClass = classLoader.loadClass ("com.daluobai.jenkinslib.steps.Test")
         def helloWorld = helloWorldClass.newInstance(this)
         helloWorld.call()
         steps.echo "StepsTomcat:test"
