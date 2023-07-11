@@ -1,3 +1,4 @@
+//未来版本规划
 def customConfig = [
         //公共参数
         "SHARE_PARAM"    : [

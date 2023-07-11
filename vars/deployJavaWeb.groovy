@@ -66,7 +66,6 @@ def call(Map customConfig) {
                     if (it.key == "stepsBuildMaven") {
                         stepsBuildMaven.build(fullConfig)
                     } else if (it.key == "stepsStorage") {
-                        def stepsStorage =  fullConfig.DEPLOY_PIPELINE.stepsStorage
                         if (ObjectUtil.isEmpty(fullConfig.DEPLOY_PIPELINE.stepsStorage)) {
                             error "stepsStorage配置为空"
                         }
