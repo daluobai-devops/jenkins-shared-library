@@ -1,4 +1,5 @@
 @Grab('cn.hutool:hutool-all:5.8.11')
+@Grab('com.typesafe:config:1.4.2')
 import cn.hutool.core.lang.Assert
 import cn.hutool.core.util.StrUtil
 import com.daluobai.jenkinslib.constant.EFileReadType
@@ -10,6 +11,10 @@ import com.daluobai.jenkinslib.steps.StepsWeb
 import com.daluobai.jenkinslib.utils.ConfigUtils
 import com.daluobai.jenkinslib.utils.MapUtils
 import cn.hutool.core.util.ObjectUtil
+import com.typesafe.config.Config
+import com.typesafe.config.ConfigFactory
+import com.typesafe.config.ConfigValueFactory
+import com.typesafe.config.*;
 
 /**
  * @author daluobai@outlook.com
@@ -121,7 +126,12 @@ def mergeConfig(Map customConfig) {
     }
     //合并自定义配置
     fullConfig = MapUtils.merge([defaultConfig, extendConfig, customConfig])
-
+    //根据自定义构建参数，修改配置
+    Config fullConfigParams = ConfigFactory.parseMap(fullConfig);
+    params.each {
+        fullConfigParams = fullConfigParams.withValue(it.key, ConfigValueFactory.fromAnyRef(it.value))
+    }
+    fullConfig = fullConfigParams.root().unwrapped();
     return MapUtils.deepCopy(fullConfig)
 }
 
