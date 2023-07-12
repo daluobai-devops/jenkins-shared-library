@@ -1,4 +1,5 @@
 @Grab('cn.hutool:hutool-all:5.8.11')
+@Grab('com.typesafe:config:1.4.2')
 import cn.hutool.core.lang.Assert
 import cn.hutool.core.util.StrUtil
 import com.daluobai.jenkinslib.api.WecomApi
@@ -132,6 +133,10 @@ def mergeConfig(Map customConfig) {
     }
     //合并自定义配置
     fullConfig = MapUtils.merge([defaultConfig, extendConfig, customConfig])
+
+    params.each {
+        echo "参数: ${it.key} = ${it.value}"
+    }
 
     return MapUtils.deepCopy(fullConfig)
 }
