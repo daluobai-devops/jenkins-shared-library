@@ -28,6 +28,7 @@ dependencies {
     implementation 'cn.hutool:hutool-all:5.8.11'
     implementation 'com.cloudbees:groovy-cps:1.31'
     implementation 'org.apache.groovy:groovy-all:4.0.9'
+    implementation 'com.typesafe:config:1.4.2'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'

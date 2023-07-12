@@ -13,6 +13,7 @@ import com.daluobai.jenkinslib.utils.ConfigUtils
 import com.daluobai.jenkinslib.utils.MapUtils
 import cn.hutool.core.util.ObjectUtil
 import com.daluobai.jenkinslib.steps.*
+import com.typesafe.config.*;
 
 /**
  * @author daluobai@outlook.com
@@ -134,9 +135,12 @@ def mergeConfig(Map customConfig) {
     //合并自定义配置
     fullConfig = MapUtils.merge([defaultConfig, extendConfig, customConfig])
 
+    //根据自定义构建参数，修改配置
+    Config fullConfigParams = ConfigFactory.parseMap(fullConfig);
     params.each {
-        echo "参数: ${it.key} = ${it.value}"
+        fullConfigParams = fullConfigParams.withValue(it.key, ConfigValueFactory.fromAnyRef(it.value))
     }
+    fullConfig = fullConfigParams.root().unwrapped();
 
     return MapUtils.deepCopy(fullConfig)
 }
