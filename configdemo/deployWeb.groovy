@@ -1,11 +1,11 @@
 def customConfig = [
         //公共参数
         "SHARE_PARAM"    : [
-                //app 名称,如果没填则使用jenkins job名称。可选
+                //app 名称,如果没填则使用jenkins job名称。可不填
                 "appName": "testWeb",
-                //消息通知，可选
+                //消息通知，可不填
                 "message": [
-                        //企业微信通知 可选
+                        //企业微信通知 可不填
                         "wecom": [
                                 //企业微信机器人token 必填
                                 "key": ""
@@ -24,9 +24,9 @@ def customConfig = [
                         "gitBranch": "master",
                         //构建命令 必填
                         "buildCMD"   : "npm install && npm run build",
-                        //用来打包的镜像 可选。默认10.16.0，选项(10.16.0,14.21.3,16)
+                        //用来打包的镜像 可不填。默认10.16.0,选项(10.16.0,14.21.3,16)
                         "dockerBuildImage"   : "registry.cn-hangzhou.aliyuncs.com/wuzhaozhongguo/build-npm:14.21.3",
-                        //使用缓存node_modules 可选，默认true
+                        //使用缓存node_modules 可不填，默认true
                         "cacheNodeModules": "true"
                 ],
                 //存储
