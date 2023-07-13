@@ -144,7 +144,7 @@ def mergeConfig(Map customConfig) {
     }
     echo "fullConfigParams2: ${fullConfigParams.toString()}"
 
-    fullConfig = fullConfigParams.root().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+    fullConfig = fullConfigParams.root().entrySet().stream().collect(Collectors.toMap(Entry::getKey, Entry::getValue))
     echo "fullConfigParams3: ${fullConfig}"
     return MapUtils.deepCopy(fullConfig)
 }
