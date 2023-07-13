@@ -78,6 +78,7 @@ class StepsBuildNpm implements Serializable {
                         set -eo pipefail
                         mkdir -p ${pathBase}/${pathPackage} && mkdir -p ${pathBase}/${pathCode} && mkdir -p ${dockerModulesProjectPath}
                         \\cp -rf ${dockerModulesProjectPath}/node_modules/ . || true
+                        ls -al ./node_modules/ || true
                         cd ${pathBase}/${pathCode}
                         git config --global http.version HTTP/1.1
                         git clone ${configSteps.gitUrl} --branch ${configSteps.gitBranch} --single-branch --depth 1 --quiet
