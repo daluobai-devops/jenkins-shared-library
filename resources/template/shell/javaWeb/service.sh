@@ -23,7 +23,7 @@ stop() {
   if [ -n "\$PIDS" ]; then
     for PID in \$PIDS; do
       # Kill the process with SIGTERM signal
-      kill \$PID
+      kill -9 \$PID
       # Wait for the process to exit
       wait \$PID
       # Echo a message to the console
