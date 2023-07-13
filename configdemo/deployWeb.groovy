@@ -2,7 +2,7 @@ def customConfig = [
         //公共参数
         "SHARE_PARAM"    : [
                 //app 名称,如果没填则使用jenkins job名称。可选
-                "appName": "test",
+                "appName": "testWeb",
                 //消息通知，可选
                 "message": [
                         //企业微信通知 可选
