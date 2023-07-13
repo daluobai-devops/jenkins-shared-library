@@ -2,6 +2,7 @@
 @Grab('com.typesafe:config:1.4.2')
 import cn.hutool.core.lang.Assert
 import cn.hutool.core.util.StrUtil
+import com.daluobai.jenkinslib.api.WecomApi
 import com.daluobai.jenkinslib.constant.EFileReadType
 import com.daluobai.jenkinslib.constant.GlobalShare
 import com.daluobai.jenkinslib.steps.StepsBuildNpm
@@ -30,6 +31,7 @@ def call(Map customConfig) {
     def stepsJenkins = new StepsJenkins(this)
     def stepsWeb = new StepsWeb(this)
     def configUtils = new ConfigUtils(this)
+    def wecomApi = new WecomApi(this)
     /*******************初始化全局对象 结束*****************/
     //用来运行构建的节点
     def nodeBuildNodeList = stepsJenkins.getNodeByLabel("buildNode")
