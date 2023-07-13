@@ -24,7 +24,7 @@ def customConfig = [
                         "gitBranch": "master",
                         //构建命令 必填
                         "buildCMD"   : "npm install && npm run build",
-                        //用来打包的镜像 可选
+                        //用来打包的镜像 可选。默认10.16.0(10.16.0,14.21.3,16)
                         "dockerBuildImage"   : "registry.cn-hangzhou.aliyuncs.com/wuzhaozhongguo/build-npm:10.16.0",
                         //使用缓存node_modules 可选，默认true
                         "cacheNodeModules": "true"
