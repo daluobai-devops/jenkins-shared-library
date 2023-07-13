@@ -142,7 +142,7 @@ def mergeConfig(Map customConfig) {
     }
     echo "fullConfigParams2: ${fullConfigParams.toString()}"
     echo "fullConfigParams3: ${fullConfigParams.root().entrySet().toString()}"
-    fullConfig = fullConfigParams.root().unwrapped()
+    fullConfig = fullConfigParams.root().entrySet()
 
     return MapUtils.deepCopy(fullConfig)
 }
