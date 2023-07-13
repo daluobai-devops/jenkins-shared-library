@@ -141,8 +141,8 @@ def mergeConfig(Map customConfig) {
         fullConfigParams = fullConfigParams.withValue(it.key, ConfigValueFactory.fromAnyRef(it.value))
     }
     echo "fullConfigParams2: ${fullConfigParams.toString()}"
-    echo "fullConfigParams3: ${fullConfigParams.root().getProperties().toMapString()}"
-    fullConfig = fullConfigParams.root().getProperties();
+    echo "fullConfigParams3: ${fullConfigParams.root().entrySet().toString()}"
+    fullConfig = fullConfigParams.root().unwrapped()
 
     return MapUtils.deepCopy(fullConfig)
 }
