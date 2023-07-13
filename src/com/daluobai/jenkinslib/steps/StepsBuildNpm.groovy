@@ -1,6 +1,7 @@
 package com.daluobai.jenkinslib.steps
 
 import cn.hutool.core.lang.Assert
+import cn.hutool.core.util.ObjectUtil
 @Grab('cn.hutool:hutool-all:5.8.11')
 
 import cn.hutool.core.util.StrUtil
@@ -35,7 +36,7 @@ class StepsBuildNpm implements Serializable {
 
         Assert.notNull(configDefault, "DEFAULT_CONFIG为空")
         Assert.notNull(configShare, "SHARE_PARAM为空")
-        Assert.notNull(configSteps, "DEPLOY_PIPELINE.stepsBuildMaven为空")
+        Assert.notNull(configSteps, "DEPLOY_PIPELINE.stepsBuildNpm为空")
 
         def pathBase = "/app"
         //docker-构建产物目录
@@ -73,6 +74,10 @@ class StepsBuildNpm implements Serializable {
                 }
                 //生成known_hosts
                 stepsGit.sshKeyscan("${configSteps.gitUrl}", "~/.ssh/known_hosts")
+                //不使用缓存node_modules
+                if (ObjectUtil.isNotEmpty(configSteps["cacheNodeModules"]) && !configSteps["cacheNodeModules"]){
+                    steps.sh "rm -rf ${dockerModulesProjectPath}/node_modules || true"
+                }
                 steps.sh """
                         #! /bin/bash -eu
                         set -eo pipefail
