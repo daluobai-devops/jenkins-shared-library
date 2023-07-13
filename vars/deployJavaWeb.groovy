@@ -136,7 +136,7 @@ def mergeConfig(Map customConfig) {
     }
     //合并自定义配置
     fullConfig = MapUtils.merge([defaultConfig, extendConfig, customConfig])
-    fullConfig = new LinkedHashMap<>().putAll(fullConfig)
+    fullConfig = new LinkedHashMap<String,Object>().putAll(fullConfig)
     //根据自定义构建参数，修改配置
     Config fullConfigParams = ConfigFactory.parseMap(fullConfig);
     echo "fullConfigParams: ${fullConfigParams.toString()}"
