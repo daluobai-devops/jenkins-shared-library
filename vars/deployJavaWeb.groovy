@@ -13,7 +13,9 @@ import com.daluobai.jenkinslib.utils.ConfigUtils
 import com.daluobai.jenkinslib.utils.MapUtils
 import cn.hutool.core.util.ObjectUtil
 import com.daluobai.jenkinslib.steps.*
-import com.typesafe.config.*;
+import com.typesafe.config.*
+
+import java.util.stream.Collectors;
 
 /**
  * @author daluobai@outlook.com
@@ -142,7 +144,7 @@ def mergeConfig(Map customConfig) {
     }
     echo "fullConfigParams2: ${fullConfigParams.toString()}"
 
-    fullConfig = fullConfigParams.root().entrySet().inject([:]) { result, entry -> result << [(entry.key): (entry.value)] }
+    fullConfig = fullConfigParams.root().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
     echo "fullConfigParams3: ${fullConfig}"
     return MapUtils.deepCopy(fullConfig)
 }
