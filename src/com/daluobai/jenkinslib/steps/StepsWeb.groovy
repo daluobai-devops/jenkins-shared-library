@@ -58,7 +58,7 @@ class StepsWeb implements Serializable {
                     steps.sh "ls -l package"
                     steps.sh "mkdir -p ${pathRoot}/${appName} && mkdir -p ${pathRoot}/${appName}/backup"
                     //备份
-                    steps.sh "mv ${pathRoot}/${appName}/${archiveName} ${pathRoot}/${appName}/backup/${backAppName} || true"
+                    steps.sh "mv -f ${pathRoot}/${appName}/${archiveName} ${pathRoot}/${appName}/backup/${backAppName} || true"
                     steps.dir("${pathRoot}/${appName}/backup/"){
                         steps.sh "find . -mtime +3 -delete"
                     }
