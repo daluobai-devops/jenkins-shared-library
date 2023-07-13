@@ -136,20 +136,18 @@ def mergeConfig(Map customConfig) {
     }
     //合并自定义配置
     fullConfig = MapUtils.merge([defaultConfig, extendConfig, customConfig])
+    fullConfig = new LinkedHashMap<>().putAll(fullConfig)
     //根据自定义构建参数，修改配置
     Config fullConfigParams = ConfigFactory.parseMap(fullConfig);
     echo "fullConfigParams: ${fullConfigParams.toString()}"
     params.each {
         fullConfigParams = fullConfigParams.withValue(it.key, ConfigValueFactory.fromAnyRef(it.value))
     }
+
     echo "fullConfigParams2: ${fullConfigParams.toString()}"
 
-//    fullConfig = fullConfigParams.root().entrySet().stream().collect(Collectors.toMap(Entry::getKey, Entry::getValue))
-    def testMap = new HashMap<>();
-    for (Map.Entry entry : fullConfigParams.root().entrySet()) {
-        testMap.put(entry.getKey(), entry.getValue());
-    }
-    fullConfig = testMap;
+    fullConfig = fullConfigParams.root().unwrapped()
+
     echo "fullConfigParams3: ${fullConfig}"
     return MapUtils.deepCopy(fullConfig)
 }
