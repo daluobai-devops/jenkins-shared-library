@@ -1,11 +1,11 @@
 def customConfig = [
         //公共参数
         "SHARE_PARAM"    : [
-                //app 名称,如果没填则使用jenkins job名称。可选
+                //app 名称,如果没填则使用jenkins job名称。可不填
                 "appName"      : "test",
-                //消息通知，可选
+                //消息通知，可不填
                 "message": [
-                        //企业微信通知 可选
+                        //企业微信通知 可不填
                         "wecom": [
                                 //企业微信机器人token 必填
                                 "key": ""
@@ -22,17 +22,17 @@ def customConfig = [
                         "gitUrl"          : "git@gitee.com:renrenio/renren-security.git",
                         //git 分支
                         "gitBranch"       : "master",
-                        //子模块目录,如果要构建子模块填入子模块目录，如果没有不填 可选
+                        //子模块目录,如果要构建子模块填入子模块目录。 可不填
                         "subModule"       : "renren-api/",
-                        //是否跳过测试 可选
+                        //是否跳过测试 可不填
                         "skipTest"        : true,
                         //生命周期 必填
                         "lifecycle"       : "clean package",
-                        //settings.xml文件路径，支持URL，HOST_PATH，RESOURCES 可选
+                        //settings.xml文件路径，支持URL，HOST_PATH，RESOURCES 可不填
                         "settingsFullPath": "RESOURCES:config/settings.xml",
-                        //用来打包的镜像,默认3.8.5-jdk8 可选。(3.6.1-jdk7,3.8.5-jdk8,3.9.0-jdk17)
+                        //用来打包的镜像,可不填.默认3.8.5-jdk8,选项(3.6.1-jdk7,3.8.5-jdk8,3.9.0-jdk17)
                         "dockerBuildImage": "registry.cn-hangzhou.aliyuncs.com/wuzhaozhongguo/build-maven:3.9.0-jdk17",
-                        //激活的profile,maven -P参数 可选
+                        //激活的profile,maven -P参数 可不填
                         "activeProfile"   : "dev"
                 ],
                 //存储
@@ -66,7 +66,7 @@ def customConfig = [
                         "stepsJavaWebDeployToService": [
                                 //是否激活,默认true
                                 "enable"    : true,
-                                //java路径 可选
+                                //java路径 可不填
                                 "javaPath"  : "/usr/local/jdk/jdk17/bin/java",
                                 //服务发布路径 必填
                                 "pathRoot"  : "/apps/application/",
@@ -83,20 +83,20 @@ def customConfig = [
                                 "tomcatHome"  : "/usr/local/tomcat",
                                 //包发布路径 必填
                                 "deployPath"  : "/usr/local/tomcat/webapps/",
-                                //重启脚本,可选
+                                //重启脚本,可不填
                                 "command": "cd /usr/local/tomcat/bin/ && ./shutdown.sh && sleep 1000 && ./startup.sh"
                         ],
 
-                        //就绪探针 可选，检查服务是否启动成功，如果启动成功则认为服务发布成功，如果不填则不检查.探针类型，支持http,tcp,cmd.
+                        //就绪探针 可不填，检查服务是否启动成功，如果启动成功则认为服务发布成功，如果不填则不检查.探针类型，支持http,tcp,cmd.
                         "readinessProbe"          : [
-                                //检查端口是否监听，如果监听则认为发布成功，如果不填则不检查 可选
+                                //检查端口是否监听，如果监听则认为发布成功，如果不填则不检查 可不填
                                 tcp: [
                                         //是否激活,默认true
                                         "enable"        : true,
                                         //探针端口
                                         "port"   : 8080
                                 ],
-                                //访问http地址，http状态码返回200则认为发布成功，如果不填则不检查 可选
+                                //访问http地址，http状态码返回200则认为发布成功，如果不填则不检查 可不填
                                 http: [
                                         //是否激活,默认true
                                         "enable"        : false,
@@ -104,21 +104,21 @@ def customConfig = [
                                         "path"   : "/actuator/health",
                                         //探针端口， 必填
                                         "port"   : 8080,
-                                        //探针超时时间，单位秒，默认5秒 可选
+                                        //探针超时时间，单位秒，默认5秒 可不填
                                         "timeout": 5
                                 ],
-                                //执行命令，以退出状态码判断是否成功 可选
+                                //执行命令，以退出状态码判断是否成功 可不填
                                 cmd: [
                                         //是否激活,默认true
                                         "enable"        : false,
                                         //探针命令，如果type为cmd则必填 必填
                                         "command": "curl -s -o /dev/null -w %{http_code} http://localhost:8080/actuator/health",
-                                        //探针超时时间，单位秒，默认5秒 可选
+                                        //探针超时时间，单位秒，默认5秒 可不填
                                         "timeout": 5
                                 ],
-                                //探针间隔时间，单位秒，默认5秒 可选
+                                //探针间隔时间，单位秒，默认5秒 可不填
                                 "period" : 5,
-                                //探针失败次数，如果失败次数达到该值则认为发布失败，默认3次 可选
+                                //探针失败次数，如果失败次数达到该值则认为发布失败，默认3次 可不填
                                 "failureThreshold": 20
                         ],
                 ]
