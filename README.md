@@ -65,9 +65,9 @@ Default version:main
   - 主机：服务器的 ip
   - Credentials：ssh-jenkins
   - Host Key Verification Strategy：Manually trusted key Verification Strategy
-- 节点属性>环境变量(用来设置环境变量)
-  - JAVA_HOME
-  - /usr/local/jdk/jdk17/
+- 节点属性>工具位置(用来设置jenkins agent执行用的jdk)
+  - 名称:JDK17(这里在系统设置->全局工具配置.里面配置一个jdk)
+  - 目录： /usr/local/jdk/jdk17/
 
 构建节点配置:
 
