@@ -13,7 +13,7 @@ jenkins pipeline 和拓展库介绍:[https://www.jenkins.io/doc/book/pipeline/](
 
 - 不依赖官方以外的 jenkins 插件。
 
-- 使用 groovy 语法，对于 java 开发人员改造起来非常容易上手，使用了 hutool包简化代码
+- 使用 groovy 语法，非常容易上手
 - 构建通过 docker，可根据不同工程选择不同的 docker 环境
 
 # 安装 Jenkins
