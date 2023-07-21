@@ -30,6 +30,11 @@ war 包方式安装:
 4. 启动 jenkins systemctl enable jenkins.service && systemctl start jenkins.service
 5. 安装插件Docker、Docker Pipeline、Docker Api、Pipeline Utility Steps
 
+或者通过远程脚本安装war包
+  
+```shell
+curl -sSL https://cdn.jsdelivr.net/gh/daluobai-devops/jenkins-shared-library@master/configdemo/installJenkins.sh | bash
+```
 # 配置Jenkins Pipeline
 
 密钥管理
