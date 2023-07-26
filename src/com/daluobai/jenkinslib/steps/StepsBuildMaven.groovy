@@ -63,7 +63,7 @@ class StepsBuildMaven implements Serializable {
             mavenImage.pull()
 
             def mvnCMDSubMod = "-pl ${configSteps.subModule} -am -amd"
-            def mvnCMDActiveProfile = "-P ${configSteps.activeProfile}"
+            def mvnCMDActiveProfile = StrUtil.isNotEmpty(configSteps.activeProfile) ? "-P ${configSteps.activeProfile}" : ""
 
             mavenImage.inside("--entrypoint '' -v maven-repo:/root/.m2/repository -v ${steps.env.WORKSPACE}/${pathPackage}:/app/package") {
                 //从 jenkins 凭据管理中获取密钥文件路径并且拷贝到~/.ssh/id_rsa
