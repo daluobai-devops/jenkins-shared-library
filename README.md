@@ -22,19 +22,16 @@ jenkins pipeline 和拓展库介绍:[https://www.jenkins.io/doc/book/pipeline/](
 - 安装 jdk11以上，推荐安装 jdk17,只用于跑 jenkins，创建 jdk 目录 mkdir -p /usr/local/jdk/jdk17下载 jdk17(https://download.oracle.com/java/17/archive/jdk-17.0.6_linux-x64_bin.tar.gz) 到这个目录解压,查看java 目录是否为/usr/local/jdk/jdk17/bin/java
 - 安装LTS版本https://www.jenkins.io/download/
 
-war 包方式安装:
-
-1. 执行 mkdir -p /usr/local/jenkins && mkdir -p /usr/local/jenkins/home
-2. 下载jenkins.war 到/usr/local/jenkins下
-3. 拷贝configdemo/jenkins.service到/etc/systemd/system/下
-4. 启动 jenkins systemctl enable jenkins.service && systemctl start jenkins.service
-5. 安装插件Docker、Docker Pipeline、Docker Api、Pipeline Utility Steps
-
-或者通过远程脚本安装war包
-  
+安装war启动的jenkins(这里会解压openjdk17到/usr/local/jdk/jdk17下)
 ```shell
 curl -sSL https://cdn.jsdelivr.net/gh/daluobai-devops/jenkins-shared-library@master/configdemo/installJenkins.sh | bash
 ```
+
+安装后操作
+1. 访问 http://ip:9000/jenkins
+2. 安装插件Docker、Docker Pipeline、Docker Api、Pipeline Utility Steps
+
+
 # 配置Jenkins Pipeline
 
 密钥管理
