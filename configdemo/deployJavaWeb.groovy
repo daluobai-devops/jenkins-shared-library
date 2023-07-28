@@ -70,7 +70,7 @@ def customConfig = [
                                 "javaPath"  : "/usr/local/jdk/jdk17/bin/java",
                                 //服务发布路径 必填
                                 "pathRoot"  : "/apps/application/",
-                                //启动参数 [-options] 示例(-Dfile.encoding=UTF-8 -Xms128M -Xmx128M -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005)
+                                //JVM参数 [-options] 示例(-Dfile.encoding=UTF-8 -Xms128M -Xmx128M -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005)
                                 "runOptions": "-Xms128M -Xmx128M",
                                 //启动参数 [args...] 示例(-–spring.profiles.active=dev)
                                 "runArgs"   : "--spring.profiles.active=dev",
