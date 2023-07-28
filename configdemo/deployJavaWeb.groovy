@@ -31,7 +31,7 @@ def customConfig = [
                         //settings.xml文件路径，支持URL，HOST_PATH，RESOURCES 可不填
                         "settingsFullPath": "RESOURCES:config/settings.xml",
                         //用来打包的镜像,可不填.默认3.8.5-jdk8,选项(3.6.1-jdk7,3.8.5-jdk8,3.9.0-jdk17)
-                        "dockerBuildImage": "registry.cn-hangzhou.aliyuncs.com/wuzhaozhongguo/build-maven:3.9.0-jdk17",
+                        "dockerBuildImage": "registry.cn-hangzhou.aliyuncs.com/wuzhaozhongguo/build-maven:3.8.5-jdk8",
                         //激活的profile,maven -P参数 可不填
                         "activeProfile"   : "dev"
                 ],
