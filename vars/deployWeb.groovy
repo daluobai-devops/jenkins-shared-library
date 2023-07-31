@@ -42,6 +42,8 @@ def call(Map customConfig) {
     /***初始化参数 开始**/
     //错误信息
     def errMessage = ""
+    //DEPLOY_PIPELINE顺序定义
+    def deployPipelineIndex = ["stepsBuildNpm","stepsStorage","stepsJavaWebDeployToWebServer"]
     //如果没传项目名称，则使用jenkins项目名称
     if (StrUtil.isBlank(customConfig.SHARE_PARAM.appName)){
         customConfig.SHARE_PARAM.appName = currentBuild.projectName
@@ -57,22 +59,23 @@ def call(Map customConfig) {
             //设置共享参数。
             GlobalShare.globalParameterMap = fullConfig
             //执行流程
-            fullConfig["DEPLOY_PIPELINE"].each {
-                stage("${it.key}") {
-                    if (it.value["enable"] != null && it.value["enable"] == false) {
-                        echo "跳过流程: ${it.key}"
+            deployPipelineIndex.each {
+                stage("${it}") {
+                    def pipelineConfigItemMap = fullConfig.DEPLOY_PIPELINE[it]
+                    if (pipelineConfigItemMap["enable"] != null && pipelineConfigItemMap["enable"] == false) {
+                        echo "跳过流程: ${it}"
                         return
                     }
-                    echo "开始执行流程: ${it.key}"
+                    echo "开始执行流程: ${it}"
                     if (it.key == "stepsBuildNpm") {
                         stepsBuildNpm.build(fullConfig)
                     } else if (it.key == "stepsStorage") {
-                        stepsJenkins.stash(fullConfig.DEPLOY_PIPELINE.stepsStorage)
+                        stepsJenkins.stash(pipelineConfigItemMap)
                     } else if (it.key == "stepsJavaWebDeployToWebServer") {
-                        stepsWeb.deploy(fullConfig.DEPLOY_PIPELINE.stepsJavaWebDeployToWebServer)
+                        stepsWeb.deploy(pipelineConfigItemMap)
                     }
                 }
-                echo "结束执行流程: ${it.key}"
+                echo "结束执行流程: ${it}"
             }
         }  catch (Exception e) {
             echo "执行异常信息: ${e.getMessage()}"
@@ -130,10 +133,10 @@ def mergeConfig(Map customConfig) {
     fullConfig = MapUtils.merge([defaultConfig, extendConfig, customConfig])
     //根据自定义构建参数，修改配置
     Config fullConfigParams = ConfigFactory.parseMap(fullConfig);
-    // params.forEach {
-//        fullConfigParams = fullConfigParams.withValue(it.key, ConfigValueFactory.fromAnyRef(it.value))
-//    }
-//    fullConfig = fullConfigParams.root().unwrapped();
+     params.forEach {
+        fullConfigParams = fullConfigParams.withValue(it.key, ConfigValueFactory.fromAnyRef(it.value))
+    }
+    fullConfig = fullConfigParams.root().unwrapped();
     return MapUtils.deepCopy(fullConfig)
 }
 
