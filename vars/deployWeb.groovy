@@ -67,11 +67,11 @@ def call(Map customConfig) {
                         return
                     }
                     echo "开始执行流程: ${it}"
-                    if (it.key == "stepsBuildNpm") {
+                    if (it == "stepsBuildNpm") {
                         stepsBuildNpm.build(fullConfig)
-                    } else if (it.key == "stepsStorage") {
+                    } else if (it == "stepsStorage") {
                         stepsJenkins.stash(pipelineConfigItemMap)
-                    } else if (it.key == "stepsJavaWebDeployToWebServer") {
+                    } else if (it == "stepsJavaWebDeployToWebServer") {
                         stepsWeb.deploy(pipelineConfigItemMap)
                     }
                 }

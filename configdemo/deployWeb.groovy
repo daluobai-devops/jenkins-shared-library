@@ -27,7 +27,7 @@ def customConfig = [
                         //用来打包的镜像 可不填。默认10.16.0,选项(10.16.0,14.21.3,16)
                         "dockerBuildImage"   : "registry.cn-hangzhou.aliyuncs.com/wuzhaozhongguo/build-npm:14.21.3",
                         //使用缓存node_modules 可不填，默认true
-                        "cacheNodeModules": "true"
+                        "cacheNodeModules": true
                 ],
                 //存储
                 "stepsStorage"  : [
