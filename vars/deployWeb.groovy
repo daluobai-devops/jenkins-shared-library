@@ -133,10 +133,16 @@ def mergeConfig(Map customConfig) {
     fullConfig = MapUtils.merge([defaultConfig, extendConfig, customConfig])
     //根据自定义构建参数，修改配置
     Config fullConfigParams = ConfigFactory.parseMap(fullConfig);
-     params.forEach {
+    echo "fullConfigParams: ${fullConfigParams.toString()}"
+    params.each {
         fullConfigParams = fullConfigParams.withValue(it.key, ConfigValueFactory.fromAnyRef(it.value))
     }
-    fullConfig = fullConfigParams.root().unwrapped();
+
+    echo "fullConfigParams2: ${fullConfigParams.toString()}"
+
+    fullConfig = fullConfigParams.root().unwrapped()
+
+    echo "fullConfigParams3: ${fullConfig}"
     return MapUtils.deepCopy(fullConfig)
 }
 
