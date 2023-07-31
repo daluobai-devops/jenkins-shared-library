@@ -46,6 +46,8 @@ def call(Map customConfig) {
     /***初始化参数 开始**/
     //错误信息
     def errMessage = ""
+    //DEPLOY_PIPELINE顺序定义
+    def deployPipelineIndex = ["stepsBuildMaven","stepsStorage","stepsDeploy"]
     //如果没传项目名称，则使用jenkins项目名称
     if (StrUtil.isBlank(customConfig.SHARE_PARAM.appName)){
         customConfig.SHARE_PARAM.appName = currentBuild.projectName
@@ -60,29 +62,32 @@ def call(Map customConfig) {
             echo "fullConfig: ${fullConfig.toString()}"
             //设置共享参数。
             GlobalShare.globalParameterMap = fullConfig
+
             //执行流程
-            fullConfig["DEPLOY_PIPELINE"].each {
-                stage("${it.key}") {
-                    if (it.value["enable"] != null && it.value["enable"] == false) {
-                        echo "跳过流程: ${it.key}"
+            deployPipelineIndex.each {
+                stage("${it}") {
+                    def pipelineConfigItemMap = fullConfig.DEPLOY_PIPELINE[it]
+                    if (pipelineConfigItemMap["enable"] != null && pipelineConfigItemMap["enable"] == false) {
+                        echo "跳过流程: ${it}"
                         return
                     }
-                    echo "开始执行流程: ${it.key}"
-                    if (it.key == "stepsBuildMaven") {
+                    echo "开始执行流程: ${it}"
+                    if (it == "stepsBuildMaven") {
                         stepsBuildMaven.build(fullConfig)
-                    } else if (it.key == "stepsStorage") {
-                        if (ObjectUtil.isEmpty(fullConfig.DEPLOY_PIPELINE.stepsStorage)) {
+                    } else if (it == "stepsStorage") {
+                        if (ObjectUtil.isEmpty(pipelineConfigItemMap)) {
                             error "stepsStorage配置为空"
                         }
-                        def dockerfileARG = '--build-arg BUILD_EXPOSE=8080 --build-arg appName="${customConfig.SHARE_PARAM.appName}" --build-arg runOptions="" --build-arg runArgs=""'
-                        fullConfig.DEPLOY_PIPELINE.stepsStorage.dockerfileARG = dockerfileARG
-                        stepsJenkins.stash(fullConfig.DEPLOY_PIPELINE.stepsStorage)
-                    } else if (it.key == "stepsDeploy") {
-                        stepsDeploy.deploy(fullConfig.DEPLOY_PIPELINE.stepsDeploy)
+                        def dockerfileARG = """--build-arg BUILD_EXPOSE=8080 --build-arg appName="${customConfig.SHARE_PARAM.appName}" --build-arg runOptions="" --build-arg runArgs="""
+                        pipelineConfigItemMap.dockerfileARG = dockerfileARG
+                        stepsJenkins.stash(pipelineConfigItemMap)
+                    } else if (it == "stepsDeploy") {
+                        stepsDeploy.deploy(pipelineConfigItemMap)
                     }
                 }
-                echo "结束执行流程: ${it.key}"
+                echo "结束执行流程: ${it}"
             }
+
         } catch (Exception e) {
             echo "执行异常信息: ${e.getMessage()}"
             currentBuild.result = "FAILURE"
@@ -147,7 +152,7 @@ def mergeConfig(Map customConfig) {
 
     echo "fullConfigParams2: ${fullConfigParams.toString()}"
 
-//    fullConfig = fullConfigParams.root().unwrapped()
+    fullConfig = fullConfigParams.root().unwrapped()
 
     echo "fullConfigParams3: ${fullConfig}"
     return MapUtils.deepCopy(fullConfig)
