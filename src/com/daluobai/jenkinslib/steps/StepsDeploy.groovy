@@ -35,6 +35,7 @@ class StepsDeploy implements Serializable {
         def labels = parameterMap.labels
         def enable = parameterMap.enable
         def readinessProbeMap = parameterMap.readinessProbe
+        def afterRunCMD = parameterMap.afterRunCMD
         def appName = GlobalShare.globalParameterMap.SHARE_PARAM.appName
         def archiveName = GlobalShare.globalParameterMap.SHARE_PARAM.archiveName
         //获取文件名后缀
@@ -82,6 +83,10 @@ class StepsDeploy implements Serializable {
                                 steps.error '服务未就绪'
                             }
                         }
+                    }
+                    //所有部署流程执行完成后运行的命令
+                    if (StrUtil.isNotBlank(afterRunCMD)) {
+                        steps.sh "${afterRunCMD}"
                     }
                 }
             }

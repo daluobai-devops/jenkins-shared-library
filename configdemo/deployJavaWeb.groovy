@@ -121,6 +121,8 @@ def customConfig = [
                                 //探针失败次数，如果失败次数达到该值则认为发布失败，默认3次 可不填
                                 "failureThreshold": 20
                         ],
+                        //所有部署流程执行完成后运行的命令
+                        "afterRunCMD":"firewall-cmd --zone=public --add-port=8080/tcp --permanent && firewall-cmd --reload"
                 ]
         ],
         //默认配置
