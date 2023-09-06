@@ -2,6 +2,7 @@
 Jenkins Pipeline Extending with Shared Libraries 
 # 简介
 jenkins pipeline 和拓展库介绍:[https://www.jenkins.io/doc/book/pipeline/]()
+jenkins介绍和学习(Jenkins中文社区Rick):https://www.bilibili.com/video/BV1fp4y1r7Dd
 
 加我微信:HELLO-WUZHAO
 
