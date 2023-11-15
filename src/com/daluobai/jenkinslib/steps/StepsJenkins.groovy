@@ -90,7 +90,7 @@ class StepsJenkins implements Serializable {
                 steps.sh "ls -l"
                 steps.sh "docker build ${buildArgs} -t ${dockerRegistry.imagePrefix}/${imageName}/${imageVersion} ."
                 steps.sh "docker push ${dockerRegistry.imagePrefix}/${imageName}/${imageVersion}"
-                archiveName = ${dockerRegistry.imagePrefix}/${imageName}/${imageVersion}
+                archiveName = "${dockerRegistry.imagePrefix}/${imageName}/${imageVersion}"
             }
         }
         GlobalShare.globalParameterMap.SHARE_PARAM.put("archiveName",archiveName)
