@@ -56,6 +56,7 @@ def customConfig = [
                                 "imageVersion"       : "latest",
                                 "dockerfile": [
                                         "url" : "git@github.com:daluobai-devops/docker-library.git",
+                                        "gitBranch"       : "main",
                                         "path": "package-javaweb/openjdk8"
                                 ],
                                 "buildArgs":["runOptions":"","runArgs":"--spring.profiles.active=dev"]

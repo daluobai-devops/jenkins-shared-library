@@ -68,7 +68,7 @@ class StepsJenkins implements Serializable {
         if (dockerRegistry.enable) {
             steps.sh "mkdir -p stash/dockerRegistry/code"
             steps.dir("stash/dockerRegistry/code") {
-                steps.git credentialsId: 'ssh-git', url: "${dockerfile.url}"
+                steps.git branch: "${dockerfile.gitBranch}", credentialsId: 'ssh-git', url: "${dockerfile.url}"
             }
             steps.sh '''mv stash/dockerRegistry/code/\$(ls -A1 stash/dockerRegistry/code/) stash/dockerRegistry/code/code/'''
 
