@@ -87,7 +87,7 @@ class StepsJenkins implements Serializable {
             def imageName = StrUtil.isBlank(dockerRegistry.imageName) ? fullConfig.SHARE_PARAM.appName : dockerRegistry.imageName
             def imageVersion = StrUtil.isBlank(dockerRegistry.imageVersion) ? DateUtil.format(new Date(), "yyyyMMddHHmmss") : dockerRegistry.imageVersion
             steps.dir("stash/dockerRegistry/code/code/${dockerfile.path}") {
-                steps.sh "docker build ${buildArgs} -t=${dockerRegistry.imagePrefix}/${imageName}/${imageVersion} ."
+                steps.sh "docker build ${buildArgs} -t ${dockerRegistry.imagePrefix}/${imageName}/${imageVersion} ."
                 steps.sh "docker push ${dockerRegistry.imagePrefix}/${imageName}/${imageVersion}"
                 archiveName = ${dockerRegistry.imagePrefix}/${imageName}/${imageVersion}
             }
