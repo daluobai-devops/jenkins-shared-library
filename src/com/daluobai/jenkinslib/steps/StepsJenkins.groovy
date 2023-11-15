@@ -71,7 +71,7 @@ class StepsJenkins implements Serializable {
                 steps.git branch: "${dockerfile.gitBranch}", credentialsId: 'ssh-git', url: "${dockerfile.url}"
             }
 //            steps.sh '''mv stash/dockerRegistry/code/\$(ls -A1 stash/dockerRegistry/code/) stash/dockerRegistry/code/code/'''
-            steps.sh "ls stash/dockerRegistry/code/code -l"
+
             steps.sh "mkdir -p stash/dockerRegistry/code/code/build/package"
             steps.sh "cp -r ${includes} stash/dockerRegistry/code/code/build/package/"
 
@@ -87,6 +87,7 @@ class StepsJenkins implements Serializable {
             def imageName = StrUtil.isBlank(dockerRegistry.imageName) ? fullConfig.SHARE_PARAM.appName : dockerRegistry.imageName
             def imageVersion = StrUtil.isBlank(dockerRegistry.imageVersion) ? DateUtil.format(new Date(), "yyyyMMddHHmmss") : dockerRegistry.imageVersion
             steps.dir("stash/dockerRegistry/code/code/${dockerfile.path}") {
+                steps.sh "ls -l"
                 steps.sh "docker build ${buildArgs} -t ${dockerRegistry.imagePrefix}/${imageName}/${imageVersion} ."
                 steps.sh "docker push ${dockerRegistry.imagePrefix}/${imageName}/${imageVersion}"
                 archiveName = ${dockerRegistry.imagePrefix}/${imageName}/${imageVersion}
