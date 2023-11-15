@@ -49,11 +49,16 @@ def customConfig = [
                         "dockerRegistry": [
                                 //是否激活,默认false
                                 "enable"       : false,
-                                "imagePrefix"       : "registry.cn-hangzhou.aliyuncs.com/wuzhaozhongguo-app/",
+                                "imagePrefix"       : "registry.cn-hangzhou.aliyuncs.com/wuzhaozhongguo-app",
+                                //如果不填则使用appName
+                                "imageName"       : "prod-xxx-api",
+                                //如果不填则使用日期作为版本号
+                                "imageVersion"       : "latest",
                                 "dockerfile": [
                                         "url" : "git@github.com:daluobai-devops/docker-library.git",
                                         "path": "package-javaweb/openjdk8"
                                 ],
+                                "buildArgs":["runOptions":"","runArgs":"--spring.profiles.active=dev"]
                         ],
                 ],
                 //发布

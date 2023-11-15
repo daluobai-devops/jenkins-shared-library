@@ -78,8 +78,6 @@ def call(Map customConfig) {
                         if (ObjectUtil.isEmpty(pipelineConfigItemMap)) {
                             error "stepsStorage配置为空"
                         }
-                        def dockerfileARG = """--build-arg BUILD_EXPOSE=8080 --build-arg appName="${customConfig.SHARE_PARAM.appName}" --build-arg runOptions="" --build-arg runArgs="""
-                        pipelineConfigItemMap.dockerfileARG = dockerfileARG
                         stepsJenkins.stash(pipelineConfigItemMap)
                     } else if (it == "stepsDeploy") {
                         stepsDeploy.deploy(pipelineConfigItemMap)

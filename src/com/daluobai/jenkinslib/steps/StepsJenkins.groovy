@@ -1,7 +1,10 @@
 package com.daluobai.jenkinslib.steps
+
+import cn.hutool.core.date.DateUtil
 @Grab('cn.hutool:hutool-all:5.8.11')
 
 import cn.hutool.core.lang.Assert
+import cn.hutool.core.util.ObjectUtil
 import cn.hutool.core.util.StrUtil
 import com.daluobai.jenkinslib.constant.GlobalShare
 /**
@@ -30,6 +33,7 @@ class StepsJenkins implements Serializable {
         def jenkinsStash = parameterMap.jenkinsStash
         def dockerRegistry = parameterMap.dockerRegistry
         def dockerfile = parameterMap.dockerfile
+        def fullConfig = GlobalShare.globalParameterMap
         Assert.notBlank(archiveType,"archiveType为空")
         def includes
         def archiveName
@@ -70,9 +74,20 @@ class StepsJenkins implements Serializable {
 
             steps.sh "mkdir -p stash/dockerRegistry/code/code/build/package"
             steps.sh "cp -r ${includes} stash/dockerRegistry/code/code/build/package/"
-            sh "docker build -t=${_TEMP_DOCKER_BUILD_APP_IMAGE_FULL_NAME} ."
-            sh "docker push ${_TEMP_DOCKER_BUILD_APP_IMAGE_FULL_NAME}"
 
+            // 拼接
+            def buildArgs = ""
+            if (dockerRegistry.buildArgs != null && dockerRegistry.buildArgs.size() > 0) {
+                dockerRegistry.buildArgs.each { key, value ->
+                    buildArgs += "--build-arg ${key}=${value} "
+                }
+            }
+            def imageName = StrUtil.isBlank(dockerRegistry.imageName) ? fullConfig.SHARE_PARAM.appName : dockerRegistry.imageName
+            def imageVersion = StrUtil.isBlank(dockerRegistry.imageVersion) ? DateUtil.format(new Date(), "yyyyMMddHHmmss") : dockerRegistry.imageVersion
+
+            sh "docker build ${buildArgs} -t=${dockerRegistry.imagePrefix}/${imageName}/${imageVersion} ."
+            sh "docker push ${dockerRegistry.imagePrefix}/${imageName}/${imageVersion}"
+            archiveName = ${dockerRegistry.imagePrefix}/${imageName}/${imageVersion}
         }
         GlobalShare.globalParameterMap.SHARE_PARAM.put("archiveName",archiveName)
     }
