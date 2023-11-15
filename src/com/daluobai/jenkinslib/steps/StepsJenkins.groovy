@@ -79,7 +79,9 @@ class StepsJenkins implements Serializable {
             def buildArgs = ""
             if (dockerRegistry.buildArgs != null && dockerRegistry.buildArgs.size() > 0) {
                 dockerRegistry.buildArgs.each { key, value ->
-                    buildArgs += "--build-arg ${key}=${value} "
+                    if (StrUtil.isNotBlank(value) && StrUtil.isNotBlank(key)){
+                        buildArgs += "--build-arg ${key}=${value} "
+                    }
                 }
             }
             def imageName = StrUtil.isBlank(dockerRegistry.imageName) ? fullConfig.SHARE_PARAM.appName : dockerRegistry.imageName
