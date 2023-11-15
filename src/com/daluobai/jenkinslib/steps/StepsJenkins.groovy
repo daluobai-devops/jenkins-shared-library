@@ -71,9 +71,9 @@ class StepsJenkins implements Serializable {
                 steps.git branch: "${dockerfile.gitBranch}", credentialsId: 'ssh-git', url: "${dockerfile.url}"
             }
 //            steps.sh '''mv stash/dockerRegistry/code/\$(ls -A1 stash/dockerRegistry/code/) stash/dockerRegistry/code/code/'''
-
-            steps.sh "mkdir -p stash/dockerRegistry/code/code/build/package"
-            steps.sh "cp -r ${includes} stash/dockerRegistry/code/code/build/package/"
+            //把构建的东西放到dockerfile目录下
+            steps.sh "mkdir -p stash/dockerRegistry/code/code/${dockerfile.path}/build/package"
+            steps.sh "cp -r ${includes} stash/dockerRegistry/code/code/${dockerfile.path}/build/package/"
 
             // 拼接
             def buildArgs = ""
