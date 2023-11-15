@@ -32,7 +32,7 @@ class StepsJenkins implements Serializable {
         def archiveType = parameterMap.archiveType
         def jenkinsStash = parameterMap.jenkinsStash
         def dockerRegistry = parameterMap.dockerRegistry
-        def dockerfile = parameterMap.dockerfile
+        def dockerfile = parameterMap.dockerRegistry.dockerfile
         def fullConfig = GlobalShare.globalParameterMap
         Assert.notBlank(archiveType,"archiveType为空")
         def includes
