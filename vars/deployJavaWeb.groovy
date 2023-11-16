@@ -104,7 +104,7 @@ def call(Map customConfig) {
                     wecomApi.sendMsg(customConfig.SHARE_PARAM.message.wecom.key, messageContent)
                 }
             }
-//            deleteDir()
+            deleteDir()
         }
     }
 }
