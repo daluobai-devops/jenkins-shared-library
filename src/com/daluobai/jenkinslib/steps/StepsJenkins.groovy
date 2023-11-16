@@ -76,7 +76,7 @@ class StepsJenkins implements Serializable {
             steps.sh "cp -r ${includes} stash/dockerRegistry/code/code/${dockerfile.path}/build/package/"
 
             // 拼接
-            def buildArgs = "--build-arg appName=${fullConfig.SHARE_PARAM.appName} "
+            def buildArgs = ""
             if (dockerRegistry.buildArgs != null && dockerRegistry.buildArgs.size() > 0) {
                 dockerRegistry.buildArgs.each { key, value ->
                     if (StrUtil.isNotBlank(value) && StrUtil.isNotBlank(key)){
