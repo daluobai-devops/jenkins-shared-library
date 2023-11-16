@@ -80,7 +80,7 @@ class StepsJenkins implements Serializable {
             if (dockerRegistry.buildArgs != null && dockerRegistry.buildArgs.size() > 0) {
                 dockerRegistry.buildArgs.each { key, value ->
                     if (StrUtil.isNotBlank(value) && StrUtil.isNotBlank(key)){
-                        buildArgs += "--build-arg '${key}'='${value}' "
+                        buildArgs += "--build-arg \'${key}\'=\'${value}\' "
                     }
                 }
             }
