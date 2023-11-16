@@ -59,7 +59,7 @@ def customConfig = [
                                         "gitBranch"       : "main",
                                         "path": "package-javaweb/openjdk8"
                                 ],
-                                "buildArgs":["runOptions":"","runArgs":"--spring.profiles.active=dev"]
+                                "buildArgs":["runOptions":"-Xms128M -Xmx128M","runArgs":"--spring.profiles.active=dev"]
                         ],
                 ],
                 //发布
