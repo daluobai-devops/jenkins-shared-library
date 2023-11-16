@@ -89,7 +89,6 @@ class StepsJenkins implements Serializable {
             steps.dir("stash/dockerRegistry/code/code/${dockerfile.path}") {
                 steps.sh "ls -l"
                 steps.sh "docker build ${buildArgs} -t ${dockerRegistry.imagePrefix}/${imageName}:${imageVersion} ."
-//                steps.sh "docker build --build-arg appName=test2 -t ${dockerRegistry.imagePrefix}/${imageName}:${imageVersion} ."
                 steps.sh "docker push ${dockerRegistry.imagePrefix}/${imageName}:${imageVersion}"
                 archiveName = "${dockerRegistry.imagePrefix}/${imageName}:${imageVersion}"
             }
