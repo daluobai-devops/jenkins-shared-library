@@ -74,7 +74,6 @@ class StepsBuildMaven implements Serializable {
                 if (StrUtil.isNotBlank(settingsXmlStr)){
                     fileUtils.writeFileBySH("~/.m2/settings.xml", settingsXmlStr)
                 }
-                steps.sh 'set +x'
                 steps.sh """
                         #! /bin/sh -e
                         mkdir -p ${pathBase}/${pathPackage} && mkdir -p ${pathBase}/${pathCode}
