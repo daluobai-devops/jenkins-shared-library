@@ -79,7 +79,7 @@ class StepsBuildNpm implements Serializable {
                     steps.sh "rm -rf ${dockerModulesProjectPath}/node_modules || true"
                 }
                 steps.sh """
-                        #! /bin/bash -eu
+                        #! /bin/sh -e
                         set -eo pipefail
                         mkdir -p ${pathBase}/${pathPackage} && mkdir -p ${pathBase}/${pathCode} && mkdir -p ${dockerModulesProjectPath}
                         cd ${pathBase}/${pathCode}
