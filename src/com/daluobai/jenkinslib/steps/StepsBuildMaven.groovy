@@ -82,7 +82,7 @@ class StepsBuildMaven implements Serializable {
                         git clone ${configSteps.gitUrl} --branch ${configSteps.gitBranch} --single-branch --depth 1 --quiet
                         mv ${pathBase}/${pathCode}/\$(ls -A1 ${pathBase}/${pathCode}/) ${pathBase}/${pathCode}/${pathCode}
                         cd ${pathBase}/${pathCode}/${pathCode}
-                        git log --pretty=format:"%h -%an,%ar : %s" -3 | cat -
+                        git log --pretty=format:"%h -%an,%ar : %s" -1
                         git config core.ignorecase false
                         mvn -Dmaven.test.skip=${configSteps.skipTest} ${configSteps.lifecycle} -Dmaven.compile.fork=true -U -B ${mvnCMDSubMod} ${mvnCMDActiveProfile}
                         ls -al ${pathBase}/${pathCode}/${pathCode}/${configSteps.subModule}/target
