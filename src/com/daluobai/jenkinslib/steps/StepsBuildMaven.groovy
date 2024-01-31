@@ -70,7 +70,7 @@ class StepsBuildMaven implements Serializable {
                 stepsGit.saveJenkinsSSHKey('ssh-git')
                 //生成known_hosts
                 stepsGit.sshKeyscan("${configSteps.gitUrl}", "~/.ssh/known_hosts")
-                //如果有settings.xml配置则写入用户自定义配置
+                //如果有settings.xml配置则写入用户自定义配置.
                 if (StrUtil.isNotBlank(settingsXmlStr)){
                     fileUtils.writeFileBySH("~/.m2/settings.xml", settingsXmlStr)
                 }
