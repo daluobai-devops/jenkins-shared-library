@@ -87,6 +87,7 @@ class StepsBuildNpm implements Serializable {
                         git clone ${configSteps.gitUrl} --branch ${configSteps.gitBranch} --single-branch --depth 1 --quiet
                         mv ${pathBase}/${pathCode}/\$(ls -A1 ${pathBase}/${pathCode}/) ${pathBase}/${pathCode}/${pathCode}
                         cd ${pathBase}/${pathCode}/${pathCode}
+                        git log -n 3
                         git config core.ignorecase false
                         \\cp -rf ${dockerModulesProjectPath}/node_modules/ . || true
                         ls -al ./node_modules/ || true
