@@ -75,7 +75,7 @@ class StepsBuildMaven implements Serializable {
                     fileUtils.writeFileBySH("~/.m2/settings.xml", settingsXmlStr)
                 }
                 steps.sh """
-                        #! /bin/sh -e
+                        #! /bin/sh
                         mkdir -p ${pathBase}/${pathPackage} && mkdir -p ${pathBase}/${pathCode}
                         cd ${pathBase}/${pathCode}
                         git config --global http.version HTTP/1.1
