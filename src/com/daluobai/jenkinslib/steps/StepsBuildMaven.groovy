@@ -75,7 +75,7 @@ class StepsBuildMaven implements Serializable {
                     fileUtils.writeFileBySH("~/.m2/settings.xml", settingsXmlStr)
                 }
                 steps.sh """
-                        #! /bin/bash -eu
+                        #! /bin/sh -e
                         set -eo pipefail
                         mkdir -p ${pathBase}/${pathPackage} && mkdir -p ${pathBase}/${pathCode}
                         cd ${pathBase}/${pathCode}
