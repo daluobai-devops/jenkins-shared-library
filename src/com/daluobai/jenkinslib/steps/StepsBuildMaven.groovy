@@ -58,7 +58,7 @@ class StepsBuildMaven implements Serializable {
         def dockerLoginCredentialsId = StrUtil.isNotBlank(configDefault.docker.registry.credentialsId) ? configDefault.docker.registry.credentialsId : ""
 
         steps.withDockerRegistry(credentialsId: dockerLoginCredentialsId, url: dockerLoginDomain) {
-
+            steps.sh "whoami"
             def mavenImage = steps.docker.image("${dockerBuildImageUrl}")
             mavenImage.pull()
 
