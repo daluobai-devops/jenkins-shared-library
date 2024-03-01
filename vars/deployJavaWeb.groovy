@@ -14,6 +14,7 @@ import com.daluobai.jenkinslib.utils.ConfigUtils
 import com.daluobai.jenkinslib.utils.MapUtils
 import cn.hutool.core.util.ObjectUtil
 import com.daluobai.jenkinslib.steps.*
+import com.daluobai.jenkinslib.utils.MessageUtils
 import com.typesafe.config.*
 
 import java.util.stream.Collectors;
@@ -33,6 +34,7 @@ def call(Map customConfig) {
     def stepsJavaWeb = new StepsJavaWeb(this)
     def configUtils = new ConfigUtils(this)
     def wecomApi = new WecomApi(this)
+    def messageUtils = new MessageUtils(this)
     def stepsTomcat = new StepsTomcat(this)
     def stepsDeploy = new StepsDeploy(this)
     /*******************初始化全局对象 结束*****************/
@@ -101,7 +103,7 @@ def call(Map customConfig) {
                     }else{
                         messageContent = "发布失败: ${currentBuild.fullDisplayName},异常信息: ${errMessage},构建日志:(${BUILD_URL}console)"
                     }
-                    wecomApi.sendMsg(customConfig.SHARE_PARAM.message.wecom.key, messageContent)
+                    messageUtils.sendMessage(customConfig.SHARE_PARAM.message, "发布完成" ,messageContent)
                 }
             }
             deleteDir()

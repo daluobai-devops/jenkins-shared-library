@@ -9,6 +9,11 @@ def customConfig = [
                         "wecom": [
                                 //企业微信机器人token 必填
                                 "key": ""
+                        ],
+                        //企业微信通知 可不填
+                        "feishu": [
+                                //飞书机器人token 必填
+                                "token": ""
                         ]
                 ]
         ],
