@@ -67,21 +67,30 @@ class StepsDeploy implements Serializable {
                     }
                     //健康检查
                     if (readinessProbeMap != null) {
+                        def healthAll = true
                         if (ObjectUtil.isNotEmpty(readinessProbeMap.tcp) && (readinessProbeMap.tcp.enable == null || readinessProbeMap.tcp.enable)) {
                             def healthCheck = endpointUtils.healthCheckWithLocalTCPPort(readinessProbeMap.tcp.port, readinessProbeMap.period, readinessProbeMap.failureThreshold)
                             if (!healthCheck) {
-                                steps.error '服务未就绪'
+                                healthAll = false
+                                steps.echo "healthCheckWithLocalTCPPort，检查失败"
                             }
-                        } else if (ObjectUtil.isNotEmpty(readinessProbeMap.http) && (readinessProbeMap.http.enable == null || readinessProbeMap.http.enable)) {
+                        }
+                        if (ObjectUtil.isNotEmpty(readinessProbeMap.http) && (readinessProbeMap.http.enable == null || readinessProbeMap.http.enable)) {
                             def healthCheck = endpointUtils.healthCheckWithHttp("http://localhost:${readinessProbeMap.http.port}${readinessProbeMap.http.path}", readinessProbeMap.http.timeout, readinessProbeMap.period, readinessProbeMap.failureThreshold)
                             if (!healthCheck) {
-                                steps.error '服务未就绪'
+                                healthAll = false
+                                steps.echo "healthCheckWithHttp，检查失败"
                             }
-                        }else if (ObjectUtil.isNotEmpty(readinessProbeMap.cmd) && (readinessProbeMap.cmd.enable == null || readinessProbeMap.cmd.enable)) {
+                        }
+                        if (ObjectUtil.isNotEmpty(readinessProbeMap.cmd) && (readinessProbeMap.cmd.enable == null || readinessProbeMap.cmd.enable)) {
                             def healthCheck = endpointUtils.healthCheckWithCMD(readinessProbeMap.cmd.command, readinessProbeMap.cmd.timeout, readinessProbeMap.period, readinessProbeMap.failureThreshold)
                             if (!healthCheck) {
-                                steps.error '服务未就绪'
+                                healthAll = false
+                                steps.echo "healthCheckWithCMD，检查失败"
                             }
+                        }
+                        if (!healthAll) {
+                            steps.error '服务未就绪'
                         }
                     }
                     //所有部署流程执行完成后运行的命令
