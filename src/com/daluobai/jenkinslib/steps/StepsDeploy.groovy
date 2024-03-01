@@ -73,7 +73,7 @@ class StepsDeploy implements Serializable {
                                 steps.error '服务未就绪'
                             }
                         } else if (ObjectUtil.isNotEmpty(readinessProbeMap.http) && (readinessProbeMap.http.enable == null || readinessProbeMap.http.enable)) {
-                            def healthCheck = endpointUtils.healthCheckWithHttp("http://localhost:${readinessProbeMap.http.path}:${readinessProbeMap.http.port}", readinessProbeMap.http.timeout, readinessProbeMap.period, readinessProbeMap.failureThreshold)
+                            def healthCheck = endpointUtils.healthCheckWithHttp("http://localhost:${readinessProbeMap.http.port}${readinessProbeMap.http.path}", readinessProbeMap.http.timeout, readinessProbeMap.period, readinessProbeMap.failureThreshold)
                             if (!healthCheck) {
                                 steps.error '服务未就绪'
                             }
