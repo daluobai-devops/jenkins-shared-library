@@ -96,15 +96,13 @@ def call(Map customConfig) {
         } finally {
             echo "发布完成: ${currentBuild.currentResult}"
             if (ObjectUtil.isNotEmpty(customConfig.SHARE_PARAM.message)){
-                if (ObjectUtil.isNotEmpty(customConfig.SHARE_PARAM.message.wecom) && ObjectUtil.isNotEmpty(customConfig.SHARE_PARAM.message.wecom.key)){
-                    def messageContent = "发布完成: ${currentBuild.fullDisplayName}"
-                    if (currentBuild.currentResult == "SUCCESS"){
-                        messageContent = "发布成功: ${currentBuild.fullDisplayName}"
-                    }else{
-                        messageContent = "发布失败: ${currentBuild.fullDisplayName},异常信息: ${errMessage},构建日志:(${BUILD_URL}console)"
-                    }
-                    messageUtils.sendMessage(customConfig.SHARE_PARAM.message, "发布完成" ,messageContent)
+                def messageContent = "发布完成: ${currentBuild.fullDisplayName}"
+                if (currentBuild.currentResult == "SUCCESS"){
+                    messageContent = "发布成功: ${currentBuild.fullDisplayName}"
+                }else{
+                    messageContent = "发布失败: ${currentBuild.fullDisplayName},异常信息: ${errMessage},构建日志:(${BUILD_URL}console)"
                 }
+                messageUtils.sendMessage(customConfig.SHARE_PARAM.message, "发布完成" ,messageContent)
             }
             deleteDir()
         }
