@@ -3,6 +3,7 @@ package com.daluobai.jenkinslib.utils
 import cn.hutool.core.io.FileUtil
 @Grab('cn.hutool:hutool-all:5.8.11')
 import cn.hutool.core.lang.Assert
+import cn.hutool.core.util.ObjUtil
 import cn.hutool.core.util.StrUtil
 import cn.hutool.http.HttpUtil
 import com.daluobai.jenkinslib.api.FeishuApi
@@ -36,7 +37,9 @@ class MessageUtils implements Serializable {
      * @return
      */
     def sendMessage(messageConfig,String title,String content) {
-        Assert.notEmpty(messageConfig, "messageConfig为空");
+        if (ObjUtil.isEmpty(messageConfig)){
+            return false
+        }
         Assert.notBlank(content,"content为空")
         //遍历messageConfig
         messageConfig.each { key, value ->
