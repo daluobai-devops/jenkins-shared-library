@@ -136,7 +136,11 @@ class EndpointUtils implements Serializable {
         for (int i = 0; i < failureThreshold; i++) {
             steps.echo "健康检查-第${i}次"
             sleep periodMS
-            def httpCode = steps.sh returnStdout: true, script: """curl -s -o /dev/null -w '%{http_code}' --connect-timeout ${timeout} ${url}"""
+            def httpCode = "0"
+            try {
+                httpCode = steps.sh returnStdout: true, script: """curl -s -o /dev/null -w '%{http_code}' --connect-timeout ${timeout} ${url}"""
+            } catch (Exception e) {
+            }
             boolean httpListening = ObjectUtil.isNotEmpty(httpCode) && httpCode.trim() == "200"
             if (httpListening){
                 steps.echo "url访问成功:${url},${timeout}"
