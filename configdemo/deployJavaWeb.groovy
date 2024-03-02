@@ -85,6 +85,8 @@ def customConfig = [
                                 "runOptions": "-Xms128M -Xmx128M",
                                 //启动参数 [args...] 示例(-–spring.profiles.active=dev)
                                 "runArgs"   : "--spring.profiles.active=dev",
+                                //服务管理方式,支持systemctl,shell,默认systemctl，如果系统没有systemctl命令则使用shell方式
+                                "manageBy"   : "shell",
                         ],
                         //发布到tomcat
                         "stepsTomcatDeploy":[

@@ -53,9 +53,14 @@ class StepsJavaWeb implements Serializable {
         }
         //拷贝新的包到发布目录
         steps.sh "cp package/${archiveName} ${pathRoot}/${appName}"
+        if (parameterMap.manageBy){
+
+        }
+        //判断用哪种方式管理服务
+        def manageBySystemctl = StrUtil.isBlank(parameterMap.manageBy) || parameterMap.manageBy == "systemctl"
         //判断是否有systemctl命令，返回0表示有，返回1表示没有
         def systemctlRe = steps.sh returnStatus: true, script: 'command -v systemctl'
-        if (systemctlRe == 0) {
+        if (manageBySystemctl && systemctlRe == 0) {
             steps.echo "通过systemctl重启"
             //systemctl重启
             reStartBySystemctl(parameterMap)
