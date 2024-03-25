@@ -3,7 +3,6 @@
 import cn.hutool.core.lang.Assert
 import cn.hutool.core.map.MapUtil
 import cn.hutool.core.util.StrUtil
-import com.daluobai.jenkinslib.api.WecomApi
 import com.daluobai.jenkinslib.constant.EFileReadType
 import com.daluobai.jenkinslib.constant.GlobalShare
 import com.daluobai.jenkinslib.steps.StepsBuildMaven
@@ -33,7 +32,6 @@ def call(Map customConfig) {
     def stepsJenkins = new StepsJenkins(this)
     def stepsJavaWeb = new StepsJavaWeb(this)
     def configUtils = new ConfigUtils(this)
-    def wecomApi = new WecomApi(this)
     def messageUtils = new MessageUtils(this)
     def stepsTomcat = new StepsTomcat(this)
     def stepsDeploy = new StepsDeploy(this)

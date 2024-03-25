@@ -2,7 +2,6 @@
 @Grab('com.typesafe:config:1.4.2')
 import cn.hutool.core.lang.Assert
 import cn.hutool.core.util.StrUtil
-import com.daluobai.jenkinslib.api.WecomApi
 import com.daluobai.jenkinslib.constant.EFileReadType
 import com.daluobai.jenkinslib.constant.GlobalShare
 import com.daluobai.jenkinslib.steps.StepsBuildNpm
@@ -12,6 +11,7 @@ import com.daluobai.jenkinslib.steps.StepsWeb
 import com.daluobai.jenkinslib.utils.ConfigUtils
 import com.daluobai.jenkinslib.utils.MapUtils
 import cn.hutool.core.util.ObjectUtil
+import com.daluobai.jenkinslib.utils.MessageUtils
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import com.typesafe.config.ConfigValueFactory
@@ -30,8 +30,7 @@ def call(Map customConfig) {
     def stepsBuildNpm = new StepsBuildNpm(this)
     def stepsJenkins = new StepsJenkins(this)
     def stepsWeb = new StepsWeb(this)
-    def configUtils = new ConfigUtils(this)
-    def wecomApi = new WecomApi(this)
+    def messageUtils = new MessageUtils(this)
     /*******************初始化全局对象 结束*****************/
     //用来运行构建的节点
     def nodeBuildNodeList = stepsJenkins.getNodeByLabel("buildNode")
@@ -85,15 +84,16 @@ def call(Map customConfig) {
         } finally {
             echo "发布完成: ${currentBuild.currentResult}"
             if (ObjectUtil.isNotEmpty(customConfig.SHARE_PARAM.message)){
-                if (ObjectUtil.isNotEmpty(customConfig.SHARE_PARAM.message.wecom) && ObjectUtil.isNotEmpty(customConfig.SHARE_PARAM.message.wecom.key)){
-                    def messageContent = "发布完成: ${currentBuild.fullDisplayName}"
-                    if (currentBuild.currentResult == "SUCCESS"){
-                        messageContent = "发布成功: ${currentBuild.fullDisplayName}"
-                    }else{
-                        messageContent = "发布失败: ${currentBuild.fullDisplayName},异常信息: ${errMessage},构建日志:(${BUILD_URL}console)"
-                    }
-                    wecomApi.sendMsg(customConfig.SHARE_PARAM.message.wecom.key, messageContent)
+                def messageTitle = "发布完成"
+                def messageContent = "发布完成: ${currentBuild.fullDisplayName}"
+                if (currentBuild.currentResult == "SUCCESS"){
+                    messageTitle = "发布成功"
+                    messageContent = "发布成功: ${currentBuild.fullDisplayName}"
+                }else{
+                    messageTitle = "发布失败"
+                    messageContent = "发布失败: ${currentBuild.fullDisplayName},异常信息: ${errMessage},构建日志:(${BUILD_URL}console)"
                 }
+                messageUtils.sendMessage(customConfig.SHARE_PARAM.message, messageTitle ,messageContent)
             }
             deleteDir()
         }

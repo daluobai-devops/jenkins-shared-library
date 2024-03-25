@@ -31,7 +31,7 @@ class MessageUtils implements Serializable {
     /*******************初始化全局对象 结束*****************/
 
     /**
-     * 从完整路径读取文件
+     *
      * @param fileFullPath
      *
      * @return
