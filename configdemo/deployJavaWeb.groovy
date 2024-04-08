@@ -78,7 +78,7 @@ def customConfig = [
                                 //是否激活,默认true
                                 "enable"    : true,
                                 //java路径 可不填
-                                "javaPath"  : "/usr/local/jdk/jdk17/bin/java",
+                                "javaPath"  : "/usr/local/jdk/jdk8/bin/java",
                                 //服务发布路径 必填
                                 "pathRoot"  : "/apps/application/",
                                 //JVM参数 [-options] 示例(-Dfile.encoding=UTF-8 -Xms128M -Xmx128M -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005)
