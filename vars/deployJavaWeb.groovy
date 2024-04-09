@@ -88,6 +88,7 @@ def call(Map customConfig) {
 
         } catch (Exception e) {
             echo "执行异常信息: ${e.getMessage()}"
+            echo "执行异常信息: ${e.getClass()}"
             currentBuild.result = "FAILURE"
             errMessage = e.getMessage()
             throw e
