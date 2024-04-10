@@ -89,13 +89,13 @@ def call(Map customConfig) {
         } catch (Exception e) {
             echo "执行异常信息: ${e.getMessage()}"
             echo "执行异常信息: ${e.getClass()}"
-//            currentBuild.result = "FAILURE"
+            currentBuild.result = "FAILURE"
             errMessage = e.getMessage()
             throw e
         } finally {
             echo "发布完成: ${currentBuild.currentResult}"
             echo "发布完成: ${currentBuild.getBuildCauses()}"
-            echo "发布完成1: ${currentBuild.result}"
+
             if (ObjectUtil.isNotEmpty(customConfig.SHARE_PARAM.message)){
                 def messageTitle = "发布完成"
                 def messageContent = "发布完成: ${currentBuild.fullDisplayName}"
