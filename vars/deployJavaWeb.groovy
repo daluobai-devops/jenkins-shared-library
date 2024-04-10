@@ -95,6 +95,7 @@ def call(Map customConfig) {
         } finally {
             echo "发布完成: ${currentBuild.currentResult}"
             echo "发布完成: ${currentBuild.getBuildCauses()}"
+            echo "发布完成1: ${currentBuild.result}"
             if (ObjectUtil.isNotEmpty(customConfig.SHARE_PARAM.message)){
                 def messageTitle = "发布完成"
                 def messageContent = "发布完成: ${currentBuild.fullDisplayName}"
