@@ -49,12 +49,12 @@ def call(Map customConfig) {
     def errMessage = ""
     EBuildStatusType eBuildStatusType = null;
     //DEPLOY_PIPELINE顺序定义
-    def deployPipelineIndex = ["stepsBuildMaven","stepsStorage","stepsDeploy"]
+    def deployPipelineIndex = ["stepsBuildMaven", "stepsStorage", "stepsDeploy"]
     //如果没传项目名称，则使用jenkins项目名称
-    if (StrUtil.isBlank(customConfig.SHARE_PARAM.appName)){
+    if (StrUtil.isBlank(customConfig.SHARE_PARAM.appName)) {
         customConfig.SHARE_PARAM.appName = currentBuild.projectName
     }
-    def SHARE_PARAM =  customConfig.SHARE_PARAM
+    def SHARE_PARAM = customConfig.SHARE_PARAM
     /***初始化参数 结束**/
     //默认在同一个构建节点运行，如果需要在其他节点运行则单独写在node块中
     node(nodeBuildNodeList[0]) {
@@ -89,28 +89,30 @@ def call(Map customConfig) {
             }
             eBuildStatusType = EBuildStatusType.SUCCESS
         } catch (Exception e) {
-            if (e instanceof org.jenkinsci.plugins.workflow.steps.FlowInterruptedException){
+            if (e instanceof org.jenkinsci.plugins.workflow.steps.FlowInterruptedException) {
                 eBuildStatusType = EBuildStatusType.ABORTED
-            }else {
+            } else {
                 eBuildStatusType = EBuildStatusType.FAILED
                 errMessage = e.getMessage()
             }
 //            currentBuild.result = "FAILURE"
             throw e
         } finally {
-            if (ObjectUtil.isNotEmpty(customConfig.SHARE_PARAM.message)){
-                def messageTitle = "发布完成"
-                def messageContent = "发布完成: ${currentBuild.fullDisplayName}"
-                if (eBuildStatusType == EBuildStatusType.SUCCESS){
+            if (ObjectUtil.isNotEmpty(customConfig.SHARE_PARAM.message)) {
+                def messageTitle = ""
+                def messageContent = ""
+                if (eBuildStatusType == EBuildStatusType.SUCCESS) {
                     messageTitle = "发布成功"
                     messageContent = "发布成功: ${currentBuild.fullDisplayName}"
-                }else if (eBuildStatusType == EBuildStatusType.FAILED){
+                } else if (eBuildStatusType == EBuildStatusType.FAILED) {
                     messageTitle = "发布失败"
                     messageContent = "发布失败: ${currentBuild.fullDisplayName},异常信息: ${errMessage},构建日志:(${BUILD_URL}console)"
-                }else if (eBuildStatusType == EBuildStatusType.ABORTED){
+                } else if (eBuildStatusType == EBuildStatusType.ABORTED) {
                     //发布终止
                 }
-                messageUtils.sendMessage(customConfig.SHARE_PARAM.message, messageTitle ,messageContent)
+                if (StrUtil.isNotBlank(messageTitle) && StrUtil.isNotBlank(messageContent)) {
+                    messageUtils.sendMessage(customConfig.SHARE_PARAM.message, messageTitle, messageContent)
+                }
             }
             deleteDir()
         }
@@ -125,7 +127,7 @@ def defaultConfigPath(EFileReadType eConfigType) {
         configPath = "/usr/local/workspace/config/jenkins-pipeline/jenkins-pipeline-config/config.json"
     } else if (eConfigType == EFileReadType.RESOURCES) {
         configPath = "config/config.json"
-    }  else {
+    } else {
         throw new Exception("暂无默认配置类型")
     }
     return configPath
