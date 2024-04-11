@@ -95,7 +95,6 @@ def call(Map customConfig) {
                 eBuildStatusType = EBuildStatusType.FAILED
                 errMessage = e.getMessage()
             }
-//            currentBuild.result = "FAILURE"
             throw e
         } finally {
             if (ObjectUtil.isNotEmpty(customConfig.SHARE_PARAM.message)) {
