@@ -3,6 +3,7 @@
 import cn.hutool.core.lang.Assert
 import cn.hutool.core.map.MapUtil
 import cn.hutool.core.util.StrUtil
+import com.daluobai.jenkinslib.constant.EBuildStatusType
 import com.daluobai.jenkinslib.constant.EFileReadType
 import com.daluobai.jenkinslib.constant.GlobalShare
 import com.daluobai.jenkinslib.steps.StepsBuildMaven
@@ -46,6 +47,7 @@ def call(Map customConfig) {
     /***初始化参数 开始**/
     //错误信息
     def errMessage = ""
+    EBuildStatusType eBuildStatusType = null;
     //DEPLOY_PIPELINE顺序定义
     def deployPipelineIndex = ["stepsBuildMaven","stepsStorage","stepsDeploy"]
     //如果没传项目名称，则使用jenkins项目名称
@@ -85,26 +87,28 @@ def call(Map customConfig) {
                 }
                 echo "结束执行流程: ${it}"
             }
-
+            eBuildStatusType = EBuildStatusType.SUCCESS
         } catch (Exception e) {
-            echo "执行异常信息: ${e.getMessage()}"
-            echo "执行异常信息: ${e.getClass()}"
-            currentBuild.result = "FAILURE"
-            errMessage = e.getMessage()
+            if (e instanceof org.jenkinsci.plugins.workflow.steps.FlowInterruptedException){
+                eBuildStatusType = EBuildStatusType.ABORTED
+            }else {
+                eBuildStatusType = EBuildStatusType.FAILED
+                errMessage = e.getMessage()
+            }
+//            currentBuild.result = "FAILURE"
             throw e
         } finally {
-            echo "发布完成: ${currentBuild.currentResult}"
-            echo "发布完成: ${currentBuild.getBuildCauses()}"
-
             if (ObjectUtil.isNotEmpty(customConfig.SHARE_PARAM.message)){
                 def messageTitle = "发布完成"
                 def messageContent = "发布完成: ${currentBuild.fullDisplayName}"
-                if (currentBuild.currentResult == "SUCCESS"){
+                if (eBuildStatusType == EBuildStatusType.SUCCESS){
                     messageTitle = "发布成功"
                     messageContent = "发布成功: ${currentBuild.fullDisplayName}"
-                }else{
+                }else if (eBuildStatusType == EBuildStatusType.FAILED){
                     messageTitle = "发布失败"
                     messageContent = "发布失败: ${currentBuild.fullDisplayName},异常信息: ${errMessage},构建日志:(${BUILD_URL}console)"
+                }else if (eBuildStatusType == EBuildStatusType.ABORTED){
+                    //发布终止
                 }
                 messageUtils.sendMessage(customConfig.SHARE_PARAM.message, messageTitle ,messageContent)
             }
