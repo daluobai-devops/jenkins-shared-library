@@ -42,7 +42,7 @@ def call(Map customConfig) {
     /***初始化参数 开始**/
     //错误信息
     def errMessage = ""
-    EBuildStatusType eBuildStatusType = null;
+    EBuildStatusType eBuildStatusType  = EBuildStatusType.FAILED
     //DEPLOY_PIPELINE顺序定义
     def deployPipelineIndex = ["stepsBuildNpm","stepsStorage","stepsJavaWebDeployToWebServer"]
     //如果没传项目名称，则使用jenkins项目名称
