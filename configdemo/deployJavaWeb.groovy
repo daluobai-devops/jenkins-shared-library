@@ -125,7 +125,7 @@ def customConfig = [
                                         //是否激活,默认true
                                         "enable"        : false,
                                         //探针命令，如果type为cmd则必填 必填
-                                        "command": "curl -s -o /dev/null -w %{http_code} http://localhost:8080/actuator/health",
+                                        "command": "curl -s 'http://localhost:8080/actuator/health' | grep -q 'UP' && echo 0 || echo 1",
                                         //探针超时时间，单位秒，默认5秒 可不填
                                         "timeout": 5
                                 ],
