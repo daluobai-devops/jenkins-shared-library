@@ -179,9 +179,9 @@ class EndpointUtils implements Serializable {
                     exitCode = steps.sh label: '执行command参数', returnStatus: true, script: command
                 }
             } catch (Exception e) {
-                exitCode = "1"
+                exitCode = 1
             }
-            boolean isSuccess = ObjectUtil.isNotEmpty(exitCode) && exitCode.trim() == "0"
+            boolean isSuccess = ObjectUtil.isNotEmpty(exitCode) && exitCode == 0
             if (isSuccess){
                 steps.echo "CMD执行成功:${command},${timeout}"
                 isOnline = true
