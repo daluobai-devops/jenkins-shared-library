@@ -116,7 +116,7 @@ class EndpointUtils implements Serializable {
 
     /**
      * 检查http接口是否正常
-     * @param localTCPPort
+     * @param
      * @return
      */
     def healthCheckWithHttp(def url,def timeout,def periodSec,def failureThreshold) {
@@ -152,7 +152,7 @@ class EndpointUtils implements Serializable {
     }
 
     /**
-     * 检查http接口是否正常
+     * CMD
      * @param localTCPPort
      * @return
      */
@@ -179,7 +179,7 @@ class EndpointUtils implements Serializable {
                     exitCode = steps.sh label: '执行command参数', returnStatus: true, script: command
                 }
             } catch (Exception e) {
-                exitCode = 1
+                exitCode = "1"
             }
             boolean isSuccess = ObjectUtil.isNotEmpty(exitCode) && exitCode.trim() == "0"
             if (isSuccess){
