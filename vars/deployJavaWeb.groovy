@@ -101,10 +101,10 @@ def call(Map customConfig) {
                 def messageTitle = ""
                 def messageContent = ""
                 if (eBuildStatusType == EBuildStatusType.SUCCESS) {
-                    messageTitle = "发布成功:${customConfig.SHARE_PARAM.appName}"
+                    messageTitle = "成功:${customConfig.SHARE_PARAM.appName}"
                     messageContent = "发布成功: ${currentBuild.fullDisplayName}"
                 } else if (eBuildStatusType == EBuildStatusType.FAILED) {
-                    messageTitle = "发布失败:${customConfig.SHARE_PARAM.appName}"
+                    messageTitle = "失败:${customConfig.SHARE_PARAM.appName}"
                     messageContent = "发布失败: ${currentBuild.fullDisplayName},异常信息: ${errMessage},构建日志:(${BUILD_URL}console)"
                 } else if (eBuildStatusType == EBuildStatusType.ABORTED) {
                     //发布终止
