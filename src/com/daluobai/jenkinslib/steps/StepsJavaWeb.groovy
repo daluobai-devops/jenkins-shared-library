@@ -52,7 +52,7 @@ class StepsJavaWeb implements Serializable {
             steps.sh "find . -mtime +3 -delete"
         }
         //拷贝新的包到发布目录
-        steps.sh "cp package/${archiveName} ${pathRoot}/${appName}"
+        steps.sh "\\cp -f package/${archiveName} ${pathRoot}/${appName}"
         if (parameterMap.manageBy){
 
         }
