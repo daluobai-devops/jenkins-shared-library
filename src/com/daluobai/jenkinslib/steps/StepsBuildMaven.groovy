@@ -42,10 +42,12 @@ class StepsBuildMaven implements Serializable {
         def pathPackage = "package"
         //docker-代码目录
         def pathCode = "code"
-        //宿主机目录-构建产物目录
-        def hostPathPackage = "${steps.env.WORKSPACE}/${pathPackage}"
+        //存放临时sshkey的目录
+        def pathSSHKey = "sshkey"
 
-        steps.sh "mkdir -p ${hostPathPackage}"
+        steps.sh "mkdir -p ${steps.env.WORKSPACE}/${pathPackage}"
+        steps.sh "mkdir -p ${steps.env.WORKSPACE}/${pathCode}"
+        steps.sh "mkdir -p ${steps.env.WORKSPACE}/${pathSSHKey}"
 
         def dockerBuildImage = StrUtil.isNotBlank(configSteps.dockerBuildImage) ? configSteps.dockerBuildImage : "registry.cn-hangzhou.aliyuncs.com/wuzhaozhongguo/build-maven:3.8.5-jdk8"
         def dockerBuildImageUrl = "${dockerBuildImage}"
@@ -67,7 +69,7 @@ class StepsBuildMaven implements Serializable {
 
             mavenImage.inside("--entrypoint '' -v maven-repo:/root/.m2/repository -v ${steps.env.WORKSPACE}/${pathPackage}:/app/package") {
                 //从 jenkins 凭据管理中获取密钥文件路径并且拷贝到~/.ssh/id_rsa
-                stepsGit.saveJenkinsSSHKey('ssh-git')
+                stepsGit.saveJenkinsSSHKey('ssh-git',"${steps.env.WORKSPACE}/${pathSSHKey}/ssh-git/")
                 //生成known_hosts
                 stepsGit.sshKeyscan("${configSteps.gitUrl}", "~/.ssh/known_hosts")
                 //如果有settings.xml配置则写入用户自定义配置.
@@ -79,7 +81,7 @@ class StepsBuildMaven implements Serializable {
                         mkdir -p ${pathBase}/${pathPackage} && mkdir -p ${pathBase}/${pathCode}
                         cd ${pathBase}/${pathCode}
                         git config --global http.version HTTP/1.1
-                        git clone ${configSteps.gitUrl} --branch ${configSteps.gitBranch} --single-branch --depth 1 --quiet
+                        GIT_SSH_COMMAND='ssh -i ${steps.env.WORKSPACE}/${pathSSHKey}/ssh-git/id_rsa' git clone ${configSteps.gitUrl} --branch ${configSteps.gitBranch} --single-branch --depth 1 --quiet
                         mv ${pathBase}/${pathCode}/\$(ls -A1 ${pathBase}/${pathCode}/) ${pathBase}/${pathCode}/${pathCode}
                         cd ${pathBase}/${pathCode}/${pathCode}
                         git log --pretty=format:"%h -%an,%ar : %s" -1

@@ -47,10 +47,10 @@ class StepsGit implements Serializable {
      * @param credentialsId
      * @return
      */
-    def saveJenkinsSSHKey(String credentialsId){
+    def saveJenkinsSSHKey(String credentialsId,String path = '~/.ssh/'){
         Assert.notBlank(credentialsId,"credentialsId为空")
         steps.withCredentials([steps.sshUserPrivateKey(credentialsId: "${credentialsId}", keyFileVariable: 'SSH_KEY_PATH')]) {
-            steps.sh "cat /etc/hostname && pwd && mkdir -p ~/.ssh && chmod 700 ~/.ssh && rm -f ~/.ssh/id_rsa && cp \${SSH_KEY_PATH} ~/.ssh/id_rsa || true && chmod 600 ~/.ssh/id_rsa"
+            steps.sh "cat /etc/hostname && pwd && mkdir -p ${path} && chmod 700 ${path} && rm -f ${path}/id_rsa && cp \${SSH_KEY_PATH} ${path}/id_rsa || true && chmod 600 ${path}/id_rsa"
         }
     }
 
