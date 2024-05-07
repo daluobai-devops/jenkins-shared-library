@@ -40,6 +40,7 @@ class StepsGit implements Serializable {
             File file = new File(filePath)
 
             steps.echo "00000"
+            steps.echo "0000-1：${filePath}"
             if (!file.exists()) {
                 steps.echo "11111"
                 File parentDir = file.getParentFile();
