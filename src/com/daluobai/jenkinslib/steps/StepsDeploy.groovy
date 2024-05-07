@@ -45,9 +45,7 @@ class StepsDeploy implements Serializable {
         Assert.notEmpty(labels, "labels为空")
 
         def backAppName = "app-" + DateUtil.format(new Date(), "yyyyMMddHHmmss") + "." + archiveSuffix
-//        steps.withCredentials([steps.sshUserPrivateKey(credentialsId: 'ssh-jenkins', keyFileVariable: 'SSH_KEY_PATH')]) {
-//            steps.sh "cat /etc/hostname && pwd && mkdir -p ~/.ssh && chmod 700 ~/.ssh && rm -f ~/.ssh/id_rsa && cp \${SSH_KEY_PATH} ~/.ssh/id_rsa || true && chmod 600 ~/.ssh/id_rsa"
-//        }
+
         labels.each { c ->
             def label = c
             steps.echo "发布第一个标签:${label}"
