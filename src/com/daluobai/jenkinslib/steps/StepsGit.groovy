@@ -38,11 +38,14 @@ class StepsGit implements Serializable {
             def portStr = port > 0 ? "-p ${port}" : ""
             File file = new File(filePath);
             if (!file.exists()) {
+                steps.echo "11111"
                 File parentDir = file.getParentFile();
-                parentDir.mkdirs();
-                file.createNewFile();
+                parentDir.mkdirs()
+                file.createNewFile()
+                steps.echo "222222"
             }
             steps.sh "ssh-keyscan ${portStr} ${host} >> ${filePath}"
+            steps.echo "33333"
         }else {
             steps.error "链接格式不正确"
         }
