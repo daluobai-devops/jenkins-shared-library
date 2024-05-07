@@ -36,7 +36,10 @@ class StepsGit implements Serializable {
             def host = matcher.group(1)
             def port = matcher.group(2)
             def portStr = port > 0 ? "-p ${port}" : ""
-            File file = new File(filePath);
+            steps.echo "-111111"
+            File file = new File(filePath)
+
+            steps.echo "00000"
             if (!file.exists()) {
                 steps.echo "11111"
                 File parentDir = file.getParentFile();
