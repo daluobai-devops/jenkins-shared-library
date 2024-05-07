@@ -68,6 +68,9 @@ class StepsBuildMaven implements Serializable {
             def mvnCMDActiveProfile = StrUtil.isNotEmpty(configSteps.activeProfile) ? "-P ${configSteps.activeProfile}" : ""
 
             mavenImage.inside("--entrypoint '' -v maven-repo:/root/.m2/repository -v ${steps.env.WORKSPACE}/${pathPackage}:/app/package") {
+                steps.sh "====="
+                steps.sh "pwd && ls"
+                steps.sh "====="
                 //从 jenkins 凭据管理中获取密钥文件路径并且拷贝到工作目录下的ssh-git目录，后面clone的时候指定密钥为这个
                 stepsGit.saveJenkinsSSHKey('ssh-git',"${steps.env.WORKSPACE}/${pathSSHKey}/ssh-git/")
                 //生成known_hosts
