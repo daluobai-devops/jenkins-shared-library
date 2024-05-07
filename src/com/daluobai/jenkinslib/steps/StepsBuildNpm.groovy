@@ -38,7 +38,7 @@ class StepsBuildNpm implements Serializable {
         Assert.notNull(configShare, "SHARE_PARAM为空")
         Assert.notNull(configSteps, "DEPLOY_PIPELINE.stepsBuildNpm为空")
 
-        def pathBase = "/app"
+        def pathBase = "${steps.env.WORKSPACE}"
         //docker-构建产物目录
         def pathPackage = "package"
         //docker-代码目录
@@ -66,11 +66,11 @@ class StepsBuildNpm implements Serializable {
             def mvnCMDActiveProfile = "-P ${configSteps.activeProfile}"
 
             //容器中缓存modules文件夹的根路径
-            def dockerModulesPath = "/root/modules"
+            def dockerModulesPath = "/path/jenkins/cache/npmModules"
             //容器中缓存modules文件夹的项目路径
             def dockerModulesProjectPath = "${dockerModulesPath}/${steps.currentBuild.projectName}"
             //这里默认会把工作空间挂载到容器中的${steps.env.WORKSPACE}目录
-            mavenImage.inside("--entrypoint '' -v npm-repo:${dockerModulesPath} -v ${steps.env.WORKSPACE}/${pathPackage}:/app/package") {
+            mavenImage.inside("--entrypoint '' -v npm-repo:${dockerModulesPath}") {
                 //从 jenkins 凭据管理中获取密钥文件路径并且拷贝到~/.ssh/id_rsa
                 stepsGit.saveJenkinsSSHKey('ssh-git',"${steps.env.WORKSPACE}/${pathSSHKey}/ssh-git/")
                 //生成known_hosts
