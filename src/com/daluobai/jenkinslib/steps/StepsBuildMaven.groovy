@@ -78,6 +78,7 @@ class StepsBuildMaven implements Serializable {
                 }
                 steps.sh """
                         #! /bin/sh -e
+                        cat /etc/hostname
                         mkdir -p ${pathBase}/${pathPackage} && mkdir -p ${pathBase}/${pathCode}
                         cd ${pathBase}/${pathCode}
                         git config --global http.version HTTP/1.1
