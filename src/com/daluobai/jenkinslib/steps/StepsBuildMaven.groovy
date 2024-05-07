@@ -68,9 +68,6 @@ class StepsBuildMaven implements Serializable {
             def mvnCMDActiveProfile = StrUtil.isNotEmpty(configSteps.activeProfile) ? "-P ${configSteps.activeProfile}" : ""
 
             mavenImage.inside("--entrypoint '' -v maven-repo:/root/.m2/repository -v ${steps.env.WORKSPACE}/${pathPackage}:/app/package") {
-                steps.echo "====="
-                steps.sh "pwd && ls"
-                steps.echo "====="
                 //从 jenkins 凭据管理中获取密钥文件路径并且拷贝到工作目录下的ssh-git目录，后面clone的时候指定密钥为这个
                 stepsGit.saveJenkinsSSHKey('ssh-git',"${steps.env.WORKSPACE}/${pathSSHKey}/ssh-git/")
                 //生成known_hosts
@@ -81,7 +78,6 @@ class StepsBuildMaven implements Serializable {
                 }
                 steps.sh """
                         #! /bin/sh -e
-                        ls /var/lib/jenkins/workspace/dev-jgzly-backend-admin-api/sshkey/ssh-git/
                         mkdir -p ${pathBase}/${pathPackage} && mkdir -p ${pathBase}/${pathCode}
                         cd ${pathBase}/${pathCode}
                         git config --global http.version HTTP/1.1
