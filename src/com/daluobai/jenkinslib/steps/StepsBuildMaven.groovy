@@ -78,7 +78,6 @@ class StepsBuildMaven implements Serializable {
                 }
                 steps.sh """
                         #! /bin/sh -e
-                        cat /etc/hostname
                         ls /var/lib/jenkins/workspace/dev-jgzly-backend-admin-api/sshkey/ssh-git/
                         mkdir -p ${pathBase}/${pathPackage} && mkdir -p ${pathBase}/${pathCode}
                         cd ${pathBase}/${pathCode}
