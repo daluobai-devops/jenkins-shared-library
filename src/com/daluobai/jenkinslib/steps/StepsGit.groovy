@@ -36,16 +36,11 @@ class StepsGit implements Serializable {
             def host = matcher.group(1)
             def port = matcher.group(2)
             def portStr = port > 0 ? "-p ${port}" : ""
-//            steps.sh "mkdir -p \$(dirname $filePath) && touch ${filePath}"
-//            steps.sh "chmod 700 \$(dirname $filePath) && chmod 600 ${filePath}"
-//            steps.sh "ssh-keyscan ${portStr} ${host} >> ${filePath}"
-//            steps.sh "cat ${filePath}"
             steps.sh """
                         #! /bin/sh -e
                         mkdir -p \$(dirname $filePath) && touch ${filePath}
                         chmod 700 \$(dirname $filePath) && chmod 600 ${filePath}
                         ssh-keyscan ${portStr} ${host} >> ${filePath}
-                        cat ${filePath}
                     """
         }else {
             steps.error "链接格式不正确"
