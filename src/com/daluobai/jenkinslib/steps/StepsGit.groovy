@@ -1,11 +1,14 @@
 package com.daluobai.jenkinslib.steps
+
 @Grab('cn.hutool:hutool-all:5.8.11')
 
 import cn.hutool.core.lang.Assert
-import com.cloudbees.groovy.cps.NonCPS/**
+import com.cloudbees.groovy.cps.NonCPS
+
+/**
  * @author daluobai@outlook.com
  * version 1.0.0
- * @title 
+ * @title
  * @description https://github.com/daluobai-devops/jenkins-shared-library
  * @create 2023/4/25 12:10
  */
@@ -26,24 +29,37 @@ class StepsGit implements Serializable {
      * @return
      */
     @NonCPS
-    def sshKeyscan(String gitUrl,String filePath) {
+    def sshKeyscan(String gitUrl, String filePath) {
         def domainByUrl = this.getDomainByGitUrl(gitUrl)
         steps.echo "domainByUrl:${domainByUrl}"
-        Assert.notBlank(domainByUrl,"链接为空")
+        Assert.notBlank(domainByUrl, "链接为空")
+        def domainHostAndPortMap = this.getDomainHostAndPort(domainByUrl)
         //获取到域名和端口
-        def matcher = (domainByUrl =~ /^([a-zA-Z0-9.-]+)(?::([0-9]+))?/)
-        if (matcher.matches()) {
-            def host = matcher.group(1)
-            def port = matcher.group(2)
-            def portStr = port > 0 ? "-p ${port}" : ""
+        if (domainHostAndPortMap != null) {
+            def host = domainHostAndPortMap.host
+            def portStr = domainHostAndPortMap.portStr
             steps.sh """
                         #! /bin/sh -e
                         mkdir -p \$(dirname $filePath) && touch ${filePath}
                         chmod 700 \$(dirname $filePath) && chmod 600 ${filePath}
                         ssh-keyscan ${portStr} ${host} >> ${filePath}
                     """
-        }else {
+        }else{
             steps.error "链接格式不正确"
+        }
+    }
+
+    @NonCPS
+    def getDomainHostAndPort(String domain) {
+        //获取到域名和端口
+        def matcher = (domain =~ /^([a-zA-Z0-9.-]+)(?::([0-9]+))?/)
+        if (matcher.matches()) {
+            def host = matcher.group(1)
+            def port = matcher.group(2)
+            def portStr = port > 0 ? "-p ${port}" : ""
+            return ["portStr": portStr, "host": host]
+        } else {
+            return null
         }
     }
 
@@ -52,8 +68,8 @@ class StepsGit implements Serializable {
      * @param credentialsId
      * @return
      */
-    def saveJenkinsSSHKey(String credentialsId,String path = '~/.ssh'){
-        Assert.notBlank(credentialsId,"credentialsId为空")
+    def saveJenkinsSSHKey(String credentialsId, String path = '~/.ssh') {
+        Assert.notBlank(credentialsId, "credentialsId为空")
         steps.withCredentials([steps.sshUserPrivateKey(credentialsId: "${credentialsId}", keyFileVariable: 'SSH_KEY_PATH')]) {
             steps.sh "cat /etc/hostname && pwd && mkdir -p ${path} && chmod 700 ${path} && rm -f ${path}/id_rsa && cp \${SSH_KEY_PATH} ${path}/id_rsa || true && chmod 600 ${path}/id_rsa"
         }
@@ -65,7 +81,7 @@ class StepsGit implements Serializable {
      * @return
      */
     @NonCPS
-    def getDomainByGitUrl(String gitUrl){
+    def getDomainByGitUrl(String gitUrl) {
         def pattern = /(?<=@|:\/\/)([^\/:]+)/
         def matcher = (gitUrl =~ pattern)
         def domain = ""
