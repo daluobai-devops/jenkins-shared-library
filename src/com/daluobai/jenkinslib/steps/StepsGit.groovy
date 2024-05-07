@@ -41,6 +41,7 @@ class StepsGit implements Serializable {
 
             steps.echo "00000"
             steps.echo "0000-1：${filePath}"
+            steps.sh "cat ${filePath}"
             if (!file.exists()) {
                 steps.echo "11111"
                 File parentDir = file.getParentFile();
