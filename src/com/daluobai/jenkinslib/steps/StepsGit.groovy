@@ -25,7 +25,7 @@ class StepsGit implements Serializable {
      * @param path 路径，一般是~/.ssh/known_hosts
      * @return
      */
-//    @NonCPS
+    @NonCPS
     def sshKeyscan(String gitUrl,String filePath) {
         def domainByUrl = this.getDomainByGitUrl(gitUrl)
         steps.echo "domainByUrl:${domainByUrl}"
@@ -37,8 +37,9 @@ class StepsGit implements Serializable {
             def port = matcher.group(2)
             def portStr = port > 0 ? "-p ${port}" : ""
             steps.echo "11111"
-            steps.sh "mkdir -p \$(dirname $filePath) && touch ${filePath}"
+            steps.sh "ls"
             steps.echo "2222"
+            steps.sh "mkdir -p \$(dirname $filePath) && touch ${filePath}"
             steps.sh "chmod 700 \$(dirname $filePath) && chmod 600 ${filePath}"
             steps.echo "3333"
             steps.sh "ssh-keyscan ${portStr} ${host} >> ${filePath}"
