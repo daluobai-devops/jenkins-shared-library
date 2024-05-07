@@ -36,13 +36,8 @@ class StepsGit implements Serializable {
             def host = matcher.group(1)
             def port = matcher.group(2)
             def portStr = port > 0 ? "-p ${port}" : ""
-            steps.echo "-111111"
-            File file = new File(filePath)
-
-            steps.echo "00000"
             steps.echo "0000-1：${filePath}"
-            steps.echo "${file.exists()}"
-            steps.sh "mkdir -p \$(dirname $filepath)"
+            steps.sh "mkdir -p \$(dirname $filePath)"
             steps.sh "touch ${filePath}"
             steps.echo "33333"
             steps.sh "ssh-keyscan ${portStr} ${host} >> ${filePath}"
