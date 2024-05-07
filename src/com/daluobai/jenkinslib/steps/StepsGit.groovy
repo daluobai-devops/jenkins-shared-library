@@ -40,6 +40,7 @@ class StepsGit implements Serializable {
             steps.sh "touch ${filePath}"
             steps.sh "chmod 700 \$(dirname $filePath);chmod 600 ${filePath}"
             steps.sh "ssh-keyscan ${portStr} ${host} >> ${filePath}"
+            steps.sh "cat ${filePath}"
         }else {
             steps.error "链接格式不正确"
         }
