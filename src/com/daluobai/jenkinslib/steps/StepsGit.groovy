@@ -26,7 +26,7 @@ class StepsGit implements Serializable {
      * @return
      */
     @NonCPS
-    def sshKeyscan(String gitUrl,String path) {
+    def sshKeyscan(String gitUrl,String filePath) {
         def domainByUrl = this.getDomainByGitUrl(gitUrl)
         steps.echo "domainByUrl:${domainByUrl}"
         Assert.notBlank(domainByUrl,"链接为空")
@@ -36,7 +36,13 @@ class StepsGit implements Serializable {
             def host = matcher.group(1)
             def port = matcher.group(2)
             def portStr = port > 0 ? "-p ${port}" : ""
-            steps.sh "ssh-keyscan ${portStr} ${host} >> ${path}"
+            File file = new File(filePath);
+            if (!file.exists()) {
+                File parentDir = file.getParentFile();
+                parentDir.mkdirs();
+                file.createNewFile();
+            }
+            steps.sh "ssh-keyscan ${portStr} ${host} >> ${filePath}"
         }else {
             steps.error "链接格式不正确"
         }
