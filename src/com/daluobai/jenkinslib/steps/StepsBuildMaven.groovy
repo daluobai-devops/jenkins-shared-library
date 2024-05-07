@@ -37,7 +37,7 @@ class StepsBuildMaven implements Serializable {
         Assert.notNull(configShare, "SHARE_PARAM为空")
         Assert.notNull(configSteps, "DEPLOY_PIPELINE.stepsBuildMaven为空")
 
-        def pathBase = "/app"
+        def pathBase = "${steps.env.WORKSPACE}"
         //docker-构建产物目录
         def pathPackage = "package"
         //docker-代码目录
@@ -67,7 +67,8 @@ class StepsBuildMaven implements Serializable {
             def mvnCMDSubMod = "-pl ${configSteps.subModule} -am -amd"
             def mvnCMDActiveProfile = StrUtil.isNotEmpty(configSteps.activeProfile) ? "-P ${configSteps.activeProfile}" : ""
 
-            mavenImage.inside("--entrypoint '' -v maven-repo:/root/.m2/repository -v ${steps.env.WORKSPACE}/${pathPackage}:/app/package") {
+            //这里默认会把工作空间挂载到容器中的${steps.env.WORKSPACE}目录
+            mavenImage.inside("--entrypoint '' -v maven-repo:/root/.m2/repository") {
                 //从 jenkins 凭据管理中获取密钥文件路径并且拷贝到工作目录下的ssh-git目录，后面clone的时候指定密钥为这个
                 stepsGit.saveJenkinsSSHKey('ssh-git',"${steps.env.WORKSPACE}/${pathSSHKey}/ssh-git/")
                 //生成known_hosts
