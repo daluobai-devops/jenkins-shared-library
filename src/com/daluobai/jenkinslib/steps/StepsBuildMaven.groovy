@@ -70,7 +70,7 @@ class StepsBuildMaven implements Serializable {
             //这里默认会把工作空间挂载到容器中的${steps.env.WORKSPACE}目录
             mavenImage.inside("--entrypoint '' -v maven-repo:/root/.m2/repository") {
                 //从 jenkins 凭据管理中获取密钥文件路径并且拷贝到工作目录下的ssh-git目录，后面clone的时候指定密钥为这个
-                stepsGit.saveJenkinsSSHKey('ssh-git',"${steps.env.WORKSPACE}/${pathSSHKey}/ssh-git/")
+                stepsGit.saveJenkinsSSHKey('ssh-git',"${steps.env.WORKSPACE}/${pathSSHKey}/ssh-git")
                 //生成known_hosts
                 stepsGit.sshKeyscan("${configSteps.gitUrl}", "~/.ssh/known_hosts")
                 //如果有settings.xml配置则写入用户自定义配置.
