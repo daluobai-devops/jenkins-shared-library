@@ -42,13 +42,8 @@ class StepsGit implements Serializable {
             steps.echo "00000"
             steps.echo "0000-1：${filePath}"
             steps.echo "${file.exists()}"
-            if (!file.exists()) {
-                steps.echo "11111"
-                File parentDir = file.getParentFile();
-                parentDir.mkdirs()
-                file.createNewFile()
-                steps.echo "222222"
-            }
+            steps.sh "mkdir -p \$(dirname $filepath)"
+            steps.sh "touch ${filePath}"
             steps.echo "33333"
             steps.sh "ssh-keyscan ${portStr} ${host} >> ${filePath}"
             steps.echo "44444"
