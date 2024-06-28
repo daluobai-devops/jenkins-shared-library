@@ -62,6 +62,8 @@ class StepsJenkins implements Serializable {
         }
         steps.sh "ls package -l"
 
+        steps.archiveArtifacts artifacts: "${includes}", followSymlinks: false
+
         if (jenkinsStash.enable) {
             steps.stash name: "appPackage", includes: "${includes}"
         }
