@@ -31,6 +31,7 @@ class StepsJenkins implements Serializable {
         Assert.notEmpty(parameterMap,"参数为空")
         def archiveType = parameterMap.archiveType
         def jenkinsStash = parameterMap.jenkinsStash
+        def archiveArtifacts = parameterMap.archiveArtifacts
         def dockerRegistry = parameterMap.dockerRegistry
         def dockerfile = parameterMap.dockerRegistry.dockerfile
         def fullConfig = GlobalShare.globalParameterMap
@@ -62,7 +63,9 @@ class StepsJenkins implements Serializable {
         }
         steps.sh "ls package -l"
 
-        steps.archiveArtifacts artifacts: "${includes}", followSymlinks: false
+        if (archiveArtifacts == true){
+            steps.archiveArtifacts artifacts: "${includes}", followSymlinks: false
+        }
 
         if (jenkinsStash.enable) {
             steps.stash name: "appPackage", includes: "${includes}"

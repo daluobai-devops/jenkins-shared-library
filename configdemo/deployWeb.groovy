@@ -45,6 +45,8 @@ def customConfig = [
                                 //是否激活,默认false
                                 "enable": true,
                         ],
+                        //存档
+                        "archiveArtifacts"  : false,
                         "dockerRegistry"  : [
                                 //是否激活,默认false
                                 "enable": false,
