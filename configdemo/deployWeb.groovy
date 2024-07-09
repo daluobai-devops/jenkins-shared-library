@@ -40,7 +40,7 @@ def customConfig = [
                         "enable": true,
                         //构建产物类型 JAR,WAR,TAR,FOLDER 必填
                         "archiveType":"TAR",
-                        //存储构建产物,构建成功后可以在页面下载构建产物。默认false
+                        //存储构建产物，构建成功后可以在页面下载构建产物，默认false。
                         "archiveArtifacts"   : false,
                         //存储类型 jenkinsStash,dockerRegistry 必填
                         "jenkinsStash"  : [
