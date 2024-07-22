@@ -71,9 +71,9 @@ class StepsWeb implements Serializable {
                     //切换到发布目录
                     steps.dir("${pathRoot}/${appName}/"){
                         if (configStepsStorage.archiveType == "ZIP"){
-                            steps.sh "tar -zxvf ${archiveName} -C app/"
-                        }else {
                             steps.sh "unzip ${archiveName} -d app/"
+                        }else {
+                            steps.sh "tar -zxvf ${archiveName} -C app/"
                         }
                         steps.sh "ls -l app"
                     }
