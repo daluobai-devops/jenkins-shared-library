@@ -72,7 +72,9 @@ class StepsJenkins implements Serializable {
 
         if (archiveArtifacts == true){
             def jobName = steps.currentBuild.projectName
-            def archiveArtifactName = "${steps.currentBuild.projectName}-${DateUtil.format(new Date(), "yyyyMMddHHmmss")}-${archiveName}"
+            //获取archiveName的后缀
+            def archiveSuffix = StrUtil.subAfter(archiveName, ".", true)
+            def archiveArtifactName = "${steps.currentBuild.projectName}-${DateUtil.format(new Date(), "yyyyMMddHHmmss")}.${archiveSuffix}"
             steps.sh "\\cp -f ${includes} package/${archiveArtifactName} || true"
             steps.archiveArtifacts artifacts: "package/${archiveArtifactName}", followSymlinks: false
         }
