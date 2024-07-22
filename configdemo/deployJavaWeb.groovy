@@ -44,7 +44,7 @@ def customConfig = [
                 "stepsStorage"      : [
                         //是否激活,默认true
                         "enable"        : true,
-                        //构建产物类型 JAR,WAR,ZIP,TAR 必填
+                        //构建产物类型 JAR,WAR 必填
                         "archiveType"   : "JAR",
                         //存储构建产物,构建成功后可以在页面下载构建产物。默认false
                         "archiveArtifacts"   : false,
