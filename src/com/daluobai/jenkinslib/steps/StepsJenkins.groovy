@@ -71,7 +71,10 @@ class StepsJenkins implements Serializable {
         steps.sh "ls package -l"
 
         if (archiveArtifacts == true){
-            steps.archiveArtifacts artifacts: "${includes}", followSymlinks: false
+            def jobName = steps.currentBuild.projectName
+            def archiveArtifactName = "${steps.currentBuild.projectName}-${DateUtil.format(new Date(), "yyyyMMddHHmmss")}-${archiveName}"
+            steps.sh "\\cp -f ${includes} package/${archiveArtifactName} || true"
+            steps.archiveArtifacts artifacts: "package/${archiveArtifactName}", followSymlinks: false
         }
 
         if (jenkinsStash.enable) {
