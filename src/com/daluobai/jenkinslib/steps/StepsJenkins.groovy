@@ -56,6 +56,11 @@ class StepsJenkins implements Serializable {
             steps.sh "mv package/*.tar.gz package/app.tar.gz || true"
             includes = "package/app.tar.gz"
         }
+        else if (archiveType == "ZIP") {
+            archiveName = "app.zip"
+            steps.sh "mv package/*.tar.gz package/app.zip || true"
+            includes = "package/app.zip"
+        }
 //        else if (archiveType == "FOLDER"){
 //            archiveName = "app"
 //            includes = "package/app/**/*"

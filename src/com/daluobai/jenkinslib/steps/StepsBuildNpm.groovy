@@ -31,8 +31,10 @@ class StepsBuildNpm implements Serializable {
         def configDefault = configMap["DEFAULT_CONFIG"]//默认配置
         //共享配置
         def configShare = configMap["SHARE_PARAM"]
-        //流程配置
+        //流程配置-构建
         def configSteps = configMap.DEPLOY_PIPELINE.stepsBuildNpm
+        //流程配置-存储
+        def configStepsStorage = configMap.DEPLOY_PIPELINE.stepsStorage
 
         Assert.notNull(configDefault, "DEFAULT_CONFIG为空")
         Assert.notNull(configShare, "SHARE_PARAM为空")
@@ -93,7 +95,8 @@ class StepsBuildNpm implements Serializable {
                         ls -al ./node_modules/ || true
                         ${configSteps.buildCMD}
                         ls -al ${pathBase}/${pathCode}/${pathCode}/dist
-                        tar -czvf ${pathBase}/${pathPackage}/app.tar.gz -C ${pathBase}/${pathCode}/${pathCode}/dist .
+
+                        ${configStepsStorage.archiveType == "ZIP" ? "zip -r ${pathBase}/${pathPackage}/app.zip ${pathBase}/${pathCode}/${pathCode}/dist/*" : "tar -czvf ${pathBase}/${pathPackage}/app.tar.gz -C ${pathBase}/${pathCode}/${pathCode}/dist ."}
                         rm -rf ${dockerModulesProjectPath}/node_modules || true
                         \\cp -rf ./node_modules ${dockerModulesProjectPath}/ || true
                     """
