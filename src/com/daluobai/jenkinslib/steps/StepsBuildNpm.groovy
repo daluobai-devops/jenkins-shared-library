@@ -95,8 +95,7 @@ class StepsBuildNpm implements Serializable {
                         ls -al ./node_modules/ || true
                         ${configSteps.buildCMD}
                         ls -al ${pathBase}/${pathCode}/${pathCode}/dist
-
-                        ${configStepsStorage.archiveType == "ZIP" ? "zip -r ${pathBase}/${pathPackage}/app.zip ${pathBase}/${pathCode}/${pathCode}/dist/*" : "tar -czvf ${pathBase}/${pathPackage}/app.tar.gz -C ${pathBase}/${pathCode}/${pathCode}/dist ."}
+                        ${configStepsStorage.archiveType == "ZIP" ? "zip -r ${pathBase}/${pathPackage}/app.zip ${pathBase}/${pathCode}/${pathCode}/dist" : "tar -czvf ${pathBase}/${pathPackage}/app.tar.gz -C ${pathBase}/${pathCode}/${pathCode}/dist ."}
                         rm -rf ${dockerModulesProjectPath}/node_modules || true
                         \\cp -rf ./node_modules ${dockerModulesProjectPath}/ || true
                     """
