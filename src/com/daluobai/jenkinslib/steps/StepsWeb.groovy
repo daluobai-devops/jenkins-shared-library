@@ -33,6 +33,7 @@ class StepsWeb implements Serializable {
         def pathRoot = parameterMap.pathRoot
         def appName = GlobalShare.globalParameterMap.SHARE_PARAM.appName
         def archiveName = GlobalShare.globalParameterMap.SHARE_PARAM.archiveName
+        def stepsStorage = GlobalShare.globalParameterMap.DEPLOY_PIPELINE.stepsStorage
         //获取文件名后缀
         def archiveSuffix = StrUtil.subAfter(archiveName, ".", true)
         Assert.notEmpty(labels,"labels为空")
@@ -69,7 +70,11 @@ class StepsWeb implements Serializable {
                     steps.sh "mkdir -p ${pathRoot}/${appName}/app"
                     //切换到发布目录
                     steps.dir("${pathRoot}/${appName}/"){
-                        steps.sh "tar -zxvf ${archiveName} -C app/"
+                        if (configStepsStorage.archiveType == "ZIP"){
+                            steps.sh "tar -zxvf ${archiveName} -C app/"
+                        }else {
+                            steps.sh "unzip ${archiveName} -d app/"
+                        }
                         steps.sh "ls -l app"
                     }
                 }
