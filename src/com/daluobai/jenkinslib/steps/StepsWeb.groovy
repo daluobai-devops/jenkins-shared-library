@@ -33,7 +33,7 @@ class StepsWeb implements Serializable {
         def pathRoot = parameterMap.pathRoot
         def appName = GlobalShare.globalParameterMap.SHARE_PARAM.appName
         def archiveName = GlobalShare.globalParameterMap.SHARE_PARAM.archiveName
-        def stepsStorage = GlobalShare.globalParameterMap.DEPLOY_PIPELINE.stepsStorage
+        def configStepsStorage = GlobalShare.globalParameterMap.DEPLOY_PIPELINE.stepsStorage
         //获取文件名后缀
         def archiveSuffix = StrUtil.subAfter(archiveName, ".", true)
         Assert.notEmpty(labels,"labels为空")
