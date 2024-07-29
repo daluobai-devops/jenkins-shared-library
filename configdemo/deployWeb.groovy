@@ -6,14 +6,18 @@ def customConfig = [
                 //消息通知，可不填
                 "message": [
                         //企业微信通知 可不填
-                        "wecom": [
+                        "wecom" : [
                                 //企业微信机器人token 必填
-                                "key": ""
+                                "key": "",
+                                //是否发送完整的消息，如果为true只发送部署成功的消息。默认false
+                                "fullMessage": false
                         ],
                         //飞书通知 可不填
                         "feishu": [
                                 //飞书机器人token 必填
-                                "token": ""
+                                "token"      : "",
+                                //是否发送完整的消息，如果为true只发送部署成功的消息。默认false
+                                "fullMessage": false
                         ]
                 ]
         ],

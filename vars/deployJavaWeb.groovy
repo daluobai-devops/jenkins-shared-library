@@ -65,6 +65,8 @@ def call(Map customConfig) {
             //设置共享参数。
             GlobalShare.globalParameterMap = fullConfig
 
+            messageUtils.sendMessage(false,customConfig.SHARE_PARAM.message, "发布开始：${customConfig.SHARE_PARAM.appName}", "发布开始: ${currentBuild.fullDisplayName}")
+
             //执行流程
             deployPipelineIndex.each {
                 stage("${it}") {
@@ -82,6 +84,7 @@ def call(Map customConfig) {
                         }
                         stepsJenkins.stash(pipelineConfigItemMap)
                     } else if (it == "stepsDeploy") {
+                        messageUtils.sendMessage(false,customConfig.SHARE_PARAM.message, "准备重启：${customConfig.SHARE_PARAM.appName}", "准备重启: ${currentBuild.fullDisplayName}")
                         stepsDeploy.deploy(pipelineConfigItemMap)
                     }
                 }
@@ -110,7 +113,7 @@ def call(Map customConfig) {
                     //发布终止
                 }
                 if (StrUtil.isNotBlank(messageTitle) && StrUtil.isNotBlank(messageContent)) {
-                    messageUtils.sendMessage(customConfig.SHARE_PARAM.message, messageTitle, messageContent)
+                    messageUtils.sendMessage(true,customConfig.SHARE_PARAM.message, messageTitle, messageContent)
                 }
             }
             deleteDir()
