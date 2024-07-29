@@ -38,7 +38,7 @@ class MessageUtils implements Serializable {
      *
      * @return
      */
-    def sendMessage(String simpleMessage = true, messageConfig, String title, String content) {
+    def sendMessage(boolean simpleMessage = true, messageConfig, String title, String content) {
         if (ObjUtil.isEmpty(messageConfig)) {
             return false
         }
