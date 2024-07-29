@@ -59,6 +59,7 @@ def call(Map customConfig) {
             echo "fullConfig: ${fullConfig.toString()}"
             //设置共享参数。
             GlobalShare.globalParameterMap = fullConfig
+            messageUtils.sendMessage(false,customConfig.SHARE_PARAM.message, "发布开始：${customConfig.SHARE_PARAM.appName}", "发布开始: ${currentBuild.fullDisplayName}")
             //执行流程
             deployPipelineIndex.each {
                 stage("${it}") {
