@@ -19,15 +19,23 @@ jenkins介绍和学习(Jenkins中文社区Rick):https://www.bilibili.com/video/B
 
 # 安装 Jenkins
 
-- 需要空白 linux 机器
-- 安装 jdk11以上，推荐安装 jdk17,只用于跑 jenkins，创建 jdk 目录 mkdir -p /usr/local/jdk/jdk17下载 jdk17(https://download.oracle.com/java/17/archive/jdk-17.0.6_linux-x64_bin.tar.gz) 到这个目录解压,查看java 目录是否为/usr/local/jdk/jdk17/bin/java
-- 安装LTS版本https://www.jenkins.io/download/
-
-安装war启动的jenkins(这里会解压openjdk17到/usr/local/jdk/jdk17下)
-```shell
-curl -sSL https://cdn.jsdelivr.net/gh/daluobai-devops/jenkins-shared-library@master/configdemo/installJenkins.sh | bash
-```
-
+- Centos7+
+  
+  - 安装 jdk11以上，推荐安装 jdk17,只用于跑 jenkins，创建 jdk 目录 mkdir -p /usr/local/jdk/jdk17下载 jdk17(https://download.oracle.com/java/17/archive/jdk-17.0.6_linux-x64_bin.tar.gz) 到这个目录解压,查看java 目录是否为/usr/local/jdk/jdk17/bin/java
+  - 安装LTS版本https://www.jenkins.io/download/
+  - 安装war启动的jenkins(这里会解压openjdk17到/usr/local/jdk/jdk17下)
+  ```shell
+  curl -sSL https://cdn.jsdelivr.net/gh/daluobai-devops/jenkins-shared-library@master/configdemo/installJenkins.sh | bash
+  ```
+- Ubuntu
+  - 安装
+    ```shell
+    curl -sSL https://cdn.jsdelivr.net/gh/daluobai-devops/jenkins-shared-library@master/configdemo/installJenkinsUbuntu.sh | bash
+    ```
+  - 卸载
+    ```shell
+      curl -sSL https://cdn.jsdelivr.net/gh/daluobai-devops/jenkins-shared-library@master/configdemo/uninstallJenkinsUbuntu.sh | bash
+      ```
 安装后操作
 1. 访问 http://ip:9000/jenkins
 2. 安装插件Docker、Docker Pipeline、Docker Api、Pipeline Utility Steps
