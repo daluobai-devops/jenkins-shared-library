@@ -11,8 +11,8 @@ echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc]" \
 sudo apt-get update
 sudo DEBIAN_FRONTEND=noninteractive apt-get install jenkins -y
 
-sed -i 's/^Group=.*/Group=root/' /lib/systemd/system/jenkins.service
-sed -i 's/^User=.*/User=root/' /lib/systemd/system/jenkins.service
+#sed -i 's/^Group=.*/Group=root/' /lib/systemd/system/jenkins.service
+#sed -i 's/^User=.*/User=root/' /lib/systemd/system/jenkins.service
 sed -i 's/^Environment=.*/Environment="JENKINS_PORT=9000"/' /lib/systemd/system/jenkins.service
 systemctl daemon-reload
 systemctl start jenkins
