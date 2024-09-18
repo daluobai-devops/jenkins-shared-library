@@ -31,7 +31,7 @@ class StepsBuildMaven implements Serializable {
         //共享配置
         def configShare = configMap["SHARE_PARAM"]
         //流程配置
-        def configSteps = configMap.DEPLOY_PIPELINE.stepsBuildMaven
+        def configSteps = configMap.DEPLOY_PIPELINE.stepsBuild.stepsBuildMaven
 
         Assert.notNull(configDefault, "DEFAULT_CONFIG为空")
         Assert.notNull(configShare, "SHARE_PARAM为空")

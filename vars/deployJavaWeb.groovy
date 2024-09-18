@@ -165,7 +165,18 @@ def mergeConfig(Map customConfig) {
     fullConfig = fullConfigParams.root().unwrapped()
 
     echo "fullConfigParams3: ${fullConfig}"
+    compatibleConfig(fullConfig)
+    echo "fullConfigParams4: ${fullConfig}"
     return MapUtils.deepCopy(fullConfig)
+}
+
+//兼容旧的配置
+def compatibleConfig(Map customConfig) {
+    if (customConfig.DEPLOY_PIPELINE.stepsBuildMaven){
+        customConfig.DEPLOY_PIPELINE.stepsBuild.stepsBuildMaven = customConfig.DEPLOY_PIPELINE.stepsBuildMaven
+        customConfig.DEPLOY_PIPELINE.stepsBuild.enable = true
+    }
+    return customConfig
 }
 
 
