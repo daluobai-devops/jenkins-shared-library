@@ -26,7 +26,8 @@ class JenkinsUtils implements Serializable {
      */
     def pipelineSH(String script) {
         Assert.notBlank(script, "script为空");
-        def scriptTrim = script.trim()
-        return scriptTrim
+        def scriptResp = steps.sh returnStdout: true, script: script
+        def scriptRespTrim = scriptResp.trim()
+        return scriptRespTrim
     }
 }
