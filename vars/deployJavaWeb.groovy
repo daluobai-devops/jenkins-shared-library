@@ -173,7 +173,7 @@ def mergeConfig(Map customConfig) {
 //兼容旧的配置
 def compatibleConfig(Map customConfig) {
     if (customConfig.DEPLOY_PIPELINE.stepsBuildMaven){
-        customConfig.DEPLOY_PIPELINE.stepsBuild = []
+        customConfig.DEPLOY_PIPELINE.stepsBuild = ["stepsBuildMaven":[],"enable":false]
         customConfig.DEPLOY_PIPELINE.stepsBuild.stepsBuildMaven = customConfig.DEPLOY_PIPELINE.stepsBuildMaven
         customConfig.DEPLOY_PIPELINE.stepsBuild.enable = true
     }
