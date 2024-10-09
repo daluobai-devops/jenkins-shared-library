@@ -38,7 +38,7 @@ jenkins介绍和学习(Jenkins中文社区Rick):https://www.bilibili.com/video/B
       ```
 安装后操作
 1. 访问 http://ip:9000/jenkins
-2. 安装插件Docker、Docker Pipeline、Docker Api、Pipeline Utility Steps
+2. 安装插件Docker、Docker Pipeline、Docker Api、Pipeline Utility Steps、
 
 
 # 配置Jenkins Pipeline

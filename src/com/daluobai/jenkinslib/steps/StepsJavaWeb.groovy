@@ -9,6 +9,7 @@ import cn.hutool.core.lang.Assert
 import cn.hutool.core.util.ObjectUtil
 import com.daluobai.jenkinslib.constant.GlobalShare
 import com.daluobai.jenkinslib.utils.EndpointUtils
+import com.daluobai.jenkinslib.utils.JenkinsUtils
 import com.daluobai.jenkinslib.utils.TemplateUtils
 import cn.hutool.core.util.StrUtil
 /**
@@ -26,6 +27,7 @@ class StepsJavaWeb implements Serializable {
     /*******************初始化全局对象 开始*****************/
     def stepsJenkins = new StepsJenkins(steps)
     def endpointUtils = new EndpointUtils(steps)
+    def jenkinsUtils = new JenkinsUtils(steps)
     /*******************初始化全局对象 结束*****************/
 
     //发布
@@ -82,6 +84,10 @@ class StepsJavaWeb implements Serializable {
         def labels = parameterMap.labels
         def pathRoot = parameterMap.pathRoot
         def javaPath = ObjectUtil.isEmpty(parameterMap.javaPath) ? "/usr/local/bin/java" : parameterMap.javaPath
+        //获取登录的用户
+        def loginUser= jenkinsUtils.pipelineSH("whoami")
+        steps.echo "当前登录用户:${loginUser}"
+
         //生成服务文件
         steps.sh "systemctl stop ${appName}.service || true"
         steps.sh "rm -f /etc/systemd/systemO/${appName}.service || true"
