@@ -49,7 +49,7 @@ class StepsBuildMaven implements Serializable {
         steps.sh "mkdir -p ${steps.env.WORKSPACE}/${pathCode}"
         steps.sh "mkdir -p ${steps.env.WORKSPACE}/${pathSSHKey}"
 
-        def dockerBuildImage = StrUtil.isNotBlank(configSteps.dockerBuildImage) ? configSteps.dockerBuildImage : "registry.cn-hangzhou.aliyuncs.com/wuzhaozhongguo/build-maven:3.8.5-jdk8"
+        def dockerBuildImage = StrUtil.isNotBlank(configSteps.dockerBuildImage) ? configSteps.dockerBuildImage : "registry.cn-hangzhou.aliyuncs.com/wuzhaozhongguo/build-maven:3-jdk8"
         def dockerBuildImageUrl = "${dockerBuildImage}"
 
         //获取settings.xml配置，如果没有设置则为空
