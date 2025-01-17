@@ -56,6 +56,7 @@ class StepsGit implements Serializable {
         if (matcher.matches()) {
             def host = matcher.group(1)
             def port = matcher.group(2)
+            steps.echo "===xxxx:${port}---${port}"
             def portStr = port > 0 ? "-p ${port}" : ""
             return ["portStr": portStr, "host": host]
         } else {
