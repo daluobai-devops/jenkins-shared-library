@@ -3,6 +3,8 @@ package com.daluobai.jenkinslib.steps
 @Grab('cn.hutool:hutool-all:5.8.11')
 
 import cn.hutool.core.lang.Assert
+import cn.hutool.core.util.NumberUtil
+import cn.hutool.core.util.StrUtil
 import com.cloudbees.groovy.cps.NonCPS
 
 /**
@@ -40,6 +42,9 @@ class StepsGit implements Serializable {
         if (domainHostAndPortMap != null) {
             def host = domainHostAndPortMap.host
             def portStr = domainHostAndPortMap.portStr
+            if (StrUtil.isNotBlank(portStr)){
+                portStr = "-p ${portStr}"
+            }
             steps.sh """
                         #! /bin/sh -e
                         mkdir -p \$(dirname $filePath) && touch ${filePath}
@@ -57,11 +62,14 @@ class StepsGit implements Serializable {
         //获取到域名和端口
         def pattern = /(?:(?:ssh|https?|git):\/\/(?:[^@]+@)?)?([a-zA-Z0-9.-]+)(?::([0-9]+))?/
         def matcher = gitUrl =~ pattern
-        if (matcher.matches()) {
+        if (matcher) {
             def host = matcher[0][1] // 捕获组 1：主机名/IP
             def port = matcher[0][2] // 捕获组 2：端口号（如果有）
             steps.echo "===xxxx:${host}---${port}"
-            def portStr = port > 0 ? "-p ${port}" : ""
+            String portStr = "";
+            if (StrUtil.isNotBlank(port) && NumberUtil.isNumber(port)) {
+                portStr = String.valueOf(port)
+            }
             return ["portStr": portStr, "host": host]
         } else {
             return null
