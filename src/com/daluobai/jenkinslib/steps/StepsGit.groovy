@@ -44,7 +44,7 @@ class StepsGit implements Serializable {
                         chmod 700 \$(dirname $filePath) && chmod 600 ${filePath}
                         ssh-keyscan ${portStr} ${host} >> ${filePath}
                     """
-        }else{
+        } else {
             steps.error "链接格式不正确"
         }
     }
@@ -99,7 +99,7 @@ class StepsGit implements Serializable {
      * @param targetCredentialsId
      * @return
      */
-    def syncGit2Git(String orgGitUrl,String orgCredentialsId, String targetGitUrl,String targetCredentialsId) {
+    def syncGit2Git(String orgGitUrl, String orgCredentialsId, String targetGitUrl, String targetCredentialsId) {
         def pathBase = "${steps.env.WORKSPACE}"
         //docker-构建产物目录
         def pathPackage = "package"
@@ -108,8 +108,8 @@ class StepsGit implements Serializable {
         //存放临时sshkey的目录
         def pathSSHKey = "sshkey"
         //从 jenkins 凭据管理中获取密钥文件路径并且拷贝到工作目录下的ssh-git目录，后面clone的时候指定密钥为这个
-        this.saveJenkinsSSHKey(orgCredentialsId,"${steps.env.WORKSPACE}/${pathSSHKey}/ssh-org-git")
-        this.saveJenkinsSSHKey(targetCredentialsId,"${steps.env.WORKSPACE}/${pathSSHKey}/ssh-target-git")
+        this.saveJenkinsSSHKey(orgCredentialsId, "${steps.env.WORKSPACE}/${pathSSHKey}/ssh-org-git")
+        this.saveJenkinsSSHKey(targetCredentialsId, "${steps.env.WORKSPACE}/${pathSSHKey}/ssh-target-git")
         //生成known_hosts
         this.sshKeyscan("${orgGitUrl}", "~/.ssh/known_hosts")
         this.sshKeyscan("${targetGitUrl}", "~/.ssh/known_hosts")
