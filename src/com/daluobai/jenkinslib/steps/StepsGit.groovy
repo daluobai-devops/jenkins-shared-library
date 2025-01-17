@@ -90,4 +90,40 @@ class StepsGit implements Serializable {
         }
         return domain
     }
+
+    /**
+     * 同步git仓库
+     * @param orgGitUrl
+     * @param orgCredentialsId
+     * @param targetGitUrl
+     * @param targetCredentialsId
+     * @return
+     */
+    def syncGit2Git(String orgGitUrl,String orgCredentialsId, String targetGitUrl,String targetCredentialsId) {
+        def pathBase = "${steps.env.WORKSPACE}"
+        //docker-构建产物目录
+        def pathPackage = "package"
+        //docker-代码目录
+        def pathCode = "code"
+        //存放临时sshkey的目录
+        def pathSSHKey = "sshkey"
+        //从 jenkins 凭据管理中获取密钥文件路径并且拷贝到工作目录下的ssh-git目录，后面clone的时候指定密钥为这个
+        this.saveJenkinsSSHKey(orgCredentialsId,"${steps.env.WORKSPACE}/${pathSSHKey}/ssh-org-git")
+        this.saveJenkinsSSHKey(targetCredentialsId,"${steps.env.WORKSPACE}/${pathSSHKey}/ssh-target-git")
+        //生成known_hosts
+        this.sshKeyscan("${orgGitUrl}", "~/.ssh/known_hosts")
+        this.sshKeyscan("${targetGitUrl}", "~/.ssh/known_hosts")
+        steps.sh """
+                        #! /bin/sh -e
+                        mkdir -p ${pathBase}/${pathPackage} && mkdir -p ${pathBase}/${pathCode}
+                        cd ${pathBase}/${pathCode}
+                        git config --global http.version HTTP/1.1
+                        GIT_SSH_COMMAND='ssh -i ${steps.env.WORKSPACE}/${pathSSHKey}/ssh-org-git/id_rsa' git clone ${orgGitUrl} --quiet
+                        mv ${pathBase}/${pathCode}/\$(ls -A1 ${pathBase}/${pathCode}/) ${pathBase}/${pathCode}/${pathCode}
+                        cd ${pathBase}/${pathCode}/${pathCode}
+                        git log --pretty=format:"%h -%an,%ar : %s" -1
+                        git config core.ignorecase false
+                        ls -al ${pathBase}/${pathCode}/${pathCode}/
+                    """
+    }
 }
