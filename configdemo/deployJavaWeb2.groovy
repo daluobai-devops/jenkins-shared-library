@@ -3,6 +3,10 @@ def customConfig = [
         "SHARE_PARAM"    : [
                 //app 名称,如果没填则使用jenkins job名称。可不填
                 "appName": "test",
+                //DEPLOY(发布),SERVICE(服务管理，RESTART,STOP,START),TEARDOWN(销毁),默认DEPLOY
+                "model":[
+                    "type":"DEPLOY"
+                ],
                 //消息通知，可不填
                 "message": [
                         //企业微信通知 可不填
