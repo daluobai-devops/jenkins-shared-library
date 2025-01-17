@@ -19,8 +19,10 @@ class StepsGit implements Serializable {
 
 //    git@127.21.8.1:2200/test/test1.git
 //    git@github.com:xxxxx/test.git
+//    ssh://git@192.168.11.11:10022/root/wuzhao-docker-compose.git
 //    https://github.com/xxxxxx/test.git
 //    http://127.21.8.1:80/test/test1.git
+
 
     /**
      * ssh-keyscan生成到known_hosts
@@ -30,10 +32,10 @@ class StepsGit implements Serializable {
      */
 //    @NonCPS
     def sshKeyscan(String gitUrl, String filePath) {
-        def domainByUrl = this.getDomainByGitUrl(gitUrl)
-        steps.echo "domainByUrl:${domainByUrl}"
-        Assert.notBlank(domainByUrl, "链接为空")
-        def domainHostAndPortMap = this.getDomainHostAndPort(domainByUrl)
+//        def domainByUrl = this.getDomainByGitUrl(gitUrl)
+//        steps.echo "domainByUrl:${domainByUrl}"
+//        Assert.notBlank(domainByUrl, "链接为空")
+        def domainHostAndPortMap = this.getDomainHostAndPort(gitUrl)
         //获取到域名和端口
         if (domainHostAndPortMap != null) {
             def host = domainHostAndPortMap.host
@@ -49,14 +51,15 @@ class StepsGit implements Serializable {
         }
     }
 
+    //从git地址中获取host和port
     @NonCPS
-    def getDomainHostAndPort(String domain) {
+    def getDomainHostAndPort(String gitUrl) {
         //获取到域名和端口
-        def matcher = (domain =~ /^([a-zA-Z0-9.-]+)(?::([0-9]+))?/)
+        def matcher = (gitUrl =~ /(?:(?:ssh|https?|git):\/\/(?:[^@]+@)?)?([a-zA-Z0-9.-]+)(?::([0-9]+))?/)
         if (matcher.matches()) {
             def host = matcher.group(1)
             def port = matcher.group(2)
-            steps.echo "===xxxx:${port}---${port}"
+            steps.echo "===xxxx:${host}---${port}"
             def portStr = port > 0 ? "-p ${port}" : ""
             return ["portStr": portStr, "host": host]
         } else {
@@ -81,16 +84,16 @@ class StepsGit implements Serializable {
      * @param gitUrl
      * @return
      */
-    @NonCPS
-    def getDomainByGitUrl(String gitUrl) {
-        def pattern = /(?<=@|:\/\/)([^\/:]+)/
-        def matcher = (gitUrl =~ pattern)
-        def domain = ""
-        if (matcher.find()) {
-            domain = matcher.group(0)
-        }
-        return domain
-    }
+//    @NonCPS
+//    def getDomainByGitUrl(String gitUrl) {
+//        def pattern = /(?<=@|:\/\/)([^\/:]+)/
+//        def matcher = (gitUrl =~ pattern)
+//        def domain = ""
+//        if (matcher.find()) {
+//            domain = matcher.group(0)
+//        }
+//        return domain
+//    }
 
     /**
      * 同步git仓库
@@ -124,6 +127,7 @@ class StepsGit implements Serializable {
                         cd ${pathBase}/${pathCode}/${pathCode}
                         git log --pretty=format:"%h -%an,%ar : %s" -1
                         git config core.ignorecase false
+                        
                         ls -al ${pathBase}/${pathCode}/${pathCode}/
                     """
     }
