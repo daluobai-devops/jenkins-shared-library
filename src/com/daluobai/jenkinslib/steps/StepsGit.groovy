@@ -61,6 +61,27 @@ class StepsGit implements Serializable {
     @NonCPS
     static
     def getDomainHostAndPort(String url) {
+        // 定义正则表达式
+        def pattern = ~/(?:(?:ssh|http(?:s)?):\/\/)?(?:git@)?([a-zA-Z0-9.\-]+)(?::(\d+))?/
+
+        // 循环处理每个连接
+        def matcher = pattern.matcher(url)
+        if (matcher.find()) {
+            def host = matcher.group(1) // 提取 host
+            def port = matcher.group(2) ?: "default" // 提取 port，默认为 default
+            String portStr = "";
+            if (StrUtil.isNotBlank(port) && NumberUtil.isNumber(port)) {
+                portStr = String.valueOf(port)
+            }
+            println "Host: ${host}, Port: ${portStr}"
+            return ["host":host,"portStr":portStr]
+        } else {
+            return null
+        }
+    }    //从git地址中获取host和port
+    @NonCPS
+    static
+    def getDomainHostAndPort1(String url) {
         def pattern = /(?:(?:ssh|https?|git):\/\/(?:[^@]+@)?)?([a-zA-Z0-9.-]+)(?::([0-9]+))?/
 
         def matcher = url =~ pattern
