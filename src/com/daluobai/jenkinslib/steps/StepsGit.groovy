@@ -59,18 +59,18 @@ class StepsGit implements Serializable {
     //从git地址中获取host和port
     @NonCPS
     def getDomainHostAndPort(String gitUrl) {
-        //获取到域名和端口
         def pattern = /(?:(?:ssh|https?|git):\/\/(?:[^@]+@)?)?([a-zA-Z0-9.-]+)(?::([0-9]+))?/
+
         def matcher = gitUrl =~ pattern
         if (matcher) {
             def host = matcher[0][1] // 捕获组 1：主机名/IP
             def port = matcher[0][2] // 捕获组 2：端口号（如果有）
-            steps.echo "===xxxx:${host}---${port}"
             String portStr = "";
             if (StrUtil.isNotBlank(port) && NumberUtil.isNumber(port)) {
                 portStr = String.valueOf(port)
             }
-            return ["portStr": portStr, "host": host]
+
+            return ["host":host,"portStr":portStr]
         } else {
             return null
         }
