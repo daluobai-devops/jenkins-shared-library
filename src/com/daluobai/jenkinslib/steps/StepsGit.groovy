@@ -143,8 +143,8 @@ class StepsGit implements Serializable {
         //存放临时sshkey的目录
         def pathSSHKey = "sshkey"
         //从 jenkins 凭据管理中获取密钥文件路径并且拷贝到工作目录下的ssh-git目录，后面clone的时候指定密钥为这个
-        this.saveJenkinsSSHKey(orgCredentialsId, "${steps.env.WORKSPACE}/${pathSSHKey}/ssh-org-git")
-        this.saveJenkinsSSHKey(targetCredentialsId, "${steps.env.WORKSPACE}/${pathSSHKey}/ssh-target-git")
+        this.saveJenkinsSSHKey(orgCredentialsId, "${steps.env.WORKSPACE}/${pathSSHKey}/ssh-git-org")
+        this.saveJenkinsSSHKey(targetCredentialsId, "${steps.env.WORKSPACE}/${pathSSHKey}/ssh-git-target")
         //生成known_hosts
         this.sshKeyscan("${orgGitUrl}", "~/.ssh/known_hosts")
         this.sshKeyscan("${targetGitUrl}", "~/.ssh/known_hosts")
@@ -153,13 +153,15 @@ class StepsGit implements Serializable {
                         mkdir -p ${pathBase}/${pathPackage} && mkdir -p ${pathBase}/${pathCode}
                         cd ${pathBase}/${pathCode}
                         git config --global http.version HTTP/1.1
-                        GIT_SSH_COMMAND='ssh -i ${steps.env.WORKSPACE}/${pathSSHKey}/ssh-org-git/id_rsa' git clone ${orgGitUrl} --quiet
+                        GIT_SSH_COMMAND='ssh -i ${steps.env.WORKSPACE}/${pathSSHKey}/ssh-git-org/id_rsa' git clone ${orgGitUrl} --quiet
                         mv ${pathBase}/${pathCode}/\$(ls -A1 ${pathBase}/${pathCode}/) ${pathBase}/${pathCode}/${pathCode}
                         cd ${pathBase}/${pathCode}/${pathCode}
                         git log --pretty=format:"%h -%an,%ar : %s" -1
                         git config core.ignorecase false
-                        
                         ls -al ${pathBase}/${pathCode}/${pathCode}/
+                        git remote remove origin_target 2>/dev/null || true
+                        git remote add origin_target "${targetGitUrl}"
+                        GIT_SSH_COMMAND='ssh -i ${steps.env.WORKSPACE}/${pathSSHKey}/ssh-git-target/id_rsa' git push origin_target --quiet
                     """
     }
 }
