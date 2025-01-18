@@ -37,7 +37,7 @@ class StepsGit implements Serializable {
 //        def domainByUrl = this.getDomainByGitUrl(gitUrl)
 //        steps.echo "domainByUrl:${domainByUrl}"
 //        Assert.notBlank(domainByUrl, "链接为空")
-        def domainHostAndPortMap = this.getDomainHostAndPort(gitUrl)
+        def domainHostAndPortMap = getDomainHostAndPort(gitUrl)
         //获取到域名和端口
         if (domainHostAndPortMap != null) {
             def host = domainHostAndPortMap.host
@@ -45,6 +45,7 @@ class StepsGit implements Serializable {
             if (StrUtil.isNotBlank(portStr)){
                 portStr = "-p ${portStr}"
             }
+            steps.echo "=====xxxx:${portStr} ${host} >> ${filePath}"
             steps.sh """
                         #! /bin/sh -e
                         mkdir -p \$(dirname $filePath) && touch ${filePath}
@@ -59,10 +60,10 @@ class StepsGit implements Serializable {
     //从git地址中获取host和port
     @NonCPS
     static
-    def getDomainHostAndPort(String gitUrl) {
+    def getDomainHostAndPort(String url) {
         def pattern = /(?:(?:ssh|https?|git):\/\/(?:[^@]+@)?)?([a-zA-Z0-9.-]+)(?::([0-9]+))?/
 
-        def matcher = gitUrl =~ pattern
+        def matcher = url =~ pattern
         if (matcher) {
             def host = matcher[0][1] // 捕获组 1：主机名/IP
             def port = matcher[0][2] // 捕获组 2：端口号（如果有）
