@@ -68,7 +68,7 @@ class StepsGit implements Serializable {
         def matcher = pattern.matcher(url)
         if (matcher.find()) {
             def host = matcher.group(1) // 提取 host
-            def port = matcher.group(2) ?: "default" // 提取 port，默认为 default
+            def port = matcher.group(2) // 提取 port，默认为 default
             String portStr = "";
             if (StrUtil.isNotBlank(port) && NumberUtil.isNumber(port)) {
                 portStr = String.valueOf(port)
