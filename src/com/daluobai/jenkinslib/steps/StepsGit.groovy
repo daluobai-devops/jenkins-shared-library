@@ -45,7 +45,7 @@ class StepsGit implements Serializable {
             if (StrUtil.isNotBlank(portStr)){
                 portStr = "-p ${portStr}"
             }
-            steps.echo "=====xxxx:${portStr} ${host} >> ${filePath}"
+            steps.echo "=====xxxx:端口:${portStr} 地址:${host} >> ${filePath}"
             steps.sh """
                         #! /bin/sh -e
                         mkdir -p \$(dirname $filePath) && touch ${filePath}
@@ -59,7 +59,6 @@ class StepsGit implements Serializable {
 
     //从git地址中获取host和port
     @NonCPS
-    static
     def getDomainHostAndPort(String url) {
         // 定义正则表达式
         def pattern = ~/(?:(?:ssh|http(?:s)?):\/\/)?(?:git@)?([a-zA-Z0-9.\-]+)(?::(\d+))?/
@@ -73,7 +72,7 @@ class StepsGit implements Serializable {
             if (StrUtil.isNotBlank(port) && NumberUtil.isNumber(port)) {
                 portStr = String.valueOf(port)
             }
-            println "Host: ${host}, Port: ${portStr}"
+            steps.echo "Host: ${host}, Port: ${portStr}"
             return ["host":host,"portStr":portStr]
         } else {
             return null
