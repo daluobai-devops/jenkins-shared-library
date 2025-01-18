@@ -61,7 +61,7 @@ class StepsGit implements Serializable {
     @NonCPS
     def getDomainHostAndPort(String url) {
         // 定义正则表达式
-        def pattern = ~/(?:(?:ssh|http(?:s)?):\/\/)?(?:git@)?([a-zA-Z0-9.\-]+)(?::(\d+))?/
+        def pattern = ~/(?:(?:ssh|http(?:s)?):\/\/)?(?:git@)?([a-zA-Z0-9.\-]+)(?::(\d{2,}))?/
 
         // 循环处理每个连接
         def matcher = pattern.matcher(url)
