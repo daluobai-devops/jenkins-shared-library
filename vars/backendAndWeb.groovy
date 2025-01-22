@@ -1,23 +1,23 @@
 @Grab('cn.hutool:hutool-all:5.8.11')
 @Grab('com.typesafe:config:1.4.2')
 import cn.hutool.core.lang.Assert
-import cn.hutool.core.map.MapUtil
 import cn.hutool.core.util.StrUtil
 import com.daluobai.jenkinslib.constant.EBuildStatusType
 import com.daluobai.jenkinslib.constant.EFileReadType
 import com.daluobai.jenkinslib.constant.GlobalShare
-import com.daluobai.jenkinslib.steps.StepsBuildMaven
+import com.daluobai.jenkinslib.steps.StepsBuildNpm
+import com.daluobai.jenkinslib.steps.StepsGit
 import com.daluobai.jenkinslib.steps.StepsJenkins
 import com.daluobai.jenkinslib.steps.StepsJavaWeb
-import com.daluobai.jenkinslib.steps.StepsTomcat
+import com.daluobai.jenkinslib.steps.StepsWeb
 import com.daluobai.jenkinslib.utils.ConfigUtils
 import com.daluobai.jenkinslib.utils.MapUtils
 import cn.hutool.core.util.ObjectUtil
-import com.daluobai.jenkinslib.steps.*
 import com.daluobai.jenkinslib.utils.MessageUtils
-import com.typesafe.config.*
-
-import java.util.stream.Collectors;
+import com.typesafe.config.Config
+import com.typesafe.config.ConfigFactory
+import com.typesafe.config.ConfigValueFactory
+import com.typesafe.config.*;
 
 /**
  * @author daluobai@outlook.com
@@ -29,13 +29,11 @@ import java.util.stream.Collectors;
 def call(Map customConfig) {
 
     /*******************初始化全局对象 开始*****************/
-    def stepsBuildMaven = new StepsBuildMaven(this)
+    def stepsBuildNpm = new StepsBuildNpm(this)
     def stepsJenkins = new StepsJenkins(this)
-    def stepsJavaWeb = new StepsJavaWeb(this)
-    def configUtils = new ConfigUtils(this)
+    def stepsWeb = new StepsWeb(this)
     def messageUtils = new MessageUtils(this)
-    def stepsTomcat = new StepsTomcat(this)
-    def stepsDeploy = new StepsDeploy(this)
+    def stepsGit = new StepsGit(this)
     /*******************初始化全局对象 结束*****************/
     //用来运行构建的节点
     def nodeBuildNodeList = stepsJenkins.getNodeByLabel("buildNode")
@@ -43,53 +41,21 @@ def call(Map customConfig) {
     if (ObjectUtil.isEmpty(nodeBuildNodeList)) {
         error '没有可用的构建节点'
     }
-
     /***初始化参数 开始**/
     //错误信息
     def errMessage = ""
     EBuildStatusType eBuildStatusType = EBuildStatusType.FAILED
     //DEPLOY_PIPELINE顺序定义
-    def deployPipelineIndex = ["stepsBuild", "stepsStorage", "stepsDeploy"]
-    //如果没传项目名称，则使用jenkins项目名称
-    if (StrUtil.isBlank(customConfig.SHARE_PARAM.appName)) {
-        customConfig.SHARE_PARAM.appName = currentBuild.projectName
-    }
-    def SHARE_PARAM = customConfig.SHARE_PARAM
     /***初始化参数 结束**/
     //默认在同一个构建节点运行，如果需要在其他节点运行则单独写在node块中
     node(nodeBuildNodeList[0]) {
         try {
             //获取并合并配置
-            def fullConfig = mergeConfig(customConfig)
-            echo "fullConfig: ${fullConfig.toString()}"
-            //设置共享参数。
-            GlobalShare.globalParameterMap = fullConfig
-
-            messageUtils.sendMessage(false,customConfig.SHARE_PARAM.message, "发布开始：${customConfig.SHARE_PARAM.appName}", "发布开始: ${currentBuild.fullDisplayName}")
-
-            //执行流程
-            deployPipelineIndex.each {
-                stage("${it}") {
-                    def pipelineConfigItemMap = fullConfig.DEPLOY_PIPELINE[it]
-                    if (pipelineConfigItemMap["enable"] != null && pipelineConfigItemMap["enable"] == false) {
-                        echo "跳过流程: ${it}"
-                        return
-                    }
-                    echo "开始执行流程: ${it}"
-                    if (it == "stepsBuild") {
-                        stepsBuildMaven.build(fullConfig)
-                    } else if (it == "stepsStorage") {
-                        if (ObjectUtil.isEmpty(pipelineConfigItemMap)) {
-                            error "stepsStorage配置为空"
-                        }
-                        stepsJenkins.stash(pipelineConfigItemMap)
-                    } else if (it == "stepsDeploy") {
-                        messageUtils.sendMessage(false,customConfig.SHARE_PARAM.message, "准备重启：${customConfig.SHARE_PARAM.appName}", "准备重启: ${currentBuild.fullDisplayName}")
-                        stepsDeploy.deploy(pipelineConfigItemMap)
-                    }
-                }
-                echo "结束执行流程: ${it}"
+            stage("${it}") {
+                echo "开始执行流程: ${it}"
+                stepsGit.syncGit2Git(customConfig["orgGitUrl"], customConfig["orgCredentialsId"], customConfig["targetGitUrl"], customConfig["targetCredentialsId"])
             }
+            echo "结束执行流程: ${it}"
             eBuildStatusType = EBuildStatusType.SUCCESS
         } catch (Exception e) {
             if (e instanceof org.jenkinsci.plugins.workflow.steps.FlowInterruptedException) {
@@ -113,7 +79,7 @@ def call(Map customConfig) {
                     //发布终止
                 }
                 if (StrUtil.isNotBlank(messageTitle) && StrUtil.isNotBlank(messageContent)) {
-                    messageUtils.sendMessage(true,customConfig.SHARE_PARAM.message, messageTitle, messageContent)
+                    messageUtils.sendMessage(customConfig.SHARE_PARAM.message, messageTitle, messageContent)
                 }
             }
             deleteDir()
@@ -152,7 +118,6 @@ def mergeConfig(Map customConfig) {
     }
     //合并自定义配置
     fullConfig = MapUtils.merge([defaultConfig, extendConfig, customConfig])
-
     //根据自定义构建参数，修改配置
     Config fullConfigParams = ConfigFactory.parseMap(fullConfig)
     echo "fullConfigParams: ${fullConfigParams.toString()}"
@@ -165,19 +130,6 @@ def mergeConfig(Map customConfig) {
     fullConfig = fullConfigParams.root().unwrapped()
 
     echo "fullConfigParams3: ${fullConfig}"
-    compatibleConfig(fullConfig)
-    echo "fullConfigParams4: ${fullConfig}"
     return MapUtils.deepCopy(fullConfig)
 }
-
-//兼容旧的配置
-def compatibleConfig(Map customConfig) {
-    if (customConfig.DEPLOY_PIPELINE.stepsBuildMaven){
-        customConfig.DEPLOY_PIPELINE.stepsBuild = ["stepsBuildMaven":[],"enable":false]
-        customConfig.DEPLOY_PIPELINE.stepsBuild.stepsBuildMaven = customConfig.DEPLOY_PIPELINE.stepsBuildMaven
-        customConfig.DEPLOY_PIPELINE.stepsBuild.enable = true
-    }
-    return customConfig
-}
-
 
