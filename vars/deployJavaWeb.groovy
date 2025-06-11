@@ -82,7 +82,7 @@ def call(Map customConfig) {
                     }
                     echo "开始执行流程: ${it}"
                     if (it == "stepsBuild") {
-                        withEnv(['SPRING_PROFILES_ACTIVE=dev']) {
+                        withEnv(['SPRING_PROFILES_ACTIVE=prod']) {
                             stepsBuildMaven.build(fullConfig)
                         }
                     } else if (it == "stepsStorage") {
