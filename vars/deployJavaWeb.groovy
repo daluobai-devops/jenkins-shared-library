@@ -67,6 +67,11 @@ def call(Map customConfig) {
 
             messageUtils.sendMessage(false,customConfig.SHARE_PARAM.message, "发布开始：${customConfig.SHARE_PARAM.appName}", "发布开始: ${currentBuild.fullDisplayName}")
 
+            //设置环境变量
+            def stepsBuildEnv = fullConfig.DEPLOY_PIPELINE.stepsBuild.stepsBuildEnv
+            stepsBuildEnv.each { key, value ->
+                this.env."${key}" = value
+            }
             //执行流程
             deployPipelineIndex.each {
                 stage("${it}") {

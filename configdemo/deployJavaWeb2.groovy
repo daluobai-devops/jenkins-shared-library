@@ -4,8 +4,8 @@ def customConfig = [
                 //app 名称,如果没填则使用jenkins job名称。可不填
                 "appName": "test",
                 //DEPLOY(发布),SERVICE(服务管理，RESTART,STOP,START),TEARDOWN(销毁),默认DEPLOY
-                "model":[
-                    "type":"DEPLOY"
+                "model"  : [
+                        "type": "DEPLOY"
                 ],
                 //消息通知，可不填
                 "message": [
@@ -30,7 +30,11 @@ def customConfig = [
                 //构建
                 "stepsBuild"  : [
                         //是否激活,默认true
-                        "enable"          : true,
+                        "enable"         : true,
+                        //构建环境变量（只在构建中生效）,SPRING_PROFILES_ACTIVE:dev
+                        "stepsBuildEnv"  : [
+                                "SPRING_PROFILES_ACTIVE": "dev"
+                        ],
                         //maven
                         "stepsBuildMaven": [
                                 //是否激活,默认true
