@@ -67,11 +67,7 @@ def call(Map customConfig) {
 
             messageUtils.sendMessage(false,customConfig.SHARE_PARAM.message, "发布开始：${customConfig.SHARE_PARAM.appName}", "发布开始: ${currentBuild.fullDisplayName}")
 
-            //设置环境变量
-            def stepsBuildEnvList = []
-            if (fullConfig.DEPLOY_PIPELINE.stepsBuild.stepsBuildEnv){
-                stepsBuildEnvList = fullConfig.DEPLOY_PIPELINE.stepsBuild.stepsBuildEnv.collect { k, v -> "${k}=${v}" }
-            }
+
             //执行流程
             deployPipelineIndex.each {
                 stage("${it}") {
@@ -82,6 +78,11 @@ def call(Map customConfig) {
                     }
                     echo "开始执行流程: ${it}"
                     if (it == "stepsBuild") {
+                        //设置环境变量
+                        def stepsBuildEnvList = []
+                        if (fullConfig.DEPLOY_PIPELINE.stepsBuild.stepsBuildEnv){
+                            stepsBuildEnvList = fullConfig.DEPLOY_PIPELINE.stepsBuild.stepsBuildEnv.collect { k, v -> "${k}=${v}" }
+                        }
                         withEnv(stepsBuildEnvList) {
                             stepsBuildMaven.build(fullConfig)
                         }
