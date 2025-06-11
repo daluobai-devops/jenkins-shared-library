@@ -68,10 +68,10 @@ def call(Map customConfig) {
             messageUtils.sendMessage(false,customConfig.SHARE_PARAM.message, "发布开始：${customConfig.SHARE_PARAM.appName}", "发布开始: ${currentBuild.fullDisplayName}")
 
             //设置环境变量
-            def stepsBuildEnv = fullConfig.DEPLOY_PIPELINE.stepsBuild.stepsBuildEnv
-            stepsBuildEnv.each { key, value ->
-                this.env."${key}" = value
-            }
+//            def stepsBuildEnv = fullConfig.DEPLOY_PIPELINE.stepsBuild.stepsBuildEnv
+//            stepsBuildEnv.each { key, value ->
+//                this.env."${key}" = value
+//            }
             //执行流程
             deployPipelineIndex.each {
                 stage("${it}") {
@@ -82,7 +82,9 @@ def call(Map customConfig) {
                     }
                     echo "开始执行流程: ${it}"
                     if (it == "stepsBuild") {
-                        stepsBuildMaven.build(fullConfig)
+                        withEnv(['SPRING_PROFILES_ACTIVE=dev']) {
+                            stepsBuildMaven.build(fullConfig)
+                        }
                     } else if (it == "stepsStorage") {
                         if (ObjectUtil.isEmpty(pipelineConfigItemMap)) {
                             error "stepsStorage配置为空"
