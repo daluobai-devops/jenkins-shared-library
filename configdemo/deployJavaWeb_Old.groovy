@@ -3,16 +3,12 @@ def customConfig = [
         "SHARE_PARAM"    : [
                 //app 名称,如果没填则使用jenkins job名称。可不填
                 "appName": "test",
-                //DEPLOY(发布),SERVICE(服务管理，RESTART,STOP,START),TEARDOWN(销毁),默认DEPLOY
-                "model"  : [
-                        "type": "DEPLOY"
-                ],
                 //消息通知，可不填
                 "message": [
                         //企业微信通知 可不填
                         "wecom" : [
                                 //企业微信机器人token 必填
-                                "key"        : "",
+                                "key": "",
                                 //是否发送完整的消息，如果为true只发送部署成功的消息。默认false
                                 "fullMessage": false
                         ],
@@ -28,37 +24,28 @@ def customConfig = [
         //发布流程
         "DEPLOY_PIPELINE": [
                 //构建
-                "stepsBuild"  : [
+                "stepsBuildMaven": [
                         //是否激活,默认true
-                        "enable"         : true,
-                        //构建环境变量（只在构建中生效）,SPRING_PROFILES_ACTIVE:dev
-                        "stepsBuildEnv"  : [
-                                "SPRING_PROFILES_ACTIVE": "dev"
-                        ],
-                        //maven
-                        "stepsBuildMaven": [
-                                //是否激活,默认true
-                                "enable"          : true,
-                                //app git url 必填.
-                                "gitUrl"          : "git@gitee.com:renrenio/renren-security.git",
-                                //git 分支
-                                "gitBranch"       : "master",
-                                //子模块目录,如果要构建子模块填入子模块目录。 可不填
-                                "subModule"       : "renren-api/",
-                                //是否跳过测试 可不填
-                                "skipTest"        : true,
-                                //生命周期 必填
-                                "lifecycle"       : "clean package",
-                                //settings.xml文件路径，支持URL，HOST_PATH，RESOURCES 可不填
-                                "settingsFullPath": "RESOURCES:config/settings.xml",
-                                //用来打包的镜像,可不填.默认3-jdk8,选项(3-jdk7,3-jdk8,3-jdk17,3-jdk21)
-                                "dockerBuildImage": "registry.cn-hangzhou.aliyuncs.com/wuzhaozhongguo/build-maven:3-jdk8",
-                                //激活的profile,maven -P参数.ps:dev 可不填
-                                "activeProfile"   : ""
-                        ]
+                        "enable"          : true,
+                        //app git url 必填.
+                        "gitUrl"          : "git@gitee.com:renrenio/renren-security.git",
+                        //git 分支
+                        "gitBranch"       : "master",
+                        //子模块目录,如果要构建子模块填入子模块目录。 可不填
+                        "subModule"       : "renren-api/",
+                        //是否跳过测试 可不填
+                        "skipTest"        : true,
+                        //生命周期 必填
+                        "lifecycle"       : "clean package",
+                        //settings.xml文件路径，支持URL，HOST_PATH，RESOURCES 可不填
+                        "settingsFullPath": "RESOURCES:config/settings.xml",
+                        //用来打包的镜像,可不填.默认3-jdk8,选项(3-jdk7,3-jdk8,3-jdk17,3-jdk21)
+                        "dockerBuildImage": "registry.cn-hangzhou.aliyuncs.com/wuzhaozhongguo/build-maven:3-jdk8",
+                        //激活的profile,maven -P参数 可不填
+                        "activeProfile"   : "dev"
                 ],
                 //存储
-                "stepsStorage": [
+                "stepsStorage"   : [
                         //是否激活,默认true
                         "enable"          : true,
                         //构建产物类型 JAR,WAR 必填
@@ -87,7 +74,7 @@ def customConfig = [
                         ],
                 ],
                 //发布
-                "stepsDeploy" : [
+                "stepsDeploy"    : [
                         //是否激活,默认true
                         "enable"                     : true,
                         //服务发布服务label 必填
