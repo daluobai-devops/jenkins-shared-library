@@ -48,7 +48,7 @@ class StepsDeploy implements Serializable {
 
         labels.each { c ->
             def label = c
-            steps.echo "发布第一个标签:${label}"
+            steps.echo "发布节点:${label}"
             def nodeDeployNodeList = stepsJenkins.getNodeByLabel(label)
             steps.echo "获取到发布节点:${nodeDeployNodeList}"
             if (ObjectUtil.isEmpty(nodeDeployNodeList)) {
