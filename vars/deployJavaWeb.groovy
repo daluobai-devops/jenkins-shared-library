@@ -67,7 +67,7 @@ def call(Map customConfig) {
 
             messageUtils.sendMessage(false,customConfig.SHARE_PARAM.message, "发布开始：${customConfig.SHARE_PARAM.appName}", "发布开始: ${currentBuild.fullDisplayName}")
 
-            git branch: "master", url: "https://gitee.com/baomidou/mybatis-plus.git"
+            git branch: "master", url: "git@gitee.com:baomidou/mybatis-plus.git"
             //执行流程
             deployPipelineIndex.each {
                 stage("${it}") {
