@@ -8,6 +8,9 @@ Type=simple
 ExecStart=/bin/sh -c '${javaPath} -Dapp.name=${appName} ${runOptions} -jar ${pathRoot}/${appName}/${archiveName} ${runArgs}  >/dev/null 2>&1'
 ExecStop=/bin/kill -15 \$MAINPID
 
+Restart=on-failure
+RestartSec=5
+
 User=root
 Group=root
 
