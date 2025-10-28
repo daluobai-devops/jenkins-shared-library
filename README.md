@@ -1,12 +1,12 @@
 # jenkins-shared-library
 Jenkins Pipeline Extending with Shared Libraries 
-# 简介
+# 一、简介
 jenkins pipeline 和拓展库介绍:[https://www.jenkins.io/doc/book/pipeline/]()
 jenkins介绍和学习(Jenkins中文社区Rick):https://www.bilibili.com/video/BV1fp4y1r7Dd
 
 加我微信:HELLO-WUZHAO
 
-# 特性
+# 二、特性
 
 - 可以通过pipeline做任何事情
 
@@ -17,7 +17,7 @@ jenkins介绍和学习(Jenkins中文社区Rick):https://www.bilibili.com/video/B
 - 使用 groovy 语法，非常容易上手
 - 构建通过 docker，可根据不同工程选择不同的 docker 环境
 
-# 安装 Jenkins
+# 三、安装 Jenkins
 
 - Centos7+
   
@@ -36,7 +36,7 @@ jenkins介绍和学习(Jenkins中文社区Rick):https://www.bilibili.com/video/B
     ```shell
       curl -sSL https://cdn.jsdelivr.net/gh/daluobai-devops/jenkins-shared-library@master/configdemo/uninstallJenkinsUbuntu.sh | bash
       ```
-# 安装后操作
+# 四、安装后操作
 
 ## 1. 访问 http://ip:9000/jenkins
 
@@ -91,7 +91,7 @@ jenkins介绍和学习(Jenkins中文社区Rick):https://www.bilibili.com/video/B
 
    构建节点:安装 docker
 
-# 发布第一个服务
+# 五、发布第一个服务（可选）
 
 新建job>流水线(pipeline)>配置
 勾选:
@@ -101,7 +101,3 @@ jenkins介绍和学习(Jenkins中文社区Rick):https://www.bilibili.com/video/B
 使用 Groovy 沙盒
 
 流水线>定义>Pipeline script填入configdemo/deployJavaWeb.groovy
-
-
-
-未完待续。。。
