@@ -76,9 +76,8 @@ jenkins介绍和学习(Jenkins中文社区Rick):https://www.bilibili.com/video/B
   - 主机：服务器的 ip
   - Credentials：ssh-jenkins
   - Host Key Verification Strategy：Manually trusted key Verification Strategy
-- 节点属性>工具位置(用来设置jenkins agent执行用的jdk)
-  - 名称:JDK17(这里在系统设置->全局工具配置.里面配置一个jdk)
-  - 目录： /usr/local/jdk/jdk17/
+  - 高级
+    - Java 路径：/usr/local/jdk/jdk17/bin/java
 
 构建节点配置:
 
@@ -87,7 +86,6 @@ jenkins介绍和学习(Jenkins中文社区Rick):https://www.bilibili.com/video/B
 用来测试发布服务的节点：
 
 - 名称：NODE-DEMO
-- 环境变量:键:JAVA_HOME 值:/usr/local/jdk/jdk17/
 
 4. 宿主机配置
 
