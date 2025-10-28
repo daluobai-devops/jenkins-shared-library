@@ -20,18 +20,22 @@ jenkins介绍和学习(Jenkins中文社区Rick):https://www.bilibili.com/video/B
 # 三、安装 Jenkins
 
 - Centos7+
-    - 安装
-      ```shell
-      curl -sSL https://cdn.jsdelivr.net/gh/daluobai-devops/jenkins-shared-library@master/configdemo/installJenkins.sh | bash
+  - 安装
+    ```shell
+    curl -sSL https://cdn.jsdelivr.net/gh/daluobai-devops/jenkins-shared-library@master/configdemo/installJenkins.sh | bash
+    ```
+  - 卸载(注意：卸载会删除jenkins home目录，所有jenkins数据都会丢失)
+    ```shell
+    curl -sSL https://cdn.jsdelivr.net/gh/daluobai-devops/jenkins-shared-library@master/configdemo/uninstallJenkins.sh | bash
       ```
 - Ubuntu
   - 安装
     ```shell
     curl -sSL https://cdn.jsdelivr.net/gh/daluobai-devops/jenkins-shared-library@master/configdemo/installJenkinsUbuntu.sh | bash
     ```
-  - 卸载
+  - 卸载(注意：卸载会删除jenkins home目录，所有jenkins数据都会丢失)
     ```shell
-      curl -sSL https://cdn.jsdelivr.net/gh/daluobai-devops/jenkins-shared-library@master/configdemo/uninstallJenkinsUbuntu.sh | bash
+    curl -sSL https://cdn.jsdelivr.net/gh/daluobai-devops/jenkins-shared-library@master/configdemo/uninstallJenkinsUbuntu.sh | bash
       ```
 # 四、安装后操作
 
@@ -40,7 +44,7 @@ jenkins介绍和学习(Jenkins中文社区Rick):https://www.bilibili.com/video/B
 ## 2. 安装插件Docker、Docker Pipeline、Docker Api、Pipeline Utility Steps、
 ## 3. 配置Jenkins Pipeline
 
-共享库配置
+### a.共享库配置
 
     系统管理>系统配置> Global Pipeline Libraries(Global Trusted Pipeline Libraries)
     
@@ -52,7 +56,7 @@ jenkins介绍和学习(Jenkins中文社区Rick):https://www.bilibili.com/video/B
     
     凭据:无(如果是你公司自己的仓库，这里选ssh-git)
 
-密钥管理
+### b.密钥管理
 
     系统管理>凭据>系统>全局凭据>新建凭据
     
@@ -60,7 +64,7 @@ jenkins介绍和学习(Jenkins中文社区Rick):https://www.bilibili.com/video/B
     
     新建docker-secret(用来登录 docker 镜像)凭据类型为Username with password，如果没有就随便填一个
 
-节点配置
+### c.节点配置
 
 配置示例:
 
