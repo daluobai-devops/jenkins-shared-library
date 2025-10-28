@@ -44,7 +44,15 @@ jenkins介绍和学习(Jenkins中文社区Rick):https://www.bilibili.com/video/B
 ## 2. 安装插件Docker、Docker Pipeline、Docker Api、Pipeline Utility Steps、
 ## 3. 配置Jenkins Pipeline
 
-### a.共享库配置
+### a.密钥管理
+
+    系统管理>凭据>系统>全局凭据>新建凭据
+    
+    新建ssh-jenkins(用来免密登录服务器)和ssh-git(用来 clone 代码) 两个凭据，类型为SSH Username with private key，填入用户名和私钥
+    
+    新建docker-secret(用来登录 docker 镜像)凭据类型为Username with password，如果没有就随便填一个
+
+### b.共享库配置
 
     系统管理>系统配置> Global Pipeline Libraries(Global Trusted Pipeline Libraries)
     
@@ -55,14 +63,6 @@ jenkins介绍和学习(Jenkins中文社区Rick):https://www.bilibili.com/video/B
     项目仓库:git@gitee.com:daluobai-devops/jenkins-shared-library.git
     
     凭据:无(如果是你公司自己的仓库，这里选ssh-git)
-
-### b.密钥管理
-
-    系统管理>凭据>系统>全局凭据>新建凭据
-    
-    新建ssh-jenkins(用来免密登录服务器)和ssh-git(用来 clone 代码) 两个凭据，类型为SSH Username with private key，填入用户名和私钥
-    
-    新建docker-secret(用来登录 docker 镜像)凭据类型为Username with password，如果没有就随便填一个
 
 ### c.节点配置
 
