@@ -36,12 +36,12 @@ jenkins介绍和学习(Jenkins中文社区Rick):https://www.bilibili.com/video/B
     ```shell
       curl -sSL https://cdn.jsdelivr.net/gh/daluobai-devops/jenkins-shared-library@master/configdemo/uninstallJenkinsUbuntu.sh | bash
       ```
-安装后操作
+# 安装后操作
 
-# 1. 访问 http://ip:9000/jenkins
+## 1. 访问 http://ip:9000/jenkins
 
-# 2. 安装插件Docker、Docker Pipeline、Docker Api、Pipeline Utility Steps、
-# 3. 配置Jenkins Pipeline
+## 2. 安装插件Docker、Docker Pipeline、Docker Api、Pipeline Utility Steps、
+## 3. 配置Jenkins Pipeline
 
 共享库配置
 
@@ -87,7 +87,7 @@ jenkins介绍和学习(Jenkins中文社区Rick):https://www.bilibili.com/video/B
 
 - 名称：NODE-DEMO
 
-# 4. 宿主机配置
+## 4. 宿主机配置
 
    构建节点:安装 docker
 
