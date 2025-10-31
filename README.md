@@ -50,7 +50,7 @@ jenkins介绍和学习(Jenkins中文社区Rick):https://www.bilibili.com/video/B
     
     新建ssh-jenkins(用来免密登录服务器)和ssh-git(用来 clone 代码) 两个凭据，类型为SSH Username with private key，填入用户名和私钥
     
-    新建docker-secret(用来登录 docker 镜像)凭据类型为Username with password，如果没有就随便填一个
+    新建docker-secret(用来登录 docker 镜像)凭据类型为Username with password，如果用不到，账号密码就随便填一个
 
 ### b.共享库配置
 
