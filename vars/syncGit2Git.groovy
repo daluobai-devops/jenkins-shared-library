@@ -4,20 +4,14 @@ import cn.hutool.core.lang.Assert
 import cn.hutool.core.util.StrUtil
 import com.daluobai.jenkinslib.constant.EBuildStatusType
 import com.daluobai.jenkinslib.constant.EFileReadType
-import com.daluobai.jenkinslib.constant.GlobalShare
 import com.daluobai.jenkinslib.steps.StepsBuildNpm
 import com.daluobai.jenkinslib.steps.StepsGit
 import com.daluobai.jenkinslib.steps.StepsJenkins
-import com.daluobai.jenkinslib.steps.StepsJavaWeb
 import com.daluobai.jenkinslib.steps.StepsWeb
 import com.daluobai.jenkinslib.utils.ConfigUtils
 import com.daluobai.jenkinslib.utils.MapUtils
 import cn.hutool.core.util.ObjectUtil
 import com.daluobai.jenkinslib.utils.MessageUtils
-import com.typesafe.config.Config
-import com.typesafe.config.ConfigFactory
-import com.typesafe.config.ConfigValueFactory
-import com.typesafe.config.*;
 
 /**
  * @author daluobai@outlook.com
