@@ -91,7 +91,6 @@ class StepsBuildNpm implements Serializable {
                         cd ${pathBase}/${pathCode}/${pathCode}
                         git log --pretty=format:"%h -%an,%ar : %s" -1
                         git config core.ignorecase false
-                        ls -al ./node_modules/ || true
                         ${configSteps.buildCMD}
                         ls -al ${pathBase}/${pathCode}/${pathCode}/dist
                         cd ${pathBase}/${pathCode}/${pathCode}/
