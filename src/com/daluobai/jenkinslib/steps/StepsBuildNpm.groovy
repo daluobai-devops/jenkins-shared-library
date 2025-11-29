@@ -68,7 +68,7 @@ class StepsBuildNpm implements Serializable {
             def mvnCMDActiveProfile = "-P ${configSteps.activeProfile}"
 
             //容器中缓存modules文件夹的根路径
-            def dockerModulesPath = "/path/jenkins/cache/npmModules"
+            def dockerModulesPath = "/root/.npm/"
             //容器中缓存modules文件夹的项目路径
             def dockerModulesProjectPath = "${dockerModulesPath}/${steps.currentBuild.projectName}"
             //这里默认会把工作空间挂载到容器中的${steps.env.WORKSPACE}目录
@@ -91,14 +91,11 @@ class StepsBuildNpm implements Serializable {
                         cd ${pathBase}/${pathCode}/${pathCode}
                         git log --pretty=format:"%h -%an,%ar : %s" -1
                         git config core.ignorecase false
-                        \\cp -rf ${dockerModulesProjectPath}/node_modules/ . || true
                         ls -al ./node_modules/ || true
                         ${configSteps.buildCMD}
                         ls -al ${pathBase}/${pathCode}/${pathCode}/dist
                         cd ${pathBase}/${pathCode}/${pathCode}/
                         ${configStepsStorage.archiveType == "ZIP" ? "zip -r ${pathBase}/${pathPackage}/app.zip ./dist" : "tar -czvf ${pathBase}/${pathPackage}/app.tar.gz -C ${pathBase}/${pathCode}/${pathCode}/dist ."}
-                        rm -rf ${dockerModulesProjectPath}/node_modules || true
-                        \\cp -rf ./node_modules ${dockerModulesProjectPath}/ || true
                     """
             }
         }
