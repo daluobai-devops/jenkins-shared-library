@@ -79,7 +79,7 @@ class StepsBuildNpm implements Serializable {
                 stepsGit.sshKeyscan("${configSteps.gitUrl}", "~/.ssh/known_hosts")
                 //不使用缓存node_modules
                 if (ObjectUtil.isNotEmpty(configSteps["cacheNodeModules"]) && !configSteps["cacheNodeModules"]){
-                    steps.sh "rm -rf ${dockerModulesProjectPath}/node_modules || true"
+//                    steps.sh "rm -rf ${dockerModulesProjectPath}/node_modules || true"
                 }
                 steps.sh """
                         #! /bin/sh -e
