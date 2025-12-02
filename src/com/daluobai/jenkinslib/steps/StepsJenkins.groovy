@@ -124,7 +124,7 @@ class StepsJenkins implements Serializable {
             //这里因为如果是 master 节点返回的数组是空字符串，所以这里需要判断一下
             for (i in 0..< nodeBuildNodeList.size()) {
                 if (StrUtil.isBlank(nodeBuildNodeList[i])){
-                    nodeBuildNodeList[i] = "master"
+                    nodeBuildNodeList[i] = "buildNode"
                 }
             }
         }
