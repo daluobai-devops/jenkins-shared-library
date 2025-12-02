@@ -82,7 +82,8 @@ jenkins介绍和学习(Jenkins中文社区Rick):https://www.bilibili.com/video/B
 
 构建节点配置:
 
-- 在用来构建的节点添加buildNode标签，也可以直接把 master 节点作为构建节点
+- 在主节点添加master标签
+- 在用来构建的节点添加buildNode标签，如果是jenkins安装节点作为构建节点，就要添加master和buildNode两个标签
 
 用来测试发布服务的节点：
 
