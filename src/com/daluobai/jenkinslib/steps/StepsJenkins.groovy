@@ -79,10 +79,10 @@ class StepsJenkins implements Serializable {
             steps.archiveArtifacts artifacts: "package/${archiveArtifactName}", followSymlinks: false
         }
 
-        if (jenkinsStash.enable) {
+        if (jenkinsStash?.enable) {
             steps.stash name: "appPackage", includes: "${includes}"
         }
-        if (dockerRegistry.enable) {
+        if (dockerRegistry?.enable) {
             steps.sh "mkdir -p stash/dockerRegistry/code/code"
             steps.dir("stash/dockerRegistry/code/code") {
                 steps.git branch: "${dockerfile.gitBranch}", credentialsId: 'ssh-git', url: "${dockerfile.url}"
