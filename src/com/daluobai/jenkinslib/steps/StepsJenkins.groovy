@@ -34,7 +34,7 @@ class StepsJenkins implements Serializable {
         def archiveArtifacts = parameterMap.archiveArtifacts
         def dockerRegistry = parameterMap.dockerRegistry
         def dockerfile = parameterMap?.dockerRegistry?.dockerfile
-        def fullConfig = steps.binding.getVariable("globalParameterMap")
+        def fullConfig = steps.globalParameterMap
         Assert.notBlank(archiveType,"archiveType为空")
         def includes
         def archiveName

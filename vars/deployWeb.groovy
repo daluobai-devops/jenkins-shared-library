@@ -5,7 +5,6 @@ import cn.hutool.core.lang.Assert
 import cn.hutool.core.util.StrUtil
 import com.daluobai.jenkinslib.constant.EBuildStatusType
 import com.daluobai.jenkinslib.constant.EFileReadType
-import com.daluobai.jenkinslib.constant.GlobalShare
 import com.daluobai.jenkinslib.steps.StepsBuildNpm
 import com.daluobai.jenkinslib.steps.StepsJenkins
 import com.daluobai.jenkinslib.steps.StepsJavaWeb
@@ -18,6 +17,9 @@ import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import com.typesafe.config.ConfigValueFactory
 import com.typesafe.config.*;
+import groovy.transform.Field
+
+@Field Map globalParameterMap = [:]
 
 /**
  * @author daluobai@outlook.com
@@ -59,7 +61,7 @@ def call(Map customConfig) {
             def fullConfig = mergeConfig(customConfig)
             echo "fullConfig: ${fullConfig.toString()}"
             //设置共享参数。
-            this.binding.setVariable("globalParameterMap", fullConfig)
+            globalParameterMap = fullConfig
             messageUtils.sendMessage(false,customConfig.SHARE_PARAM.message, "发布开始：${customConfig.SHARE_PARAM.appName}", "发布开始: ${currentBuild.fullDisplayName}")
             //执行流程
             deployPipelineIndex.each {

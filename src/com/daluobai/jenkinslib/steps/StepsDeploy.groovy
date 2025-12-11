@@ -36,7 +36,7 @@ class StepsDeploy implements Serializable {
         def enable = parameterMap.enable
         def readinessProbeMap = parameterMap.readinessProbe
         def afterRunCMD = parameterMap.afterRunCMD
-        def globalParameterMap = steps.binding.getVariable("globalParameterMap")
+        def globalParameterMap = steps.globalParameterMap
         def appName = globalParameterMap.SHARE_PARAM.appName
         def archiveName = globalParameterMap.SHARE_PARAM.archiveName
         //获取文件名后缀

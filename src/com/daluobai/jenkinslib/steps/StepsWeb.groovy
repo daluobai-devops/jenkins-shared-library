@@ -31,7 +31,7 @@ class StepsWeb implements Serializable {
         Assert.notEmpty(parameterMap,"参数为空")
         def labels = parameterMap.labels
         def pathRoot = parameterMap.pathRoot
-        def globalParameterMap = steps.binding.getVariable("globalParameterMap")
+        def globalParameterMap = steps.globalParameterMap
         def appName = globalParameterMap.SHARE_PARAM.appName
         def archiveName = globalParameterMap.SHARE_PARAM.archiveName
         def configStepsStorage = globalParameterMap.DEPLOY_PIPELINE.stepsStorage

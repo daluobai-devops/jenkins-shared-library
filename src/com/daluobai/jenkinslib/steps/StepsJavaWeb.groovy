@@ -35,7 +35,7 @@ class StepsJavaWeb implements Serializable {
         steps.echo "StepsJavaWeb:${parameterMap}"
         Assert.notEmpty(parameterMap,"参数为空")
         def pathRoot = parameterMap.pathRoot
-        def globalParameterMap = steps.binding.getVariable("globalParameterMap")
+        def globalParameterMap = steps.globalParameterMap
         def appName = globalParameterMap.SHARE_PARAM.appName
         def archiveName = globalParameterMap.SHARE_PARAM.archiveName
         //获取文件名后缀
@@ -80,7 +80,7 @@ class StepsJavaWeb implements Serializable {
      */
     def reStartBySystemctl(Map parameterMap){
         Assert.notEmpty(parameterMap,"参数为空")
-        def globalParameterMap = steps.binding.getVariable("globalParameterMap")
+        def globalParameterMap = steps.globalParameterMap
         def appName = globalParameterMap.SHARE_PARAM.appName
         def archiveName = globalParameterMap.SHARE_PARAM.archiveName
         def labels = parameterMap.labels
@@ -113,7 +113,7 @@ class StepsJavaWeb implements Serializable {
 
     def reStartByShell(Map parameterMap){
         Assert.notEmpty(parameterMap,"参数为空")
-        def globalParameterMap = steps.binding.getVariable("globalParameterMap")
+        def globalParameterMap = steps.globalParameterMap
         def appName = globalParameterMap.SHARE_PARAM.appName
         def archiveName = globalParameterMap.SHARE_PARAM.archiveName
         def labels = parameterMap.labels

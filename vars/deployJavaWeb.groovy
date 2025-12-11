@@ -20,6 +20,10 @@ import com.typesafe.config.*
 
 import java.util.stream.Collectors;
 
+import groovy.transform.Field
+
+@Field Map globalParameterMap = [:]
+
 /**
  * @author daluobai@outlook.com
  * version 1.0.0
@@ -64,7 +68,7 @@ def call(Map customConfig) {
             def fullConfig = mergeConfig(customConfig)
             echo "fullConfig: ${fullConfig.toString()}"
             //设置共享参数。
-            this.binding.setVariable("globalParameterMap", fullConfig)
+            globalParameterMap = fullConfig
 
             messageUtils.sendMessage(false,customConfig.SHARE_PARAM.message, "发布开始：${customConfig.SHARE_PARAM.appName}", "发布开始: ${currentBuild.fullDisplayName}")
 
