@@ -35,8 +35,9 @@ class StepsJavaWeb implements Serializable {
         steps.echo "StepsJavaWeb:${parameterMap}"
         Assert.notEmpty(parameterMap,"参数为空")
         def pathRoot = parameterMap.pathRoot
-        def appName = GlobalShare.globalParameterMap.SHARE_PARAM.appName
-        def archiveName = GlobalShare.globalParameterMap.SHARE_PARAM.archiveName
+        def globalParameterMap = steps.binding.getVariable("globalParameterMap")
+        def appName = globalParameterMap.SHARE_PARAM.appName
+        def archiveName = globalParameterMap.SHARE_PARAM.archiveName
         //获取文件名后缀
         def archiveSuffix = StrUtil.subAfter(archiveName, ".", true)
 
@@ -79,8 +80,9 @@ class StepsJavaWeb implements Serializable {
      */
     def reStartBySystemctl(Map parameterMap){
         Assert.notEmpty(parameterMap,"参数为空")
-        def appName = GlobalShare.globalParameterMap.SHARE_PARAM.appName
-        def archiveName = GlobalShare.globalParameterMap.SHARE_PARAM.archiveName
+        def globalParameterMap = steps.binding.getVariable("globalParameterMap")
+        def appName = globalParameterMap.SHARE_PARAM.appName
+        def archiveName = globalParameterMap.SHARE_PARAM.archiveName
         def labels = parameterMap.labels
         def pathRoot = parameterMap.pathRoot
         def javaPath = ObjectUtil.isEmpty(parameterMap.javaPath) ? "/usr/local/bin/java" : parameterMap.javaPath
@@ -111,8 +113,9 @@ class StepsJavaWeb implements Serializable {
 
     def reStartByShell(Map parameterMap){
         Assert.notEmpty(parameterMap,"参数为空")
-        def appName = GlobalShare.globalParameterMap.SHARE_PARAM.appName
-        def archiveName = GlobalShare.globalParameterMap.SHARE_PARAM.archiveName
+        def globalParameterMap = steps.binding.getVariable("globalParameterMap")
+        def appName = globalParameterMap.SHARE_PARAM.appName
+        def archiveName = globalParameterMap.SHARE_PARAM.archiveName
         def labels = parameterMap.labels
         def pathRoot = parameterMap.pathRoot
         def javaPath = ObjectUtil.isEmpty(parameterMap.javaPath) ? "/usr/local/bin/java" : parameterMap.javaPath

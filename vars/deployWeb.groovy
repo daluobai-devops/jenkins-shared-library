@@ -59,7 +59,7 @@ def call(Map customConfig) {
             def fullConfig = mergeConfig(customConfig)
             echo "fullConfig: ${fullConfig.toString()}"
             //设置共享参数。
-            GlobalShare.globalParameterMap = fullConfig
+            this.binding.setVariable("globalParameterMap", fullConfig)
             messageUtils.sendMessage(false,customConfig.SHARE_PARAM.message, "发布开始：${customConfig.SHARE_PARAM.appName}", "发布开始: ${currentBuild.fullDisplayName}")
             //执行流程
             deployPipelineIndex.each {
@@ -123,6 +123,39 @@ def defaultConfigPath(EFileReadType eConfigType) {
         throw new Exception("暂无默认配置类型")
     }
     return configPath
+}
+
+//合并配置customConfig >> extendConfig >> defaultConfig = fullConfig
+def mergeConfig(Map customConfig) {
+
+    def fullConfig = [:]
+    def extendConfig = [:]
+    def defaultConfig = [:]
+    //读取默认配置文件
+    defaultConfig = new ConfigUtils(this).readConfig(EFileReadType.RESOURCES, defaultConfigPath(EFileReadType.RESOURCES))
+    echo "customConfig: ${customConfig.toString()}"
+    echo "defaultConfig: ${defaultConfig.toString()}"
+    //读取继承配置文件
+    if (ObjectUtil.isNotEmpty(customConfig.CONFIG_EXTEND) && ObjectUtil.isNotEmpty(EFileReadType.get(customConfig.CONFIG_EXTEND.configFullPath))) {
+        extendConfig = new ConfigUtils(this).readConfigFromFullPath(customConfig.CONFIG_EXTEND.configFullPath)
+        echo "extendConfig: ${extendConfig.toString()}"
+    }
+    //合并自定义配置
+    fullConfig = MapUtils.merge([defaultConfig, extendConfig, customConfig])
+
+    //根据自定义构建参数，修改配置
+    Config fullConfigParams = ConfigFactory.parseMap(fullConfig)
+    echo "fullConfigParams: ${fullConfigParams.toString()}"
+    params.each {
+        fullConfigParams = fullConfigParams.withValue(it.key, ConfigValueFactory.fromAnyRef(it.value))
+    }
+
+    echo "fullConfigParams2: ${fullConfigParams.toString()}"
+
+    fullConfig = fullConfigParams.root().unwrapped()
+
+    echo "fullConfigParams3: ${fullConfig}"
+    return MapUtils.deepCopy(fullConfig)
 }
 
 //合并配置customConfig >> extendConfig >> defaultConfig = fullConfig
