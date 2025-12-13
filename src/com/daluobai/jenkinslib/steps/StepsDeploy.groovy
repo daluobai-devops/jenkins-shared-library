@@ -66,7 +66,7 @@ class StepsDeploy implements Serializable {
                     //健康检查
                     if (readinessProbeMap != null) {
                         def healthAll = true
-                        if (ObjUtils.isNotEmpty(readinessProbeMap.tcp) && (readinessProbeMap.tcp.enable == null || readinessProbeMap.tcp.enable)) {
+                        if (healthAll && ObjUtils.isNotEmpty(readinessProbeMap.tcp) && (readinessProbeMap.tcp.enable == null || readinessProbeMap.tcp.enable)) {
                             def healthCheck = endpointUtils.healthCheckWithLocalTCPPort(readinessProbeMap.tcp.port, readinessProbeMap.period, readinessProbeMap.failureThreshold)
                             if (!healthCheck) {
                                 healthAll = false
@@ -74,7 +74,7 @@ class StepsDeploy implements Serializable {
                             }
                             steps.echo "tcp，${healthCheck}"
                         }
-                        if (ObjUtils.isNotEmpty(readinessProbeMap.http) && (readinessProbeMap.http.enable == null || readinessProbeMap.http.enable)) {
+                        if (healthAll && ObjUtils.isNotEmpty(readinessProbeMap.http) && (readinessProbeMap.http.enable == null || readinessProbeMap.http.enable)) {
                             def healthCheck = endpointUtils.healthCheckWithHttp("http://localhost:${readinessProbeMap.http.port}${readinessProbeMap.http.path}", readinessProbeMap.http.timeout, readinessProbeMap.period, readinessProbeMap.failureThreshold)
                             if (!healthCheck) {
                                 healthAll = false
@@ -82,7 +82,7 @@ class StepsDeploy implements Serializable {
                             }
                             steps.echo "http，${healthCheck}"
                         }
-                        if (ObjUtils.isNotEmpty(readinessProbeMap.cmd) && (readinessProbeMap.cmd.enable == null || readinessProbeMap.cmd.enable)) {
+                        if (healthAll && ObjUtils.isNotEmpty(readinessProbeMap.cmd) && (readinessProbeMap.cmd.enable == null || readinessProbeMap.cmd.enable)) {
                             def healthCheck = endpointUtils.healthCheckWithCMD(readinessProbeMap.cmd.command, readinessProbeMap.cmd.timeout, readinessProbeMap.period, readinessProbeMap.failureThreshold)
                             if (!healthCheck) {
                                 healthAll = false
