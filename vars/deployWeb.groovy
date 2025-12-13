@@ -1,4 +1,3 @@
-@GrabResolver(name='aliyun', root='https://maven.aliyun.com/repository/public')
 import com.daluobai.jenkinslib.utils.AssertUtils
 import com.daluobai.jenkinslib.utils.StrUtils
 import com.daluobai.jenkinslib.utils.ObjUtils
