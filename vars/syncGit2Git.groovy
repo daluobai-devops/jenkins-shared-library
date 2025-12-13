@@ -1,8 +1,8 @@
 @GrabResolver(name='aliyun', root='https://maven.aliyun.com/repository/public')
-@Grab('cn.hutool:hutool-all:5.8.42')
 @Grab('com.typesafe:config:1.4.2')
-import cn.hutool.core.lang.Assert
-import cn.hutool.core.util.StrUtil
+import com.daluobai.jenkinslib.utils.AssertUtils
+import com.daluobai.jenkinslib.utils.StrUtils
+import com.daluobai.jenkinslib.utils.ObjUtils
 import com.daluobai.jenkinslib.constant.EBuildStatusType
 import com.daluobai.jenkinslib.constant.EFileReadType
 import com.daluobai.jenkinslib.steps.StepsBuildNpm
@@ -11,7 +11,6 @@ import com.daluobai.jenkinslib.steps.StepsJenkins
 import com.daluobai.jenkinslib.steps.StepsWeb
 import com.daluobai.jenkinslib.utils.ConfigUtils
 import com.daluobai.jenkinslib.utils.MapUtils
-import cn.hutool.core.util.ObjectUtil
 import com.daluobai.jenkinslib.utils.MessageUtils
 
 /**
@@ -33,7 +32,7 @@ def call(Map customConfig) {
     //用来运行构建的节点
     def nodeBuildNodeList = stepsJenkins.getNodeByLabel("buildNode")
     echo "获取到节点:${nodeBuildNodeList}"
-    if (ObjectUtil.isEmpty(nodeBuildNodeList)) {
+    if (ObjUtils.isEmpty(nodeBuildNodeList)) {
         error '没有可用的构建节点'
     }
     /***初始化参数 开始**/
@@ -61,7 +60,7 @@ def call(Map customConfig) {
             }
             throw e
         } finally {
-            if (ObjectUtil.isNotEmpty(customConfig.SHARE_PARAM.message)) {
+            if (ObjUtils.isNotEmpty(customConfig.SHARE_PARAM.message)) {
                 def messageTitle = ""
                 def messageContent = ""
                 if (eBuildStatusType == EBuildStatusType.SUCCESS) {
@@ -73,7 +72,7 @@ def call(Map customConfig) {
                 } else if (eBuildStatusType == EBuildStatusType.ABORTED) {
                     //发布终止
                 }
-                if (StrUtil.isNotBlank(messageTitle) && StrUtil.isNotBlank(messageContent)) {
+                if (StrUtils.isNotBlank(messageTitle) && StrUtils.isNotBlank(messageContent)) {
                     messageUtils.sendMessage(customConfig.SHARE_PARAM.message, messageTitle, messageContent)
                 }
             }
@@ -84,7 +83,7 @@ def call(Map customConfig) {
 
 //获取默认配置路径
 def defaultConfigPath(EFileReadType eConfigType) {
-    Assert.notNull(eConfigType, "配置类型为空")
+    AssertUtils.notNull(eConfigType, "配置类型为空")
     def configPath = null
     if (eConfigType == EFileReadType.HOST_PATH) {
         configPath = "/usr/local/workspace/config/jenkins-pipeline/jenkins-pipeline-config/config.json"
@@ -107,7 +106,7 @@ def mergeConfig(Map customConfig) {
     echo "customConfig: ${customConfig.toString()}"
     echo "defaultConfig: ${defaultConfig.toString()}"
     //读取继承配置文件
-    if (ObjectUtil.isNotEmpty(customConfig.CONFIG_EXTEND) && ObjectUtil.isNotEmpty(EFileReadType.get(customConfig.CONFIG_EXTEND.configFullPath))) {
+    if (ObjUtils.isNotEmpty(customConfig.CONFIG_EXTEND) && ObjUtils.isNotEmpty(EFileReadType.get(customConfig.CONFIG_EXTEND.configFullPath))) {
         extendConfig = new ConfigUtils(this).readConfigFromFullPath(customConfig.CONFIG_EXTEND.configFullPath)
         echo "extendConfig: ${extendConfig.toString()}"
     }

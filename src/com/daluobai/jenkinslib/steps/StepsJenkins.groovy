@@ -1,11 +1,9 @@
 package com.daluobai.jenkinslib.steps
 
-import cn.hutool.core.date.DateUtil
-@Grab('cn.hutool:hutool-all:5.8.42')
-
-import cn.hutool.core.lang.Assert
-import cn.hutool.core.util.ObjectUtil
-import cn.hutool.core.util.StrUtil
+import com.daluobai.jenkinslib.utils.DateUtils
+import com.daluobai.jenkinslib.utils.AssertUtils
+import com.daluobai.jenkinslib.utils.ObjUtils
+import com.daluobai.jenkinslib.utils.StrUtils
 import com.daluobai.jenkinslib.constant.GlobalShare
 /**
  * @author daluobai@outlook.com
@@ -28,14 +26,14 @@ class StepsJenkins implements Serializable {
      *
      */
     def stash(Map parameterMap) {
-        Assert.notEmpty(parameterMap,"参数为空")
+        AssertUtils.notEmpty(parameterMap,"参数为空")
         def archiveType = parameterMap.archiveType
         def jenkinsStash = parameterMap.jenkinsStash
         def archiveArtifacts = parameterMap.archiveArtifacts
         def dockerRegistry = parameterMap.dockerRegistry
         def dockerfile = parameterMap?.dockerRegistry?.dockerfile
         def fullConfig = steps.globalParameterMap
-        Assert.notBlank(archiveType,"archiveType为空")
+        AssertUtils.notBlank(archiveType,"archiveType为空")
         def includes
         def archiveName
         steps.sh "ls package -l"
@@ -74,7 +72,7 @@ class StepsJenkins implements Serializable {
             def jobName = steps.currentBuild.projectName
             //获取archiveName的后缀
             def archiveSuffix = archiveName.substring(archiveName.indexOf(".") + 1);
-            def archiveArtifactName = "${steps.currentBuild.projectName}-${DateUtil.format(new Date(), "yyyyMMddHHmmss")}.${archiveSuffix}"
+            def archiveArtifactName = "${steps.currentBuild.projectName}-${DateUtils.format(new Date(), "yyyyMMddHHmmss")}.${archiveSuffix}"
             steps.sh "\\cp -f ${includes} package/${archiveArtifactName} || true"
             steps.archiveArtifacts artifacts: "package/${archiveArtifactName}", followSymlinks: false
         }
@@ -96,13 +94,13 @@ class StepsJenkins implements Serializable {
             def buildArgs = ""
             if (dockerRegistry.buildArgs != null && dockerRegistry.buildArgs.size() > 0) {
                 dockerRegistry.buildArgs.each { key, value ->
-                    if (StrUtil.isNotBlank(value) && StrUtil.isNotBlank(key)){
+                    if (StrUtils.isNotBlank(value) && StrUtils.isNotBlank(key)){
                         buildArgs += "--build-arg \'${key}\'=\'${value}\' "
                     }
                 }
             }
-            def imageName = StrUtil.isBlank(dockerRegistry.imageName) ? fullConfig.SHARE_PARAM.appName : dockerRegistry.imageName
-            def imageVersion = StrUtil.isBlank(dockerRegistry.imageVersion) ? DateUtil.format(new Date(), "yyyyMMddHHmmss") : dockerRegistry.imageVersion
+            def imageName = StrUtils.isBlank(dockerRegistry.imageName) ? fullConfig.SHARE_PARAM.appName : dockerRegistry.imageName
+            def imageVersion = StrUtils.isBlank(dockerRegistry.imageVersion) ? DateUtils.format(new Date(), "yyyyMMddHHmmss") : dockerRegistry.imageVersion
             steps.dir("stash/dockerRegistry/code/code/${dockerfile.path}") {
                 steps.sh "ls -l"
                 steps.sh "docker build ${buildArgs} -t ${dockerRegistry.imagePrefix}/${imageName}:${imageVersion} ."
@@ -118,12 +116,12 @@ class StepsJenkins implements Serializable {
      *
      */
     def getNodeByLabel(String label) {
-        Assert.notBlank(label,"label为空")
+        AssertUtils.notBlank(label,"label为空")
         def nodeBuildNodeList = steps.nodesByLabel label: label
         if (nodeBuildNodeList != null && nodeBuildNodeList.size() > 0) {
             //这里因为如果是 master 节点返回的数组是空字符串，所以这里需要判断一下
             for (i in 0..< nodeBuildNodeList.size()) {
-                if (StrUtil.isBlank(nodeBuildNodeList[i])){
+                if (StrUtils.isBlank(nodeBuildNodeList[i])){
                     nodeBuildNodeList[i] = "master"
                 }
             }

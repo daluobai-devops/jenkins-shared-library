@@ -1,12 +1,9 @@
 package com.daluobai.jenkinslib.steps
 
-import cn.hutool.core.date.DateUtil
-import cn.hutool.core.lang.Assert
-
-//@Grab('cn.hutool:hutool-all:5.8.42')
-
-import cn.hutool.core.util.ObjectUtil
-import cn.hutool.core.util.StrUtil
+import com.daluobai.jenkinslib.utils.DateUtils
+import com.daluobai.jenkinslib.utils.AssertUtils
+import com.daluobai.jenkinslib.utils.ObjUtils
+import com.daluobai.jenkinslib.utils.StrUtils
 import com.daluobai.jenkinslib.constant.GlobalShare
 import com.daluobai.jenkinslib.utils.TemplateUtils
 /**
@@ -28,7 +25,7 @@ class StepsWeb implements Serializable {
     //发布
     def deploy(Map parameterMap) {
         steps.echo "StepsJavaWeb:${parameterMap}"
-        Assert.notEmpty(parameterMap,"参数为空")
+        AssertUtils.notEmpty(parameterMap,"参数为空")
         def labels = parameterMap.labels
         def pathRoot = parameterMap.pathRoot
         def globalParameterMap = steps.globalParameterMap
@@ -36,10 +33,10 @@ class StepsWeb implements Serializable {
         def archiveName = globalParameterMap.SHARE_PARAM.archiveName
         def configStepsStorage = globalParameterMap.DEPLOY_PIPELINE.stepsStorage
         //获取文件名后缀
-        def archiveSuffix = StrUtil.subAfter(archiveName, ".", true)
-        Assert.notEmpty(labels,"labels为空")
+        def archiveSuffix = StrUtils.subAfter(archiveName, ".", true)
+        AssertUtils.notEmpty(labels,"labels为空")
 
-        def backAppName = "app-" + DateUtil.format(new Date(), "yyyyMMddHHmmss") + "." + archiveSuffix
+        def backAppName = "app-" + DateUtils.format(new Date(), "yyyyMMddHHmmss") + "." + archiveSuffix
 //        steps.withCredentials([steps.sshUserPrivateKey(credentialsId: 'ssh-jenkins', keyFileVariable: 'SSH_KEY_PATH')]) {
 //            steps.sh "mkdir -p ~/.ssh && chmod 700 ~/.ssh && rm -f ~/.ssh/id_rsa && cp \${SSH_KEY_PATH} ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa"
 //        }
@@ -48,7 +45,7 @@ class StepsWeb implements Serializable {
             steps.echo "发布第一个标签:${label}"
             def nodeDeployNodeList = stepsJenkins.getNodeByLabel(label)
             steps.echo "获取到发布节点:${nodeDeployNodeList}"
-            if (ObjectUtil.isEmpty(nodeDeployNodeList)) {
+            if (ObjUtils.isEmpty(nodeDeployNodeList)) {
                 steps.error '没有可用的发布节点'
             }
             nodeDeployNodeList.each{ d ->

@@ -1,10 +1,9 @@
 package com.daluobai.jenkinslib.utils
 
-import cn.hutool.core.io.FileUtil
-@Grab('cn.hutool:hutool-all:5.8.42')
-import cn.hutool.core.lang.Assert
-import cn.hutool.core.util.StrUtil
-import cn.hutool.http.HttpUtil
+import com.daluobai.jenkinslib.utils.IoUtils
+import com.daluobai.jenkinslib.utils.AssertUtils
+import com.daluobai.jenkinslib.utils.StrUtils
+import com.daluobai.jenkinslib.utils.HttpUtils
 import com.daluobai.jenkinslib.constant.EFileReadType
 
 import java.nio.charset.Charset
@@ -27,10 +26,10 @@ class FileUtils implements Serializable {
      * @return
      */
     def readStringFromFullPath(String fileFullPath) {
-        Assert.notBlank(fileFullPath, "fileFullPath为空");
-        def configType = StrUtil.subBefore(fileFullPath, ":", false)
+        AssertUtils.notBlank(fileFullPath, "fileFullPath为空");
+        def configType = StrUtils.subBefore(fileFullPath, ":", false)
         //获取后缀
-        def path = StrUtil.subAfter(fileFullPath, ":", false)
+        def path = StrUtils.subAfter(fileFullPath, ":", false)
         EFileReadType extendConfigType = EFileReadType.get(configType)
         return this.readString(extendConfigType, path)
     }
@@ -41,18 +40,18 @@ class FileUtils implements Serializable {
  * @return
  */
     def readString(EFileReadType eConfigType, String path) {
-        Assert.notNull(eConfigType, "配置类型为空");
-        Assert.notBlank(path, "path为空")
+        AssertUtils.notNull(eConfigType, "配置类型为空");
+        AssertUtils.notBlank(path, "path为空")
         def fileString = ""
         if (eConfigType == EFileReadType.HOST_PATH) {
             def file = new File(path)
-            boolean isFile = FileUtil.isFile(file)
-            Assert.isTrue(isFile, "配置文件不存在")
-            fileString = FileUtil.readString(file, Charset.forName("utf-8"))
+            boolean isFile = IoUtils.isFile(file)
+            AssertUtils.isTrue(isFile, "配置文件不存在")
+            fileString = IoUtils.readString(file, Charset.forName("utf-8"))
         } else if (eConfigType == EFileReadType.RESOURCES) {
             fileString = steps.libraryResource path
         } else if (eConfigType == EFileReadType.URL) {
-            fileString = HttpUtil.get(path)
+            fileString = HttpUtils.get(path)
         } else {
             throw new Exception("暂不支持的配置类型")
         }

@@ -1,11 +1,6 @@
 package com.daluobai.jenkinslib.utils
 
-@Grab('cn.hutool:hutool-all:5.8.42')
-import cn.hutool.json.JSONUtil
-import cn.hutool.core.util.StrUtil
-import cn.hutool.core.lang.Assert
-import cn.hutool.core.io.FileUtil
-import java.util.regex.Pattern;
+import com.daluobai.jenkinslib.utils.AssertUtils
 /**
  * @author daluobai@outlook.com
  * version 1.0.0
@@ -24,8 +19,8 @@ class TemplateUtils implements Serializable {
      */
     @Deprecated
     def stringTemplate(stringTemplateContent, dataMap) {
-        Assert.notBlank(stringTemplateContent, "stringTemplateContent为空");
-        Assert.notNull(dataMap, "dataMap为空");
+        AssertUtils.notBlank(stringTemplateContent, "stringTemplateContent为空");
+        AssertUtils.notNull(dataMap, "dataMap为空");
 
         def engine = new groovy.text.GStringTemplateEngine()
         def template = engine.createTemplate(stringTemplateContent).make(dataMap)
@@ -39,8 +34,8 @@ class TemplateUtils implements Serializable {
      * @return
      */
     static def makeTemplate(stringTemplateContent, dataMap) {
-        Assert.notBlank(stringTemplateContent, "stringTemplateContent为空");
-        Assert.notNull(dataMap, "dataMap为空");
+        AssertUtils.notBlank(stringTemplateContent, "stringTemplateContent为空");
+        AssertUtils.notNull(dataMap, "dataMap为空");
 
         def engine = new groovy.text.GStringTemplateEngine()
         def template = engine.createTemplate(stringTemplateContent).make(dataMap)

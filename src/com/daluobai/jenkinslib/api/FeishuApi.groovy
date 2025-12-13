@@ -1,11 +1,9 @@
 package com.daluobai.jenkinslib.api
 
-@Grab('cn.hutool:hutool-all:5.8.42')
-import cn.hutool.http.HttpUtil
-import cn.hutool.core.lang.Assert
-import cn.hutool.json.JSONObject
-import cn.hutool.json.JSONUtil
-import cn.hutool.core.util.StrUtil
+import com.daluobai.jenkinslib.utils.HttpUtils
+import com.daluobai.jenkinslib.utils.AssertUtils
+import com.daluobai.jenkinslib.utils.JsonUtils
+import com.daluobai.jenkinslib.utils.StrUtils
 /**
  * @author daluobai@outlook.com
  * version 1.0.0
@@ -25,26 +23,26 @@ class FeishuApi implements Serializable {
      * @return
      */
     def sendMsg(String chatToken,String title,String text) {
-        Assert.notBlank(chatToken,"chatToken空的");
-        Assert.notBlank(title,"title空的");
-        Assert.notBlank(text,"text空的");
+        AssertUtils.notBlank(chatToken,"chatToken空的");
+        AssertUtils.notBlank(title,"title空的");
+        AssertUtils.notBlank(text,"text空的");
 
         Map<String,Object> params = new HashMap<>();
         params.put("title",title);
         params.put("text",text);
 
-        String paramsStr = JSONUtil.toJsonStr(params);
+        String paramsStr = JsonUtils.toJsonStr(params);
         String response = "";
         try {
-            response = HttpUtil.post("https://open.feishu.cn/open-apis/bot/hook/"+chatToken,
+            response = HttpUtils.post("https://open.feishu.cn/open-apis/bot/hook/"+chatToken,
                     paramsStr);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (StrUtil.isBlank(response)){
+        if (StrUtils.isBlank(response)){
             return false
         }
-        cn.hutool.json.JSONObject responseJson = JSONUtil.parseObj(response);
+        JsonUtils.JSONObject responseJson = JsonUtils.parseObj(response);
 
         Boolean ok = responseJson.getBool("ok");
         return !(ok == null || !ok);

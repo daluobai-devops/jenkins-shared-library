@@ -1,10 +1,8 @@
 package com.daluobai.jenkinslib.steps
 
-@Grab('cn.hutool:hutool-all:5.8.42')
-
-import cn.hutool.core.lang.Assert
-import cn.hutool.core.util.NumberUtil
-import cn.hutool.core.util.StrUtil
+import com.daluobai.jenkinslib.utils.AssertUtils
+import com.daluobai.jenkinslib.utils.NumberUtils
+import com.daluobai.jenkinslib.utils.StrUtils
 import com.cloudbees.groovy.cps.NonCPS
 
 /**
@@ -42,7 +40,7 @@ class StepsGit implements Serializable {
         if (domainHostAndPortMap != null) {
             def host = domainHostAndPortMap.host
             def portStr = domainHostAndPortMap.portStr
-            if (StrUtil.isNotBlank(portStr)){
+            if (StrUtils.isNotBlank(portStr)){
                 portStr = "-p ${portStr}"
             }
             steps.echo "=====xxxx:端口:${portStr} 地址:${host} >> ${filePath}"
@@ -69,7 +67,7 @@ class StepsGit implements Serializable {
             def host = matcher.group(1) // 提取 host
             def port = matcher.group(2) // 提取 port，默认为 default
             String portStr = "";
-            if (StrUtil.isNotBlank(port) && NumberUtil.isNumber(port)) {
+            if (StrUtils.isNotBlank(port) && NumberUtils.isNumber(port)) {
                 portStr = String.valueOf(port)
             }
             steps.echo "Host: ${host}, Port: ${portStr}"
@@ -88,7 +86,7 @@ class StepsGit implements Serializable {
             def host = matcher[0][1] // 捕获组 1：主机名/IP
             def port = matcher[0][2] // 捕获组 2：端口号（如果有）
             String portStr = "";
-            if (StrUtil.isNotBlank(port) && NumberUtil.isNumber(port)) {
+            if (StrUtils.isNotBlank(port) && NumberUtils.isNumber(port)) {
                 portStr = String.valueOf(port)
             }
 
@@ -104,7 +102,7 @@ class StepsGit implements Serializable {
      * @return
      */
     def saveJenkinsSSHKey(String credentialsId, String path = '~/.ssh') {
-        Assert.notBlank(credentialsId, "credentialsId为空")
+        AssertUtils.notBlank(credentialsId, "credentialsId为空")
         steps.withCredentials([steps.sshUserPrivateKey(credentialsId: "${credentialsId}", keyFileVariable: 'SSH_KEY_PATH')]) {
             steps.sh "cat /etc/hostname && pwd && mkdir -p ${path} && chmod 700 ${path} && rm -f ${path}/id_rsa && cp \${SSH_KEY_PATH} ${path}/id_rsa || true && chmod 600 ${path}/id_rsa"
         }

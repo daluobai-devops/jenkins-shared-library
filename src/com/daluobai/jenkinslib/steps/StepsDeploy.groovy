@@ -1,11 +1,10 @@
 package com.daluobai.jenkinslib.steps
 
 @Grab('org.reflections:reflections:0.9.9-RC1')
-@Grab('cn.hutool:hutool-all:5.8.42')
-import cn.hutool.core.date.DateUtil
-import cn.hutool.core.lang.Assert
-import cn.hutool.core.util.ObjectUtil
-import cn.hutool.core.util.StrUtil
+import com.daluobai.jenkinslib.utils.DateUtils
+import com.daluobai.jenkinslib.utils.AssertUtils
+import com.daluobai.jenkinslib.utils.ObjUtils
+import com.daluobai.jenkinslib.utils.StrUtils
 import com.daluobai.jenkinslib.constant.GlobalShare
 import com.daluobai.jenkinslib.utils.EndpointUtils
 
@@ -31,7 +30,7 @@ class StepsDeploy implements Serializable {
     //发布
     def deploy(Map parameterMap) {
         steps.echo "StepsJavaWeb:${parameterMap}"
-        Assert.notEmpty(parameterMap, "参数为空")
+        AssertUtils.notEmpty(parameterMap, "参数为空")
         def labels = parameterMap.labels
         def enable = parameterMap.enable
         def readinessProbeMap = parameterMap.readinessProbe
@@ -40,34 +39,34 @@ class StepsDeploy implements Serializable {
         def appName = globalParameterMap.SHARE_PARAM.appName
         def archiveName = globalParameterMap.SHARE_PARAM.archiveName
         //获取文件名后缀
-        def archiveSuffix = StrUtil.subAfter(archiveName, ".", true)
+        def archiveSuffix = StrUtils.subAfter(archiveName, ".", true)
         //获取文件名
-        def archiveOnlyName = StrUtil.subBefore(archiveName, ".", true)
-        Assert.notEmpty(labels, "labels为空")
+        def archiveOnlyName = StrUtils.subBefore(archiveName, ".", true)
+        AssertUtils.notEmpty(labels, "labels为空")
 
-        def backAppName = "app-" + DateUtil.format(new Date(), "yyyyMMddHHmmss") + "." + archiveSuffix
+        def backAppName = "app-" + DateUtils.format(new Date(), "yyyyMMddHHmmss") + "." + archiveSuffix
 
         labels.each { c ->
             def label = c
             steps.echo "发布节点:${label}"
             def nodeDeployNodeList = stepsJenkins.getNodeByLabel(label)
             steps.echo "获取到发布节点:${nodeDeployNodeList}"
-            if (ObjectUtil.isEmpty(nodeDeployNodeList)) {
+            if (ObjUtils.isEmpty(nodeDeployNodeList)) {
                 steps.error '没有可用的发布节点'
             }
             nodeDeployNodeList.each { d ->
                 def nodeDeployNode = d
                 steps.echo "开始发布:${nodeDeployNode}"
                 steps.node(nodeDeployNode) {
-                    if (ObjectUtil.isNotEmpty(parameterMap.stepsJavaWebDeployToService)) {
+                    if (ObjUtils.isNotEmpty(parameterMap.stepsJavaWebDeployToService)) {
                         stepsJavaWeb.deploy(parameterMap.stepsJavaWebDeployToService)
-                    } else if (ObjectUtil.isNotEmpty(parameterMap.stepsTomcatDeploy)) {
+                    } else if (ObjUtils.isNotEmpty(parameterMap.stepsTomcatDeploy)) {
                         stepsTomcat.deploy(parameterMap.stepsJavaWebDeployToTomcat)
                     }
                     //健康检查
                     if (readinessProbeMap != null) {
                         def healthAll = true
-                        if (ObjectUtil.isNotEmpty(readinessProbeMap.tcp) && (readinessProbeMap.tcp.enable == null || readinessProbeMap.tcp.enable)) {
+                        if (ObjUtils.isNotEmpty(readinessProbeMap.tcp) && (readinessProbeMap.tcp.enable == null || readinessProbeMap.tcp.enable)) {
                             def healthCheck = endpointUtils.healthCheckWithLocalTCPPort(readinessProbeMap.tcp.port, readinessProbeMap.period, readinessProbeMap.failureThreshold)
                             if (!healthCheck) {
                                 healthAll = false
@@ -75,7 +74,7 @@ class StepsDeploy implements Serializable {
                             }
                             steps.echo "tcp，${healthCheck}"
                         }
-                        if (ObjectUtil.isNotEmpty(readinessProbeMap.http) && (readinessProbeMap.http.enable == null || readinessProbeMap.http.enable)) {
+                        if (ObjUtils.isNotEmpty(readinessProbeMap.http) && (readinessProbeMap.http.enable == null || readinessProbeMap.http.enable)) {
                             def healthCheck = endpointUtils.healthCheckWithHttp("http://localhost:${readinessProbeMap.http.port}${readinessProbeMap.http.path}", readinessProbeMap.http.timeout, readinessProbeMap.period, readinessProbeMap.failureThreshold)
                             if (!healthCheck) {
                                 healthAll = false
@@ -83,7 +82,7 @@ class StepsDeploy implements Serializable {
                             }
                             steps.echo "http，${healthCheck}"
                         }
-                        if (ObjectUtil.isNotEmpty(readinessProbeMap.cmd) && (readinessProbeMap.cmd.enable == null || readinessProbeMap.cmd.enable)) {
+                        if (ObjUtils.isNotEmpty(readinessProbeMap.cmd) && (readinessProbeMap.cmd.enable == null || readinessProbeMap.cmd.enable)) {
                             def healthCheck = endpointUtils.healthCheckWithCMD(readinessProbeMap.cmd.command, readinessProbeMap.cmd.timeout, readinessProbeMap.period, readinessProbeMap.failureThreshold)
                             if (!healthCheck) {
                                 healthAll = false
@@ -96,7 +95,7 @@ class StepsDeploy implements Serializable {
                         }
                     }
                     //所有部署流程执行完成后运行的命令
-                    if (StrUtil.isNotBlank(afterRunCMD)) {
+                    if (StrUtils.isNotBlank(afterRunCMD)) {
                         steps.sh "${afterRunCMD}"
                     }
                 }

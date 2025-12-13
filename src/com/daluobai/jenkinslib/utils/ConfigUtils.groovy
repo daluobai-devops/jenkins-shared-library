@@ -1,10 +1,9 @@
 package com.daluobai.jenkinslib.utils
 
-@Grab('cn.hutool:hutool-all:5.8.42')
-import cn.hutool.core.lang.Assert
-import cn.hutool.core.io.FileUtil
-import cn.hutool.core.util.StrUtil
-import cn.hutool.http.HttpUtil
+import com.daluobai.jenkinslib.utils.AssertUtils
+import com.daluobai.jenkinslib.utils.IoUtils
+import com.daluobai.jenkinslib.utils.StrUtils
+import com.daluobai.jenkinslib.utils.HttpUtils
 import com.daluobai.jenkinslib.constant.EFileReadType
 import java.nio.charset.Charset
 /**
@@ -26,10 +25,10 @@ class ConfigUtils implements Serializable {
      * @return
      */
     def readConfigFromFullPath(String configFullPath) {
-        Assert.notBlank(configFullPath, "configFullPath为空");
-        def configType = StrUtil.subBefore(configFullPath, ":", false)
+        AssertUtils.notBlank(configFullPath, "configFullPath为空");
+        def configType = StrUtils.subBefore(configFullPath, ":", false)
         //获取后缀
-        def path = StrUtil.subAfter(configFullPath, ":", false)
+        def path = StrUtils.subAfter(configFullPath, ":", false)
         EFileReadType extendConfigType = EFileReadType.get(configType)
         return this.readConfig(extendConfigType, path)
     }
@@ -40,14 +39,14 @@ class ConfigUtils implements Serializable {
  * @return
  */
     def readConfig(EFileReadType eConfigType, String path) {
-        Assert.notNull(eConfigType, "配置类型为空");
-        Assert.notBlank(path, "path为空");
+        AssertUtils.notNull(eConfigType, "配置类型为空");
+        AssertUtils.notBlank(path, "path为空");
         def configMap = [:]
         def configStr = new FileUtils(steps).readString(eConfigType, path)
         if (eConfigType == EFileReadType.HOST_PATH) {
             def file = new File(path)
-            boolean isFile = FileUtil.isFile(file)
-            Assert.isTrue(isFile, "配置文件不存在")
+            boolean isFile = IoUtils.isFile(file)
+            AssertUtils.isTrue(isFile, "配置文件不存在")
             configMap = MapUtils.mapJsonString2Map(configStr)
         } else if (eConfigType == EFileReadType.RESOURCES) {
             configMap = MapUtils.mapJsonString2Map(configStr)
@@ -56,7 +55,7 @@ class ConfigUtils implements Serializable {
         } else {
             throw new Exception("暂不支持的配置类型")
         }
-        Assert.notNull(configMap, "配置文件读取失败");
+        AssertUtils.notNull(configMap, "配置文件读取失败");
         return configMap
     }
 }

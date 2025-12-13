@@ -1,10 +1,8 @@
 package com.daluobai.jenkinslib.steps
 
-import cn.hutool.core.lang.Assert
-import cn.hutool.core.util.ObjectUtil
-@Grab('cn.hutool:hutool-all:5.8.42')
-
-import cn.hutool.core.util.StrUtil
+import com.daluobai.jenkinslib.utils.AssertUtils
+import com.daluobai.jenkinslib.utils.ObjUtils
+import com.daluobai.jenkinslib.utils.StrUtils
 import com.daluobai.jenkinslib.utils.ConfigUtils
 import com.daluobai.jenkinslib.utils.FileUtils
 /**
@@ -36,9 +34,9 @@ class StepsBuildNpm implements Serializable {
         //流程配置-存储
         def configStepsStorage = configMap.DEPLOY_PIPELINE.stepsStorage
 
-        Assert.notNull(configDefault, "DEFAULT_CONFIG为空")
-        Assert.notNull(configShare, "SHARE_PARAM为空")
-        Assert.notNull(configSteps, "DEPLOY_PIPELINE.stepsBuildNpm为空")
+        AssertUtils.notNull(configDefault, "DEFAULT_CONFIG为空")
+        AssertUtils.notNull(configShare, "SHARE_PARAM为空")
+        AssertUtils.notNull(configSteps, "DEPLOY_PIPELINE.stepsBuildNpm为空")
 
         def pathBase = "${steps.env.WORKSPACE}"
         //docker-构建产物目录
@@ -52,12 +50,12 @@ class StepsBuildNpm implements Serializable {
         steps.sh "mkdir -p ${steps.env.WORKSPACE}/${pathCode}"
         steps.sh "mkdir -p ${steps.env.WORKSPACE}/${pathSSHKey}"
 
-        def dockerBuildImage = StrUtil.isNotBlank(configSteps.dockerBuildImage) ? configSteps.dockerBuildImage : "registry.cn-hangzhou.aliyuncs.com/wuzhaozhongguo/build-npm:10.16.0"
+        def dockerBuildImage = StrUtils.isNotBlank(configSteps.dockerBuildImage) ? configSteps.dockerBuildImage : "registry.cn-hangzhou.aliyuncs.com/wuzhaozhongguo/build-npm:10.16.0"
         def dockerBuildImageUrl = "${dockerBuildImage}"
 
         //如果没有提供登录密钥则不登录
-        def dockerLoginDomain = StrUtil.isNotBlank(configDefault.docker.registry.credentialsId) ? "https://${configDefault.docker.registry.domain}" : ""
-        def dockerLoginCredentialsId = StrUtil.isNotBlank(configDefault.docker.registry.credentialsId) ? configDefault.docker.registry.credentialsId : ""
+        def dockerLoginDomain = StrUtils.isNotBlank(configDefault.docker.registry.credentialsId) ? "https://${configDefault.docker.registry.domain}" : ""
+        def dockerLoginCredentialsId = StrUtils.isNotBlank(configDefault.docker.registry.credentialsId) ? configDefault.docker.registry.credentialsId : ""
 
         steps.withDockerRegistry(credentialsId: dockerLoginCredentialsId, url: dockerLoginDomain) {
 
@@ -78,7 +76,7 @@ class StepsBuildNpm implements Serializable {
                 //生成known_hosts
                 stepsGit.sshKeyscan("${configSteps.gitUrl}", "~/.ssh/known_hosts")
                 //不使用缓存node_modules
-                if (ObjectUtil.isNotEmpty(configSteps["cacheNodeModules"]) && !configSteps["cacheNodeModules"]){
+                if (ObjUtils.isNotEmpty(configSteps["cacheNodeModules"]) && !configSteps["cacheNodeModules"]){
 //                    steps.sh "rm -rf ${dockerModulesProjectPath}/node_modules || true"
                 }
                 steps.sh """

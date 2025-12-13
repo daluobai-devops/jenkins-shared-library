@@ -1,11 +1,9 @@
 package com.daluobai.jenkinslib.api
 
-@Grab('cn.hutool:hutool-all:5.8.42')
-import cn.hutool.http.HttpUtil
-import cn.hutool.core.lang.Assert
-import cn.hutool.json.JSONObject
-import cn.hutool.json.JSONUtil
-import cn.hutool.core.util.StrUtil
+import com.daluobai.jenkinslib.utils.HttpUtils
+import com.daluobai.jenkinslib.utils.AssertUtils
+import com.daluobai.jenkinslib.utils.JsonUtils
+import com.daluobai.jenkinslib.utils.StrUtils
 /**
  * @author daluobai@outlook.com
  * version 1.0.0
@@ -25,26 +23,26 @@ class DingDingApi implements Serializable {
      * @return
      */
     def sendMsg(String accessToken,String text) {
-        Assert.notBlank(accessToken,"accessToken空的");
-        Assert.notBlank(text,"text空的");
+        AssertUtils.notBlank(accessToken,"accessToken空的");
+        AssertUtils.notBlank(text,"text空的");
         Map<String,Object> params = new HashMap<>();
         params.put("msgtype","text");
         Map<String,Object> paramsText = new HashMap<>();
         paramsText.put("content",text);
         params.put("text",paramsText);
 
-        String paramsStr = JSONUtil.toJsonStr(params);
+        String paramsStr = JsonUtils.toJsonStr(params);
         String response = "";
         try {
-            response = HttpUtil.post("https://oapi.dingtalk.com/robot/send?access_token="+accessToken,
+            response = HttpUtils.post("https://oapi.dingtalk.com/robot/send?access_token="+accessToken,
                     paramsStr);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (StrUtil.isBlank(response)){
+        if (StrUtils.isBlank(response)){
             return false
         }
-        cn.hutool.json.JSONObject responseJson = JSONUtil.parseObj(response);
+        JsonUtils.JSONObject responseJson = JsonUtils.parseObj(response);
 
         def errcode = responseJson.getInt("errcode")
         return !(errcode == null || errcode != 0);

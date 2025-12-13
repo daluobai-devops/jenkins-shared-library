@@ -1,9 +1,7 @@
 package com.daluobai.jenkinslib.steps
 
-@Grab('cn.hutool:hutool-all:5.8.42')
-
-import cn.hutool.core.util.StrUtil
-import cn.hutool.core.lang.Assert
+import com.daluobai.jenkinslib.utils.StrUtils
+import com.daluobai.jenkinslib.utils.AssertUtils
 import com.daluobai.jenkinslib.utils.ConfigUtils
 import com.daluobai.jenkinslib.utils.FileUtils
 /**
@@ -33,9 +31,9 @@ class StepsBuildMaven implements Serializable {
         //流程配置
         def configSteps = configMap.DEPLOY_PIPELINE.stepsBuild.stepsBuildMaven
 
-        Assert.notNull(configDefault, "DEFAULT_CONFIG为空")
-        Assert.notNull(configShare, "SHARE_PARAM为空")
-        Assert.notNull(configSteps, "DEPLOY_PIPELINE.stepsBuildMaven为空")
+        AssertUtils.notNull(configDefault, "DEFAULT_CONFIG为空")
+        AssertUtils.notNull(configShare, "SHARE_PARAM为空")
+        AssertUtils.notNull(configSteps, "DEPLOY_PIPELINE.stepsBuildMaven为空")
 
         def pathBase = "${steps.env.WORKSPACE}"
         //docker-构建产物目录
@@ -49,15 +47,15 @@ class StepsBuildMaven implements Serializable {
         steps.sh "mkdir -p ${steps.env.WORKSPACE}/${pathCode}"
         steps.sh "mkdir -p ${steps.env.WORKSPACE}/${pathSSHKey}"
 
-        def dockerBuildImage = StrUtil.isNotBlank(configSteps.dockerBuildImage) ? configSteps.dockerBuildImage : "registry.cn-hangzhou.aliyuncs.com/wuzhaozhongguo/build-maven:3-jdk8"
+        def dockerBuildImage = StrUtils.isNotBlank(configSteps.dockerBuildImage) ? configSteps.dockerBuildImage : "registry.cn-hangzhou.aliyuncs.com/wuzhaozhongguo/build-maven:3-jdk8"
         def dockerBuildImageUrl = "${dockerBuildImage}"
 
         //获取settings.xml配置，如果没有设置则为空
-        def settingsXmlStr = StrUtil.isNotBlank(configSteps.settingsFullPath) ? fileUtils.readStringFromFullPath(configSteps.settingsFullPath) : null
+        def settingsXmlStr = StrUtils.isNotBlank(configSteps.settingsFullPath) ? fileUtils.readStringFromFullPath(configSteps.settingsFullPath) : null
 
         //如果没有提供登录密钥则不登录
-        def dockerLoginDomain = StrUtil.isNotBlank(configDefault.docker.registry.credentialsId) ? "https://${configDefault.docker.registry.domain}" : ""
-        def dockerLoginCredentialsId = StrUtil.isNotBlank(configDefault.docker.registry.credentialsId) ? configDefault.docker.registry.credentialsId : ""
+        def dockerLoginDomain = StrUtils.isNotBlank(configDefault.docker.registry.credentialsId) ? "https://${configDefault.docker.registry.domain}" : ""
+        def dockerLoginCredentialsId = StrUtils.isNotBlank(configDefault.docker.registry.credentialsId) ? configDefault.docker.registry.credentialsId : ""
 
         steps.withDockerRegistry(credentialsId: dockerLoginCredentialsId, url: dockerLoginDomain) {
             steps.sh "whoami"
@@ -65,7 +63,7 @@ class StepsBuildMaven implements Serializable {
             mavenImage.pull()
 
             def mvnCMDSubMod = "-pl ${configSteps.subModule} -am -amd"
-            def mvnCMDActiveProfile = StrUtil.isNotEmpty(configSteps.activeProfile) ? "-P ${configSteps.activeProfile}" : ""
+            def mvnCMDActiveProfile = StrUtils.isNotEmpty(configSteps.activeProfile) ? "-P ${configSteps.activeProfile}" : ""
 
             //这里默认会把工作空间挂载到容器中的${steps.env.WORKSPACE}目录
             mavenImage.inside("--entrypoint '' -v maven-repo:/root/.m2/repository") {
@@ -74,7 +72,7 @@ class StepsBuildMaven implements Serializable {
                 //生成known_hosts
                 stepsGit.sshKeyscan("${configSteps.gitUrl}", "~/.ssh/known_hosts")
                 //如果有settings.xml配置则写入用户自定义配置.
-                if (StrUtil.isNotBlank(settingsXmlStr)){
+                if (StrUtils.isNotBlank(settingsXmlStr)){
                     fileUtils.writeFileBySH("~/.m2/settings.xml", settingsXmlStr)
                 }
                 steps.sh """

@@ -1,9 +1,6 @@
 package com.daluobai.jenkinslib.utils
 
-import cn.hutool.core.io.FileUtil
-@Grab('cn.hutool:hutool-all:5.8.42')
-import cn.hutool.core.lang.Assert
-import cn.hutool.core.util.StrUtil
+import com.daluobai.jenkinslib.utils.AssertUtils
 import com.daluobai.jenkinslib.constant.EFileReadType
 
 /**
@@ -25,7 +22,7 @@ class JenkinsUtils implements Serializable {
      * @return
      */
     def pipelineSH(String script) {
-        Assert.notBlank(script, "script为空");
+        AssertUtils.notBlank(script, "script为空");
         def scriptResp = steps.sh returnStdout: true, script: script
         def scriptRespTrim = scriptResp.trim()
         return scriptRespTrim

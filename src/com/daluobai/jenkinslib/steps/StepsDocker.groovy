@@ -1,7 +1,6 @@
 package com.daluobai.jenkinslib.steps
-@Grab('cn.hutool:hutool-all:5.8.42')
 
-import cn.hutool.core.lang.Assert/**
+import com.daluobai.jenkinslib.utils.AssertUtils/**
  * @author wuzhao
  * version 1.0.0
  * @title

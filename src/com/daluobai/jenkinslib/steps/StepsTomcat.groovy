@@ -1,12 +1,10 @@
 package com.daluobai.jenkinslib.steps
 
 @Grab('org.reflections:reflections:0.9.9-RC1')
-@Grab('cn.hutool:hutool-all:5.8.42')
-import cn.hutool.core.date.DateUtil
-import cn.hutool.core.lang.Assert
-
-import cn.hutool.core.util.ObjectUtil
-import cn.hutool.core.util.StrUtil
+import com.daluobai.jenkinslib.utils.DateUtils
+import com.daluobai.jenkinslib.utils.AssertUtils
+import com.daluobai.jenkinslib.utils.ObjUtils
+import com.daluobai.jenkinslib.utils.StrUtils
 import com.daluobai.jenkinslib.constant.GlobalShare
 import com.daluobai.jenkinslib.utils.EndpointUtils
 import com.daluobai.jenkinslib.utils.TemplateUtils
@@ -31,7 +29,7 @@ class StepsTomcat implements Serializable {
     //发布
     def deploy(Map parameterMap) {
         steps.echo "StepsJavaWeb:${parameterMap}"
-        Assert.notEmpty(parameterMap,"参数为空")
+        AssertUtils.notEmpty(parameterMap,"参数为空")
         def enable = parameterMap.enable
         if (enable == false) {
             steps.echo "StepsTomcat.deploy不执行"
@@ -44,11 +42,11 @@ class StepsTomcat implements Serializable {
         def appName = globalParameterMap.SHARE_PARAM.appName
         def archiveName = globalParameterMap.SHARE_PARAM.archiveName
         //获取文件名后缀
-        def archiveSuffix = StrUtil.subAfter(archiveName, ".", true)
+        def archiveSuffix = StrUtils.subAfter(archiveName, ".", true)
         //获取文件名
-        def archiveOnlyName = StrUtil.subBefore(archiveName, ".", true)
+        def archiveOnlyName = StrUtils.subBefore(archiveName, ".", true)
 
-        def backAppName = "app-" + DateUtil.format(new Date(), "yyyyMMddHHmmss") + "." + archiveSuffix
+        def backAppName = "app-" + DateUtils.format(new Date(), "yyyyMMddHHmmss") + "." + archiveSuffix
 //        steps.withCredentials([steps.sshUserPrivateKey(credentialsId: 'ssh-jenkins', keyFileVariable: 'SSH_KEY_PATH')]) {
 //            steps.sh "mkdir -p ~/.ssh && chmod 700 ~/.ssh && rm -f ~/.ssh/id_rsa && cp \${SSH_KEY_PATH} ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa"
 //        }
@@ -68,7 +66,7 @@ class StepsTomcat implements Serializable {
         steps.sh "rm -rf ${deployPath}/${archiveOnlyName}/ || true"
         //切换到发布目录
         steps.dir("${deployPath}/"){
-            if (ObjectUtil.isNotEmpty(command)){
+            if (ObjUtils.isNotEmpty(command)){
                 steps.sh "${command}"
             }
         }

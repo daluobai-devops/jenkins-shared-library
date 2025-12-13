@@ -1,11 +1,9 @@
 package com.daluobai.jenkinslib.api
 
-@Grab('cn.hutool:hutool-all:5.8.42')
-import cn.hutool.core.lang.Assert
-import cn.hutool.core.util.StrUtil
-import cn.hutool.http.HttpRequest
-import cn.hutool.json.JSONObject
-import cn.hutool.json.JSONUtil
+import com.daluobai.jenkinslib.utils.AssertUtils
+import com.daluobai.jenkinslib.utils.StrUtils
+import com.daluobai.jenkinslib.utils.HttpUtils
+import com.daluobai.jenkinslib.utils.JsonUtils
 
 /**
  * @author daluobai@outlook.com
@@ -26,8 +24,8 @@ class WecomApi implements Serializable {
      * @return
      */
     def sendMsg(String chatToken,String text) {
-        Assert.notBlank(chatToken,"chatToken空的");
-        Assert.notBlank(text,"text空的");
+        AssertUtils.notBlank(chatToken,"chatToken空的");
+        AssertUtils.notBlank(text,"text空的");
 
         def paramMap = [
             "msgtype": "text",
@@ -36,18 +34,18 @@ class WecomApi implements Serializable {
             ]
         ]
 
-        String paramsStr = JSONUtil.toJsonStr(paramMap);
+        String paramsStr = JsonUtils.toJsonStr(paramMap);
         String response = ""
         try {
-            response = HttpRequest.post("https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key="+chatToken)
+            response = HttpUtils.HttpRequest.post("https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key="+chatToken)
                     .contentType("application/json;charset=utf-8").body(paramsStr).execute().body()
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (StrUtil.isBlank(response)){
+        if (StrUtils.isBlank(response)){
             return false
         }
-        JSONObject responseJson = JSONUtil.parseObj(response)
+        JsonUtils.JSONObject responseJson = JsonUtils.parseObj(response)
 
         Boolean ok = responseJson.getBool("ok")
         return !(ok == null || !ok)

@@ -1,11 +1,10 @@
 package com.daluobai.jenkinslib.utils
 
-import cn.hutool.core.util.ObjectUtil
-@Grab('cn.hutool:hutool-all:5.8.42')
-import cn.hutool.http.HttpUtil
-import cn.hutool.core.lang.Assert
-import cn.hutool.json.JSONUtil
-import cn.hutool.core.util.StrUtil
+import com.daluobai.jenkinslib.utils.ObjUtils
+import com.daluobai.jenkinslib.utils.HttpUtils
+import com.daluobai.jenkinslib.utils.AssertUtils
+import com.daluobai.jenkinslib.utils.JsonUtils
+import com.daluobai.jenkinslib.utils.StrUtils
 /**
  * @author daluobai@outlook.com
  * version 1.0.0
@@ -24,7 +23,7 @@ class EndpointUtils implements Serializable {
      * @return
      */
     def healthCheck(String heathcheckUrl) {
-        Assert.notBlank(heathcheckUrl,"heathcheckUrl为空");
+        AssertUtils.notBlank(heathcheckUrl,"heathcheckUrl为空");
         steps.echo "健康检查-路径:${heathcheckUrl}"
         boolean isOnline = false
         for (int i = 0; i < 60; i++) {
@@ -32,17 +31,17 @@ class EndpointUtils implements Serializable {
             sleep 3000
             String response = "";
             try {
-                response = HttpUtil.get(heathcheckUrl)
+                response = HttpUtils.get(heathcheckUrl)
             } catch (Exception e) {
 
             }
-            if (StrUtil.isBlank(response) || !JSONUtil.isJson(response)){
+            if (StrUtils.isBlank(response) || !JsonUtils.isJson(response)){
                 continue
             }
-            cn.hutool.json.JSONObject responseJson = JSONUtil.parseObj(response);
+            JsonUtils.JSONObject responseJson = JsonUtils.parseObj(response);
 
             String status = responseJson.getStr("status");
-            if (StrUtil.isNotBlank(status) && status.equals("UP")){
+            if (StrUtils.isNotBlank(status) && status.equals("UP")){
                 isOnline = true
                 break
             }
@@ -58,8 +57,8 @@ class EndpointUtils implements Serializable {
      * @return
      */
     def kubernetesDeployStatusCheck(String deployName,String namespace) {
-        Assert.notBlank(deployName,"deployName空的");
-        Assert.notBlank(namespace,"namespace空的");
+        AssertUtils.notBlank(deployName,"deployName空的");
+        AssertUtils.notBlank(namespace,"namespace空的");
         def kubernetesApi = new com.daluobai.jenkinslib.api.KubernetesApi(steps)
         steps.echo "发布状态检查:${deployName} ${namespace}"
         boolean isOnline = false
@@ -88,12 +87,12 @@ class EndpointUtils implements Serializable {
      * @return
      */
     def healthCheckWithLocalTCPPort(def localTCPPort,def periodSec,def failureThreshold) {
-        Assert.notNull(localTCPPort,"端口为空")
+        AssertUtils.notNull(localTCPPort,"端口为空")
         steps.echo "检查本地端口是否监听-参数${localTCPPort}，间隔${periodSec}，重试次数${failureThreshold}"
-        if (ObjectUtil.isNull(periodSec) || periodSec < 0){
+        if (ObjUtils.isNull(periodSec) || periodSec < 0){
             periodSec = 0
         }
-        if (ObjectUtil.isNull(failureThreshold) || failureThreshold < 1){
+        if (ObjUtils.isNull(failureThreshold) || failureThreshold < 1){
             failureThreshold = 1
         }
         def periodMS = periodSec * 1000
@@ -104,7 +103,7 @@ class EndpointUtils implements Serializable {
             sleep periodMS
             //加上wc -l会导致结果不对，所以按照是否有返回值判断
             def portListeningStr = steps.sh returnStdout: true, script: """ss -tuln | egrep '^.*${localTCPPort}\\s' | awk '\$1 ~ /tcp/ && \$2 == "LISTEN" {print \$0}'"""
-            boolean portListening = ObjectUtil.isNotEmpty(portListeningStr) && ObjectUtil.isNotEmpty(portListeningStr.trim())
+            boolean portListening = ObjUtils.isNotEmpty(portListeningStr) && ObjUtils.isNotEmpty(portListeningStr.trim())
             if (portListening){
                 steps.echo "端口监听成功:${portListeningStr},${localTCPPort}"
                 isOnline = true
@@ -120,15 +119,15 @@ class EndpointUtils implements Serializable {
      * @return
      */
     def healthCheckWithHttp(def url,def timeout,def periodSec,def failureThreshold) {
-        Assert.notNull(url,"url为空")
+        AssertUtils.notNull(url,"url为空")
         steps.echo "检查http是能访问-参数${url}，${timeout}，间隔${periodSec}，重试次数${failureThreshold}"
-        if (ObjectUtil.isNull(periodSec) || periodSec < 0){
+        if (ObjUtils.isNull(periodSec) || periodSec < 0){
             periodSec = 0
         }
-        if (ObjectUtil.isNull(failureThreshold) || failureThreshold < 1){
+        if (ObjUtils.isNull(failureThreshold) || failureThreshold < 1){
             failureThreshold = 1
         }
-        if (ObjectUtil.isNull(timeout) || timeout < 1){
+        if (ObjUtils.isNull(timeout) || timeout < 1){
             timeout = 5
         }
         def periodMS = periodSec * 1000
@@ -141,7 +140,7 @@ class EndpointUtils implements Serializable {
                 httpCode = steps.sh returnStdout: true, script: """curl -s -o /dev/null -w '%{http_code}' --connect-timeout ${timeout} ${url}"""
             } catch (Exception e) {
             }
-            boolean httpListening = ObjectUtil.isNotEmpty(httpCode) && httpCode.trim() == "200"
+            boolean httpListening = ObjUtils.isNotEmpty(httpCode) && httpCode.trim() == "200"
             if (httpListening){
                 steps.echo "url访问成功:${url},${timeout}"
                 isOnline = true
@@ -157,15 +156,15 @@ class EndpointUtils implements Serializable {
      * @return
      */
     def healthCheckWithCMD(def command,def timeout,def periodSec,def failureThreshold) {
-        Assert.notNull(command,"command为空")
+        AssertUtils.notNull(command,"command为空")
         steps.echo "检查http是能访问-参数${command}，${timeout}，间隔${periodSec}，重试次数${failureThreshold}"
-        if (ObjectUtil.isNull(periodSec) || periodSec < 0){
+        if (ObjUtils.isNull(periodSec) || periodSec < 0){
             periodSec = 0
         }
-        if (ObjectUtil.isNull(failureThreshold) || failureThreshold < 1){
+        if (ObjUtils.isNull(failureThreshold) || failureThreshold < 1){
             failureThreshold = 1
         }
-        if (ObjectUtil.isNull(timeout) || timeout < 1){
+        if (ObjUtils.isNull(timeout) || timeout < 1){
             timeout = 5
         }
         def periodMS = periodSec * 1000
@@ -181,7 +180,7 @@ class EndpointUtils implements Serializable {
             } catch (Exception e) {
                 exitCode = 1
             }
-            boolean isSuccess = ObjectUtil.isNotEmpty(exitCode) && exitCode == 0
+            boolean isSuccess = ObjUtils.isNotEmpty(exitCode) && exitCode == 0
             if (isSuccess){
                 steps.echo "CMD执行成功:${command},${timeout}"
                 isOnline = true
