@@ -43,7 +43,7 @@ class StepsGit implements Serializable {
             if (StrUtils.isNotBlank(portStr)){
                 portStr = "-p ${portStr}"
             }
-            steps.echo "=====xxxx:端口:${portStr} 地址:${host} >> ${filePath}"
+            steps.echo "ssh-keyscan:端口:${portStr} 地址:${host} >> ${filePath}"
             steps.sh """
                         #! /bin/sh -e
                         mkdir -p \$(dirname $filePath) && touch ${filePath}
