@@ -1,5 +1,4 @@
 @GrabResolver(name='aliyun', root='https://maven.aliyun.com/repository/public')
-@Grab('com.typesafe:config:1.4.2')
 import com.daluobai.jenkinslib.utils.AssertUtils
 import com.daluobai.jenkinslib.utils.StrUtils
 import com.daluobai.jenkinslib.utils.ObjUtils
@@ -12,6 +11,7 @@ import com.daluobai.jenkinslib.steps.StepsWeb
 import com.daluobai.jenkinslib.utils.ConfigUtils
 import com.daluobai.jenkinslib.utils.MapUtils
 import com.daluobai.jenkinslib.utils.MessageUtils
+import com.daluobai.jenkinslib.utils.ConfigMergeUtils
 
 /**
  * @author daluobai@outlook.com
@@ -113,17 +113,8 @@ def mergeConfig(Map customConfig) {
     //合并自定义配置
     fullConfig = MapUtils.merge([defaultConfig, extendConfig, customConfig])
     //根据自定义构建参数，修改配置
-    Config fullConfigParams = ConfigFactory.parseMap(fullConfig)
-    echo "fullConfigParams: ${fullConfigParams.toString()}"
-    params.each {
-        fullConfigParams = fullConfigParams.withValue(it.key, ConfigValueFactory.fromAnyRef(it.value))
-    }
-
-    echo "fullConfigParams2: ${fullConfigParams.toString()}"
-
-    fullConfig = fullConfigParams.root().unwrapped()
-
-    echo "fullConfigParams3: ${fullConfig}"
+    fullConfig = ConfigMergeUtils.mergeParams(fullConfig, params)
+    echo "fullConfig merged: ${fullConfig}"
     return MapUtils.deepCopy(fullConfig)
 }
 
