@@ -25,7 +25,7 @@ class KubernetesApi implements Serializable {
         AssertUtils.notBlank(namespace,"namespace空的");
 
         def deployStatusMap = steps.sh returnStdout: true, script: "kubectl get deploy ${deployName} -n ${namespace} -o jsonpath='{.status}'"
-        JsonUtils.JSONObject responseJson = null;
+        def responseJson = null;
         try{
             responseJson = JsonUtils.parseObj(deployStatusMap);
         } catch (Exception e) {

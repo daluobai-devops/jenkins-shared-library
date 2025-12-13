@@ -42,7 +42,7 @@ class FeishuApi implements Serializable {
         if (StrUtils.isBlank(response)){
             return false
         }
-        JsonUtils.JSONObject responseJson = JsonUtils.parseObj(response);
+        def responseJson = JsonUtils.parseObj(response);
 
         Boolean ok = responseJson.getBool("ok");
         return !(ok == null || !ok);

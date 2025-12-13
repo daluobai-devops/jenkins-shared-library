@@ -38,7 +38,7 @@ class EndpointUtils implements Serializable {
             if (StrUtils.isBlank(response) || !JsonUtils.isJson(response)){
                 continue
             }
-            JsonUtils.JSONObject responseJson = JsonUtils.parseObj(response);
+            def responseJson = JsonUtils.parseObj(response);
 
             String status = responseJson.getStr("status");
             if (StrUtils.isNotBlank(status) && status.equals("UP")){
