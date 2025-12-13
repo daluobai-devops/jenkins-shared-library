@@ -39,30 +39,10 @@ jenkins介绍和学习(Jenkins中文社区Rick):https://www.bilibili.com/video/B
       ```
 # 四、安装后操作
 
-## 1. 配置依赖库（重要！）
+## 1. 访问 http://ip:9000/jenkins
 
-本项目依赖以下 JAR 包：
-- `cn.hutool:hutool-all:5.8.11`
-- `com.typesafe:config:1.4.2`
-- `org.reflections:reflections:0.9.9-RC1`
-
-为避免运行时出现 `ConcurrentModificationException` 错误，请按以下方式之一配置依赖：
-
-### 推荐方式：使用 Init Groovy 脚本
-
-将 `configdemo/init-groovy/load-dependencies.groovy` 文件复制到 Jenkins 的 `$JENKINS_HOME/init.groovy.d/` 目录下，然后重启 Jenkins。
-
-```bash
-cp configdemo/init-groovy/load-dependencies.groovy $JENKINS_HOME/init.groovy.d/
-systemctl restart jenkins
-```
-
-详细配置说明请参考：[DEPENDENCIES_SETUP.md](DEPENDENCIES_SETUP.md)
-
-## 2. 访问 http://ip:9000/jenkins
-
-## 3. 安装插件Docker、Docker Pipeline、Docker Api、Pipeline Utility Steps、
-## 4. 配置Jenkins Pipeline
+## 2. 安装插件Docker、Docker Pipeline、Docker Api、Pipeline Utility Steps、
+## 3. 配置Jenkins Pipeline
 
 ### a.密钥管理
 
@@ -109,7 +89,7 @@ systemctl restart jenkins
 
 - 名称：NODE-DEMO
 
-## 5. 宿主机配置
+## 4. 宿主机配置
 
    构建节点:安装 docker
 

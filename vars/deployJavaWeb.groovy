@@ -1,6 +1,6 @@
-//@GrabResolver(name='aliyun', root='https://maven.aliyun.com/repository/public')
-//@Grab('cn.hutool:hutool-all:5.8.11')
-//@Grab('com.typesafe:config:1.4.2')
+@GrabResolver(name='aliyun', root='https://maven.aliyun.com/repository/public')
+@Grab('cn.hutool:hutool-all:5.8.11')
+@Grab('com.typesafe:config:1.4.2')
 import cn.hutool.core.lang.Assert
 import cn.hutool.core.map.MapUtil
 import cn.hutool.core.util.StrUtil
