@@ -27,7 +27,7 @@ class EndpointUtils implements Serializable {
         steps.echo "健康检查-路径:${heathcheckUrl}"
         boolean isOnline = false
         for (int i = 0; i < 60; i++) {
-            steps.echo "健康检查-第${i}次"
+//            steps.echo "健康检查-第${i}次"
             sleep 3000
             String response = "";
             try {
@@ -63,7 +63,7 @@ class EndpointUtils implements Serializable {
         steps.echo "发布状态检查:${deployName} ${namespace}"
         boolean isOnline = false
         for (int i = 0; i < 60; i++) {
-            steps.echo "发布状态检查-第${i}次"
+//            steps.echo "发布状态检查-第${i}次"
             sleep 3000
             def deployStatusMap = kubernetesApi.deploymentStatus(deployName,namespace)
             steps.echo "发布状态检查:${deployStatusMap}"
@@ -133,7 +133,7 @@ class EndpointUtils implements Serializable {
         def periodMS = periodSec * 1000
         boolean isOnline = false
         for (int i = 0; i < failureThreshold; i++) {
-            steps.echo "健康检查-第${i}次"
+//            steps.echo "健康检查-第${i}次"
             sleep periodMS
             def httpCode = "0"
             try {
@@ -170,7 +170,7 @@ class EndpointUtils implements Serializable {
         def periodMS = periodSec * 1000
         boolean isOnline = false
         for (int i = 0; i < failureThreshold; i++) {
-            steps.echo "健康检查-第${i}次"
+//            steps.echo "健康检查-第${i}次"
             sleep periodMS
             def exitCode = 1
             try {
