@@ -99,7 +99,7 @@ class EndpointUtils implements Serializable {
         steps.echo "检查本地端口是否监听:${localTCPPort}"
         boolean isOnline = false
         for (int i = 0; i < failureThreshold; i++) {
-            steps.echo "健康检查-第${i}次"
+//            steps.echo "健康检查-第${i}次"
             sleep periodMS
             //加上wc -l会导致结果不对，所以按照是否有返回值判断
             def portListeningStr = steps.sh returnStdout: true, script: """ss -tuln | egrep '^.*${localTCPPort}\\s' | awk '\$1 ~ /tcp/ && \$2 == "LISTEN" {print \$0}'"""

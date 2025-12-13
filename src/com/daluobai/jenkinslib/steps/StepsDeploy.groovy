@@ -72,7 +72,7 @@ class StepsDeploy implements Serializable {
                                 healthAll = false
                                 steps.echo "healthCheckWithLocalTCPPort，检查失败"
                             }
-                            steps.echo "tcp，${healthCheck}"
+                            steps.echo "healthCheckWithLocalTCPPort结束，${healthCheck}"
                         }
                         if (healthAll && ObjUtils.isNotEmpty(readinessProbeMap.http) && (readinessProbeMap.http.enable == null || readinessProbeMap.http.enable)) {
                             def healthCheck = endpointUtils.healthCheckWithHttp("http://localhost:${readinessProbeMap.http.port}${readinessProbeMap.http.path}", readinessProbeMap.http.timeout, readinessProbeMap.period, readinessProbeMap.failureThreshold)
@@ -80,7 +80,7 @@ class StepsDeploy implements Serializable {
                                 healthAll = false
                                 steps.echo "healthCheckWithHttp，检查失败"
                             }
-                            steps.echo "http，${healthCheck}"
+                            steps.echo "healthCheckWithHttp结束，${healthCheck}"
                         }
                         if (healthAll && ObjUtils.isNotEmpty(readinessProbeMap.cmd) && (readinessProbeMap.cmd.enable == null || readinessProbeMap.cmd.enable)) {
                             def healthCheck = endpointUtils.healthCheckWithCMD(readinessProbeMap.cmd.command, readinessProbeMap.cmd.timeout, readinessProbeMap.period, readinessProbeMap.failureThreshold)
@@ -88,7 +88,7 @@ class StepsDeploy implements Serializable {
                                 healthAll = false
                                 steps.echo "healthCheckWithCMD，检查失败"
                             }
-                            steps.echo "cmd，${healthCheck}"
+                            steps.echo "healthCheckWithCMD结束，${healthCheck}"
                         }
                         if (!healthAll) {
                             steps.error '服务未就绪'
