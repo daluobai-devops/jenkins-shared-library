@@ -30,7 +30,7 @@ class StepsGit implements Serializable {
      * @param path 路径，一般是~/.ssh/known_hosts
      * @return
      */
-    @NonCPS
+//    @NonCPS
     def sshKeyscan(String gitUrl, String filePath) {
 //        def domainByUrl = this.getDomainByGitUrl(gitUrl)
 //        steps.echo "domainByUrl:${domainByUrl}"
@@ -56,7 +56,7 @@ class StepsGit implements Serializable {
     }
 
     //从git地址中获取host和port
-    @NonCPS
+//    @NonCPS
     def getDomainHostAndPort(String url) {
         // 定义正则表达式
         def pattern = ~/(?:(?:ssh|http(?:s)?):\/\/)?(?:git@)?([a-zA-Z0-9.\-]+)(?::(\d{2,}))?/
@@ -76,7 +76,7 @@ class StepsGit implements Serializable {
             return null
         }
     }    //从git地址中获取host和port
-    @NonCPS
+//    @NonCPS
     static
     def getDomainHostAndPort1(String url) {
         def pattern = /(?:(?:ssh|https?|git):\/\/(?:[^@]+@)?)?([a-zA-Z0-9.-]+)(?::([0-9]+))?/
