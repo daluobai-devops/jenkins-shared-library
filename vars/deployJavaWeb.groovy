@@ -1,13 +1,13 @@
 @GrabResolver(name='aliyun', root='https://maven.aliyun.com/repository/public')
-//@Grab('cn.hutool:hutool-all:5.8.42')
+@Grab('cn.hutool:hutool-all:5.8.42')
 @Grab('com.typesafe:config:1.4.2')
-import com.daluobai.jenkinslib.lib.hutool.core.util.StrUtil
-import com.daluobai.jenkinslib.lib.hutool.core.lang.Assert
+import cn.hutool.core.util.StrUtil
+import cn.hutool.core.lang.Assert
 import com.daluobai.jenkinslib.constant.EBuildStatusType
 import com.daluobai.jenkinslib.constant.EFileReadType
 import com.daluobai.jenkinslib.utils.ConfigUtils
 import com.daluobai.jenkinslib.utils.MapUtils
-import com.daluobai.jenkinslib.lib.hutool.core.util.ObjectUtil
+import cn.hutool.core.util.ObjectUtil
 import com.daluobai.jenkinslib.steps.*
 import com.daluobai.jenkinslib.utils.MessageUtils
 import com.typesafe.config.*

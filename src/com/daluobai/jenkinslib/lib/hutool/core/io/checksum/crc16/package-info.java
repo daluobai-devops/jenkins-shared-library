@@ -1,7 +1,0 @@
-/**
- * CRC16相关算法封装为Checksum
- *
- * @author looly
- *
- */
-package com.daluobai.jenkinslib.lib.hutool.core.io.checksum.crc16;
