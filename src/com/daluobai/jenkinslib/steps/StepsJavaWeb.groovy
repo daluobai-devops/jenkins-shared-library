@@ -3,7 +3,7 @@ package com.daluobai.jenkinslib.steps
 import cn.hutool.core.date.DateUtil
 import cn.hutool.core.io.FileUtil
 
-//@Grab('cn.hutool:hutool-all:5.8.11')
+//@Grab('cn.hutool:hutool-all:5.8.42')
 
 import cn.hutool.core.lang.Assert
 import cn.hutool.core.util.ObjectUtil

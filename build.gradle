@@ -25,7 +25,7 @@ allprojects {
 }
 
 dependencies {
-    implementation 'cn.hutool:hutool-all:5.8.11'
+    implementation 'cn.hutool:hutool-all:5.8.42'
     implementation 'com.cloudbees:groovy-cps:1.31'
     implementation 'org.apache.groovy:groovy-all:4.0.9'
     implementation 'com.typesafe:config:1.4.2'

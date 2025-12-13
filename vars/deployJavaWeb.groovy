@@ -1,25 +1,16 @@
 @GrabResolver(name='aliyun', root='https://maven.aliyun.com/repository/public')
-@Grab('cn.hutool:hutool-all:5.8.11')
+//@Grab('cn.hutool:hutool-all:5.8.42')
 @Grab('com.typesafe:config:1.4.2')
-import cn.hutool.core.lang.Assert
-import cn.hutool.core.map.MapUtil
-import cn.hutool.core.util.StrUtil
+import com.daluobai.jenkinslib.lib.hutool.core.util.StrUtil
+import com.daluobai.jenkinslib.lib.hutool.core.lang.Assert
 import com.daluobai.jenkinslib.constant.EBuildStatusType
 import com.daluobai.jenkinslib.constant.EFileReadType
-import com.daluobai.jenkinslib.constant.GlobalShare
-import com.daluobai.jenkinslib.steps.StepsBuildMaven
-import com.daluobai.jenkinslib.steps.StepsJenkins
-import com.daluobai.jenkinslib.steps.StepsJavaWeb
-import com.daluobai.jenkinslib.steps.StepsTomcat
 import com.daluobai.jenkinslib.utils.ConfigUtils
 import com.daluobai.jenkinslib.utils.MapUtils
-import cn.hutool.core.util.ObjectUtil
+import com.daluobai.jenkinslib.lib.hutool.core.util.ObjectUtil
 import com.daluobai.jenkinslib.steps.*
 import com.daluobai.jenkinslib.utils.MessageUtils
 import com.typesafe.config.*
-
-import java.util.stream.Collectors;
-
 import groovy.transform.Field
 
 @Field Map globalParameterMap = [:]

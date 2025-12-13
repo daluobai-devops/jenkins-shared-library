@@ -2,7 +2,7 @@ package com.daluobai.jenkinslib.steps
 
 import cn.hutool.core.lang.Assert
 import cn.hutool.core.util.ObjectUtil
-@Grab('cn.hutool:hutool-all:5.8.11')
+@Grab('cn.hutool:hutool-all:5.8.42')
 
 import cn.hutool.core.util.StrUtil
 import com.daluobai.jenkinslib.utils.ConfigUtils
