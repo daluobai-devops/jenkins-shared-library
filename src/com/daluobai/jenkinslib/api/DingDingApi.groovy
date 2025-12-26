@@ -34,7 +34,7 @@ class DingDingApi implements Serializable {
         String paramsStr = JsonUtils.toJsonStr(params);
         String response = "";
         try {
-            response = HttpUtils.post("https://oapi.dingtalk.com/robot/send?access_token="+accessToken,
+            response = HttpUtils.postJson("https://oapi.dingtalk.com/robot/send?access_token="+accessToken,
                     paramsStr);
         } catch (Exception e) {
             e.printStackTrace();

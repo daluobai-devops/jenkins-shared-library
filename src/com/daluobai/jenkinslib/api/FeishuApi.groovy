@@ -34,7 +34,7 @@ class FeishuApi implements Serializable {
         String paramsStr = JsonUtils.toJsonStr(params);
         String response = "";
         try {
-            response = HttpUtils.post("https://open.feishu.cn/open-apis/bot/hook/"+chatToken,
+            response = HttpUtils.postJson("https://open.feishu.cn/open-apis/bot/hook/"+chatToken,
                     paramsStr);
         } catch (Exception e) {
             e.printStackTrace();
