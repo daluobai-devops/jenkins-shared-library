@@ -44,9 +44,11 @@ class FeishuApi implements Serializable {
         }
         def responseJson = JsonUtils.parseObj(response);
         this.steps.echo "飞书发送消息结果："+response;
+//        飞书发送消息结果：{"ok":true}
 
-        Boolean ok = responseJson.getBool("ok");
-        return !(ok == null || !ok);
+
+        Boolean ok = responseJson.get("ok") as Boolean;
+        return ok != null && ok;
 
     }
 }
