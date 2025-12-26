@@ -78,7 +78,7 @@ class StepsBuildMaven implements Serializable {
                 steps.sh """
                         #! /bin/sh -e
                         mkdir -p ${pathBase}/${pathPackage} && mkdir -p ${pathBase}/${pathCode}
-                        cd ${pathBase}/${pathCode}
+                        cd ${pathBase}/${pathCode} && rm -rf *
                         git config --global http.version HTTP/1.1
                         GIT_SSH_COMMAND='ssh -i ${steps.env.WORKSPACE}/${pathSSHKey}/ssh-git/id_rsa' git clone ${configSteps.gitUrl} --branch ${configSteps.gitBranch} --single-branch --depth 1 --quiet
                         mv ${pathBase}/${pathCode}/\$(ls -A1 ${pathBase}/${pathCode}/) ${pathBase}/${pathCode}/${pathCode}
