@@ -44,8 +44,8 @@ class DingDingApi implements Serializable {
         }
         def responseJson = JsonUtils.parseObj(response);
 
-        def errcode = responseJson.getInt("errcode")
-        return !(errcode == null || errcode != 0);
+        def errcode = responseJson.get("errcode") as Integer;
+        return errcode != null && errcode == 0;
 
     }
 }
