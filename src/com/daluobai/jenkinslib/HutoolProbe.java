@@ -4,7 +4,7 @@ import cn.hutool.core.util.StrUtil;
 
 import java.io.Serializable;
 
-class HutoolProbe implements Serializable {
+public class HutoolProbe implements Serializable {
 
   static String run() {
     // 只要能编译/运行到这里，就证明 hutool 在 classpath 里
