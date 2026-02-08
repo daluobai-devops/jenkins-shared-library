@@ -46,7 +46,7 @@ class StepsBuildMaven implements Serializable {
         steps.checkout([
                 $class: 'GitSCM',
                 branches: [[name: '*/master']],
-                userRemoteConfigs: [[credentialsId: 'ssh-git', url: 'git@codeup.aliyun.com:.../jgzly-backend.git']],
+                userRemoteConfigs: [[credentialsId: 'ssh-git', url: 'git@codeup.aliyun.com:5fef130e578739320804fdd8/company/njzs/jgzly/jgzly-backend.git']],
                 extensions: [
                         [$class: 'CloneOption', shallow: false, noTags: false, timeout: 20],
                         [$class: 'PruneStaleBranch'],
