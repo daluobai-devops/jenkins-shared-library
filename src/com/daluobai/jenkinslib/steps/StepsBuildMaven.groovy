@@ -43,7 +43,7 @@ class StepsBuildMaven implements Serializable {
         //存放临时sshkey的目录
         def pathSSHKey = "sshkey"
 
-        steps.checkout scmGit(branches: [[name: "*/${configSteps.gitBranch}"]], extensions: [], userRemoteConfigs: [[credentialsId: 'ssh-git', url: "${configSteps.gitUrl}"]])
+        steps.checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[credentialsId: 'ssh-git', url: 'git@codeup.aliyun.com:5fef130e578739320804fdd8/company/njzs/jgzly/jgzly-backend.git']])
 
 
         steps.sh "mkdir -p ${steps.env.WORKSPACE}/${pathPackage}"
