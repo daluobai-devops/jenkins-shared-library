@@ -78,7 +78,7 @@ jenkins介绍和学习(Jenkins中文社区Rick):https://www.bilibili.com/video/B
   - Credentials：ssh-jenkins
   - Host Key Verification Strategy：Manually trusted key Verification Strategy
   - 高级
-    - Java 路径：/usr/local/jdk/jdk17/bin/java
+    - Java 路径：/usr/local/jdk/jdk21/bin/java
 
 构建节点配置:
 
