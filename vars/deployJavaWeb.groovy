@@ -92,7 +92,7 @@ def call(Map customConfig) {
             }
             eBuildStatusType = EBuildStatusType.SUCCESS
         } catch (Exception e) {
-            if (e instanceof org.jenkinsci.plugins.workflow.steps.FlowInterruptedException) {
+            if (e.getClass().getName() == 'org.jenkinsci.plugins.workflow.steps.FlowInterruptedException') {
                 eBuildStatusType = EBuildStatusType.ABORTED
             } else {
                 eBuildStatusType = EBuildStatusType.FAILED

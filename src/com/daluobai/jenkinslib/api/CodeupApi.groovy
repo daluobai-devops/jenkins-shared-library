@@ -32,7 +32,7 @@ class CodeupApi implements Serializable {
     }
 
     boolean fileExists(String domain, String token, String repositoryId, String filePath, String ref, String organizationId) {
-        HttpUtils.HttpResponse response = doGetFile(domain, token, repositoryId, filePath, ref, organizationId)
+        def response = doGetFile(domain, token, repositoryId, filePath, ref, organizationId)
         if (response.getStatus() == HttpURLConnection.HTTP_OK) {
             return true
         }
@@ -51,7 +51,7 @@ class CodeupApi implements Serializable {
     }
 
     String getFileContent(String domain, String token, String repositoryId, String filePath, String ref, String organizationId) {
-        HttpUtils.HttpResponse response = doGetFile(domain, token, repositoryId, filePath, ref, organizationId)
+        def response = doGetFile(domain, token, repositoryId, filePath, ref, organizationId)
         if (response.getStatus() == HttpURLConnection.HTTP_NOT_FOUND) {
             return null
         }
@@ -73,7 +73,7 @@ class CodeupApi implements Serializable {
         return contentStr
     }
 
-    private HttpUtils.HttpResponse doGetFile(String domain, String token, String repositoryId, String filePath, String ref, String organizationId) {
+    private def doGetFile(String domain, String token, String repositoryId, String filePath, String ref, String organizationId) {
         AssertUtils.notBlank(domain, "domain空的")
         AssertUtils.notBlank(token, "token空的")
         AssertUtils.notBlank(repositoryId, "repositoryId空的")
