@@ -1,0 +1,171 @@
+package com.daluobai.jenkinslib.api
+
+import com.daluobai.jenkinslib.utils.HttpUtils
+import groovy.lang.ExpandoMetaClass
+import groovy.lang.GroovySystem
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Test
+
+import static org.junit.jupiter.api.Assertions.assertEquals
+import static org.junit.jupiter.api.Assertions.assertFalse
+import static org.junit.jupiter.api.Assertions.assertNull
+import static org.junit.jupiter.api.Assertions.assertThrows
+import static org.junit.jupiter.api.Assertions.assertTrue
+
+class CodeupApiTest {
+
+    @AfterEach
+    void cleanup() {
+        GroovySystem.metaClassRegistry.removeMetaClass(HttpUtils.HttpRequest)
+    }
+
+    @Test
+    void fileExistsReturnsTrueWhenCodeupReturns200() {
+        Map<String, Object> captured = [:]
+        stubGetRequest(captured, new HttpUtils.HttpResponse(HttpURLConnection.HTTP_OK, '{"content":"dGVzdA==","encoding":"base64"}'))
+
+        CodeupApi api = new CodeupApi(null)
+
+        boolean exists = api.fileExists('pt-token', 'group/demo', 'src/main.txt', 'master')
+
+        assertTrue(exists)
+        assertEquals('https://openapi-rdc.aliyuncs.com/oapi/v1/codeup/repositories/group%2Fdemo/files/src%2Fmain.txt?ref=master', captured.url)
+        assertEquals('pt-token', captured.headers['x-yunxiao-token'])
+    }
+
+    @Test
+    void fileExistsSupportsCustomDomainWhenProvided() {
+        Map<String, Object> captured = [:]
+        stubGetRequest(captured, new HttpUtils.HttpResponse(HttpURLConnection.HTTP_OK, '{"content":"dGVzdA==","encoding":"base64"}'))
+
+        CodeupApi api = new CodeupApi(null)
+
+        boolean exists = api.fileExists('codeup.example.com', 'pt-token', 'group/demo', 'src/main.txt', 'master')
+
+        assertTrue(exists)
+        assertEquals('https://codeup.example.com/oapi/v1/codeup/repositories/group%2Fdemo/files/src%2Fmain.txt?ref=master', captured.url)
+    }
+
+    @Test
+    void fileExistsReturnsFalseWhenCodeupReturns404() {
+        stubGetRequest([:], new HttpUtils.HttpResponse(HttpURLConnection.HTTP_NOT_FOUND, ''))
+
+        CodeupApi api = new CodeupApi(null)
+
+        assertFalse(api.fileExists('pt-token', '2813489', 'missing.txt', 'master'))
+    }
+
+    @Test
+    void getFileContentDecodesBase64Content() {
+        Map<String, Object> captured = [:]
+        stubGetRequest(captured, new HttpUtils.HttpResponse(HttpURLConnection.HTTP_OK, '{"content":"5L2g5aW9","encoding":"base64"}'))
+
+        CodeupApi api = new CodeupApi(null)
+
+        assertEquals('你好', api.getFileContent('pt-token', '2813489', 'demo.txt', 'master'))
+        assertEquals('https://openapi-rdc.aliyuncs.com/oapi/v1/codeup/repositories/2813489/files/demo.txt?ref=master', captured.url)
+    }
+
+    @Test
+    void getFileContentSupportsCustomDomainWhenProvided() {
+        Map<String, Object> captured = [:]
+        stubGetRequest(captured, new HttpUtils.HttpResponse(HttpURLConnection.HTTP_OK, '{"content":"aGVsbG8=","encoding":"base64"}'))
+
+        CodeupApi api = new CodeupApi(null)
+
+        String content = api.getFileContent('codeup.example.com', 'pt-token', 'group/demo', 'src/main.txt', 'master')
+
+        assertEquals('hello', content)
+        assertEquals('https://codeup.example.com/oapi/v1/codeup/repositories/group%2Fdemo/files/src%2Fmain.txt?ref=master', captured.url)
+    }
+
+    @Test
+    void getFileContentReturnsPlainTextWhenEncodingIsText() {
+        Map<String, Object> captured = [:]
+        stubGetRequest(captured, new HttpUtils.HttpResponse(HttpURLConnection.HTTP_OK, '{"content":"hello","encoding":"text"}'))
+
+        CodeupApi api = new CodeupApi(null)
+
+        String content = api.getFileContent('codeup.example.com/', 'pt-token', 'group/demo', 'dir/app config.yml', 'feature/test', 'org-id')
+
+        assertEquals('hello', content)
+        assertEquals('https://codeup.example.com/oapi/v1/codeup/organizations/org-id/repositories/group%2Fdemo/files/dir%2Fapp%20config.yml?ref=feature%2Ftest', captured.url)
+    }
+
+    @Test
+    void fileExistsThrowsWhenResponseIsUnexpected() {
+        stubGetRequest([:], new HttpUtils.HttpResponse(HttpURLConnection.HTTP_FORBIDDEN, '{"message":"forbidden"}'))
+
+        CodeupApi api = new CodeupApi(null)
+
+        RuntimeException error = assertThrows(RuntimeException.class) {
+            api.fileExists('pt-token', '2813489', 'private.txt', 'master')
+        }
+        assertTrue(error.message.contains('响应码: 403'))
+    }
+
+    @Test
+    void getFileContentReturnsNullWhenCodeupReturns404() {
+        stubGetRequest([:], new HttpUtils.HttpResponse(HttpURLConnection.HTTP_NOT_FOUND, ''))
+
+        CodeupApi api = new CodeupApi(null)
+
+        assertNull(api.getFileContent('pt-token', '2813489', 'missing.txt', 'master'))
+    }
+
+    @Test
+    void getFileContentThrowsWhenResponseIsUnexpected() {
+        stubGetRequest([:], new HttpUtils.HttpResponse(HttpURLConnection.HTTP_FORBIDDEN, '{"message":"forbidden"}'))
+
+        CodeupApi api = new CodeupApi(null)
+
+        RuntimeException error = assertThrows(RuntimeException.class) {
+            api.getFileContent('pt-token', '2813489', 'private.txt', 'master')
+        }
+        assertTrue(error.message.contains('响应码: 403'))
+    }
+
+    @Test
+    void getFileContentReturnsNullWhenPayloadHasNoContent() {
+        stubGetRequest([:], new HttpUtils.HttpResponse(HttpURLConnection.HTTP_OK, '{"encoding":"base64"}'))
+
+        CodeupApi api = new CodeupApi(null)
+
+        assertNull(api.getFileContent('pt-token', '2813489', 'empty.txt', 'master'))
+    }
+
+    private static void stubGetRequest(Map<String, Object> captured, HttpUtils.HttpResponse response) {
+        ExpandoMetaClass emc = new ExpandoMetaClass(HttpUtils.HttpRequest, false, true)
+        emc.'static'.get = { String url ->
+            captured.url = url
+            return new FakeHttpRequest(captured, response)
+        }
+        emc.initialize()
+        GroovySystem.metaClassRegistry.setMetaClass(HttpUtils.HttpRequest, emc)
+    }
+
+    static class FakeHttpRequest {
+        private final Map<String, Object> captured
+        private final HttpUtils.HttpResponse response
+
+        FakeHttpRequest(Map<String, Object> captured, HttpUtils.HttpResponse response) {
+            this.captured = captured
+            this.response = response
+            this.captured.headers = [:]
+        }
+
+        FakeHttpRequest header(String name, String value) {
+            captured.headers[name] = value
+            return this
+        }
+
+        FakeHttpRequest timeout(int timeout) {
+            captured.timeout = timeout
+            return this
+        }
+
+        HttpUtils.HttpResponse execute() {
+            return response
+        }
+    }
+}
