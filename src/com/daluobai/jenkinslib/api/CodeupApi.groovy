@@ -18,6 +18,7 @@ import java.util.Base64
  */
 class CodeupApi implements Serializable {
     static final String DEFAULT_DOMAIN = 'openapi-rdc.aliyuncs.com'
+    static final int DEFAULT_PAGE_SIZE = 100
 
     def steps
 
@@ -73,6 +74,38 @@ class CodeupApi implements Serializable {
         return contentStr
     }
 
+    List<Map<String, Object>> listRepositories(String token) {
+        return listRepositories(DEFAULT_DOMAIN, token)
+    }
+
+    List<Map<String, Object>> listRepositories(String domain, String token) {
+        AssertUtils.notBlank(domain, "domain空的")
+        AssertUtils.notBlank(token, "token空的")
+
+        List<Map<String, Object>> repositories = []
+        int page = 1
+
+        while (true) {
+            def response = doGetRepositories(domain, token, page, DEFAULT_PAGE_SIZE)
+            if (!response.isOk()) {
+                throw new RuntimeException("查询Codeup仓库列表失败，domain: ${normalizeDomain(domain)}, page: ${page}, 响应码: ${response.getStatus()}")
+            }
+
+            List<Object> responseJson = JsonUtils.parseArray(response.body())
+            List<Map<String, Object>> currentPage = responseJson.collect { Object item ->
+                return (Map<String, Object>) item
+            }
+            repositories.addAll(currentPage)
+
+            if (currentPage.size() < DEFAULT_PAGE_SIZE) {
+                break
+            }
+            page++
+        }
+
+        return repositories
+    }
+
     private def doGetFile(String domain, String token, String repositoryId, String filePath, String ref, String organizationId) {
         AssertUtils.notBlank(domain, "domain空的")
         AssertUtils.notBlank(token, "token空的")
@@ -81,6 +114,14 @@ class CodeupApi implements Serializable {
         AssertUtils.notBlank(ref, "ref空的")
 
         String url = buildFileUrl(domain, repositoryId, filePath, ref, organizationId)
+        return HttpUtils.HttpRequest.get(url)
+                .header("x-yunxiao-token", token)
+                .timeout(30000)
+                .execute()
+    }
+
+    private def doGetRepositories(String domain, String token, int page, int perPage) {
+        String url = buildRepositoriesUrl(domain, page, perPage)
         return HttpUtils.HttpRequest.get(url)
                 .header("x-yunxiao-token", token)
                 .timeout(30000)
@@ -98,6 +139,11 @@ class CodeupApi implements Serializable {
             return "${normalizedDomain}/oapi/v1/codeup/organizations/${encodedOrganizationId}/repositories/${encodedRepositoryId}/files/${encodedFilePath}?ref=${encodedRef}"
         }
         return "${normalizedDomain}/oapi/v1/codeup/repositories/${encodedRepositoryId}/files/${encodedFilePath}?ref=${encodedRef}"
+    }
+
+    private static String buildRepositoriesUrl(String domain, int page, int perPage) {
+        String normalizedDomain = normalizeDomain(domain)
+        return "${normalizedDomain}/oapi/v1/codeup/organizations/repositories?page=${page}&perPage=${perPage}"
     }
 
     private static String normalizeDomain(String domain) {

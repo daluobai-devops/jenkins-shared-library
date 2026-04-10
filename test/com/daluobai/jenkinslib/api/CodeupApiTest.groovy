@@ -1,6 +1,7 @@
 package com.daluobai.jenkinslib.api
 
 import com.daluobai.jenkinslib.utils.HttpUtils
+import com.daluobai.jenkinslib.utils.JsonUtils
 import groovy.lang.ExpandoMetaClass
 import groovy.lang.GroovySystem
 import org.junit.jupiter.api.AfterEach
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.assertEquals
 import static org.junit.jupiter.api.Assertions.assertFalse
+import static org.junit.jupiter.api.Assertions.assertNotNull
 import static org.junit.jupiter.api.Assertions.assertNull
 import static org.junit.jupiter.api.Assertions.assertThrows
 import static org.junit.jupiter.api.Assertions.assertTrue
@@ -134,6 +136,84 @@ class CodeupApiTest {
         assertNull(api.getFileContent('pt-token', '2813489', 'empty.txt', 'master'))
     }
 
+    @Test
+    void listRepositoriesAggregatesAllPages() {
+        List<Map<String, Object>> capturedRequests = []
+        stubSequentialGetRequests(capturedRequests, [
+                new HttpUtils.HttpResponse(HttpURLConnection.HTTP_OK, buildRepositoriesJson(100, 1)),
+                new HttpUtils.HttpResponse(HttpURLConnection.HTTP_OK, buildRepositoriesJson(1, 101))
+        ])
+
+        CodeupApi api = new CodeupApi(null)
+
+        List<Map<String, Object>> repositories = api.listRepositories('pt-token')
+
+        assertEquals(101, repositories.size())
+        assertEquals('repo-1', repositories.first().name)
+        assertEquals('repo-101', repositories.last().name)
+        assertEquals(2, capturedRequests.size())
+        assertEquals('https://openapi-rdc.aliyuncs.com/oapi/v1/codeup/organizations/repositories?page=1&perPage=100', capturedRequests[0].url)
+        assertEquals('https://openapi-rdc.aliyuncs.com/oapi/v1/codeup/organizations/repositories?page=2&perPage=100', capturedRequests[1].url)
+        assertEquals('pt-token', capturedRequests[0].headers['x-yunxiao-token'])
+        assertEquals('pt-token', capturedRequests[1].headers['x-yunxiao-token'])
+    }
+
+    @Test
+    void listRepositoriesSupportsCustomDomainWhenProvided() {
+        Map<String, Object> captured = [:]
+        stubGetRequest(captured, new HttpUtils.HttpResponse(HttpURLConnection.HTTP_OK, buildRepositoriesJson(1, 1)))
+
+        CodeupApi api = new CodeupApi(null)
+
+        List<Map<String, Object>> repositories = api.listRepositories('codeup.example.com', 'pt-token')
+
+        assertEquals(1, repositories.size())
+        assertEquals('https://codeup.example.com/oapi/v1/codeup/organizations/repositories?page=1&perPage=100', captured.url)
+    }
+
+    @Test
+    void listRepositoriesRequestsNextPageWhenCurrentPageHasExactlyPageSizeItems() {
+        List<Map<String, Object>> capturedRequests = []
+        stubSequentialGetRequests(capturedRequests, [
+                new HttpUtils.HttpResponse(HttpURLConnection.HTTP_OK, buildRepositoriesJson(100, 1)),
+                new HttpUtils.HttpResponse(HttpURLConnection.HTTP_OK, '[]')
+        ])
+
+        CodeupApi api = new CodeupApi(null)
+
+        List<Map<String, Object>> repositories = api.listRepositories('pt-token')
+
+        assertEquals(100, repositories.size())
+        assertEquals(2, capturedRequests.size())
+        assertEquals('https://openapi-rdc.aliyuncs.com/oapi/v1/codeup/organizations/repositories?page=2&perPage=100', capturedRequests[1].url)
+    }
+
+    @Test
+    void listRepositoriesReturnsEmptyListWhenApiReturnsEmptyArray() {
+        stubGetRequest([:], new HttpUtils.HttpResponse(HttpURLConnection.HTTP_OK, '[]'))
+
+        CodeupApi api = new CodeupApi(null)
+
+        List<Map<String, Object>> repositories = api.listRepositories('pt-token')
+
+        assertNotNull(repositories)
+        assertTrue(repositories.isEmpty())
+    }
+
+    @Test
+    void listRepositoriesThrowsWhenResponseIsUnexpected() {
+        stubGetRequest([:], new HttpUtils.HttpResponse(HttpURLConnection.HTTP_FORBIDDEN, '{"message":"forbidden"}'))
+
+        CodeupApi api = new CodeupApi(null)
+
+        RuntimeException error = assertThrows(RuntimeException.class) {
+            api.listRepositories('pt-token')
+        }
+        assertTrue(error.message.contains('响应码: 403'))
+        assertTrue(error.message.contains('page: 1'))
+        assertTrue(error.message.contains('https://openapi-rdc.aliyuncs.com'))
+    }
+
     private static void stubGetRequest(Map<String, Object> captured, HttpUtils.HttpResponse response) {
         ExpandoMetaClass emc = new ExpandoMetaClass(HttpUtils.HttpRequest, false, true)
         emc.'static'.get = { String url ->
@@ -142,6 +222,37 @@ class CodeupApiTest {
         }
         emc.initialize()
         GroovySystem.metaClassRegistry.setMetaClass(HttpUtils.HttpRequest, emc)
+    }
+
+    private static void stubSequentialGetRequests(List<Map<String, Object>> capturedRequests, List<HttpUtils.HttpResponse> responses) {
+        ExpandoMetaClass emc = new ExpandoMetaClass(HttpUtils.HttpRequest, false, true)
+        int index = 0
+        emc.'static'.get = { String url ->
+            Map<String, Object> captured = [url: url, headers: [:]]
+            capturedRequests.add(captured)
+            HttpUtils.HttpResponse response = responses[index]
+            index++
+            return new FakeHttpRequest(captured, response)
+        }
+        emc.initialize()
+        GroovySystem.metaClassRegistry.setMetaClass(HttpUtils.HttpRequest, emc)
+    }
+
+    private static String buildRepositoriesJson(int count, int startIndex) {
+        List<Map<String, Object>> repositories = (0..<count).collect { int offset ->
+            int id = startIndex + offset
+            return [
+                    id                : id,
+                    name              : "repo-${id}",
+                    path              : "repo-${id}",
+                    nameWithNamespace : "org / repo-${id}",
+                    pathWithNamespace : "org/repo-${id}",
+                    webUrl            : "https://codeup.example.com/org/repo-${id}",
+                    archived          : false,
+                    visibility        : 'private'
+            ]
+        }
+        return JsonUtils.toJsonStr(repositories)
     }
 
     static class FakeHttpRequest {

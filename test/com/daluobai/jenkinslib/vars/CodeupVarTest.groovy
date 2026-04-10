@@ -2,6 +2,7 @@ package com.daluobai.jenkinslib.vars
 
 import com.daluobai.jenkinslib.api.CodeupApi
 import com.daluobai.jenkinslib.utils.HttpUtils
+import com.daluobai.jenkinslib.utils.JsonUtils
 import groovy.lang.ExpandoMetaClass
 import groovy.lang.GroovyShell
 import groovy.lang.GroovySystem
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 
 import static org.junit.jupiter.api.Assertions.assertEquals
+import static org.junit.jupiter.api.Assertions.assertFalse
 import static org.junit.jupiter.api.Assertions.assertNotNull
 import static org.junit.jupiter.api.Assertions.assertSame
 import static org.junit.jupiter.api.Assertions.assertTrue
@@ -59,6 +61,23 @@ class CodeupVarTest {
 
         assertEquals('hello', content)
         assertEquals('https://openapi-rdc.aliyuncs.com/oapi/v1/codeup/repositories/group%2Fdemo/files/src%2Fmain.txt?ref=master', captured.url)
+    }
+
+    @Test
+    void codeupVarUsesDefaultDomainForListRepositories() {
+        GroovyShell shell = new GroovyShell(CodeupApi.class.classLoader)
+        Script script = shell.parse(new File('vars/codeup.groovy'))
+        Map<String, Object> captured = [:]
+        stubGetRequest(captured, new HttpUtils.HttpResponse(HttpURLConnection.HTTP_OK, JsonUtils.toJsonStr([[id: 1, name: 'repo-1', archived: false]])))
+
+        CodeupApi client = (CodeupApi) script.call()
+        List<Map<String, Object>> repositories = client.listRepositories('pt-token')
+
+        assertEquals(1, repositories.size())
+        assertEquals('repo-1', repositories[0].name)
+        assertFalse((Boolean) repositories[0].archived)
+        assertEquals('https://openapi-rdc.aliyuncs.com/oapi/v1/codeup/organizations/repositories?page=1&perPage=100', captured.url)
+        assertEquals('pt-token', captured.headers['x-yunxiao-token'])
     }
 
     private static void stubGetRequest(Map<String, Object> captured, HttpUtils.HttpResponse response) {
