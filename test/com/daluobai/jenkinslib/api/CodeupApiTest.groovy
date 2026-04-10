@@ -137,6 +137,17 @@ class CodeupApiTest {
     }
 
     @Test
+    void listRepositoriesRequiresOrganizationIdWhenUsingDefaultDomain() {
+        CodeupApi api = new CodeupApi(null)
+
+        IllegalArgumentException error = assertThrows(IllegalArgumentException.class) {
+            api.listRepositories('pt-token')
+        }
+
+        assertEquals('organizationId空的', error.message)
+    }
+
+    @Test
     void listRepositoriesAggregatesAllPages() {
         List<Map<String, Object>> capturedRequests = []
         stubSequentialGetRequests(capturedRequests, [
@@ -146,14 +157,14 @@ class CodeupApiTest {
 
         CodeupApi api = new CodeupApi(null)
 
-        List<Map<String, Object>> repositories = api.listRepositories('pt-token')
+        List<Map<String, Object>> repositories = api.listRepositories('pt-token', 'org-id')
 
         assertEquals(101, repositories.size())
         assertEquals('repo-1', repositories.first().name)
         assertEquals('repo-101', repositories.last().name)
         assertEquals(2, capturedRequests.size())
-        assertEquals('https://openapi-rdc.aliyuncs.com/oapi/v1/codeup/organizations/repositories?page=1&perPage=100', capturedRequests[0].url)
-        assertEquals('https://openapi-rdc.aliyuncs.com/oapi/v1/codeup/organizations/repositories?page=2&perPage=100', capturedRequests[1].url)
+        assertEquals('https://openapi-rdc.aliyuncs.com/oapi/v1/codeup/organizations/org-id/repositories?page=1&perPage=100', capturedRequests[0].url)
+        assertEquals('https://openapi-rdc.aliyuncs.com/oapi/v1/codeup/organizations/org-id/repositories?page=2&perPage=100', capturedRequests[1].url)
         assertEquals('pt-token', capturedRequests[0].headers['x-yunxiao-token'])
         assertEquals('pt-token', capturedRequests[1].headers['x-yunxiao-token'])
     }
@@ -165,10 +176,10 @@ class CodeupApiTest {
 
         CodeupApi api = new CodeupApi(null)
 
-        List<Map<String, Object>> repositories = api.listRepositories('codeup.example.com', 'pt-token')
+        List<Map<String, Object>> repositories = api.listRepositories('codeup.example.com', 'pt-token', 'org-id')
 
         assertEquals(1, repositories.size())
-        assertEquals('https://codeup.example.com/oapi/v1/codeup/organizations/repositories?page=1&perPage=100', captured.url)
+        assertEquals('https://codeup.example.com/oapi/v1/codeup/organizations/org-id/repositories?page=1&perPage=100', captured.url)
     }
 
     @Test
@@ -181,11 +192,11 @@ class CodeupApiTest {
 
         CodeupApi api = new CodeupApi(null)
 
-        List<Map<String, Object>> repositories = api.listRepositories('pt-token')
+        List<Map<String, Object>> repositories = api.listRepositories('pt-token', 'org-id')
 
         assertEquals(100, repositories.size())
         assertEquals(2, capturedRequests.size())
-        assertEquals('https://openapi-rdc.aliyuncs.com/oapi/v1/codeup/organizations/repositories?page=2&perPage=100', capturedRequests[1].url)
+        assertEquals('https://openapi-rdc.aliyuncs.com/oapi/v1/codeup/organizations/org-id/repositories?page=2&perPage=100', capturedRequests[1].url)
     }
 
     @Test
@@ -194,10 +205,23 @@ class CodeupApiTest {
 
         CodeupApi api = new CodeupApi(null)
 
-        List<Map<String, Object>> repositories = api.listRepositories('pt-token')
+        List<Map<String, Object>> repositories = api.listRepositories('pt-token', 'org-id')
 
         assertNotNull(repositories)
         assertTrue(repositories.isEmpty())
+    }
+
+    @Test
+    void listRepositoriesSupportsCustomDomainWhenOrganizationIdProvided() {
+        Map<String, Object> captured = [:]
+        stubGetRequest(captured, new HttpUtils.HttpResponse(HttpURLConnection.HTTP_OK, buildRepositoriesJson(1, 1)))
+
+        CodeupApi api = new CodeupApi(null)
+
+        List<Map<String, Object>> repositories = api.listRepositories('codeup.example.com', 'pt-token', 'org-id')
+
+        assertEquals(1, repositories.size())
+        assertEquals('https://codeup.example.com/oapi/v1/codeup/organizations/org-id/repositories?page=1&perPage=100', captured.url)
     }
 
     @Test
@@ -207,11 +231,11 @@ class CodeupApiTest {
         CodeupApi api = new CodeupApi(null)
 
         RuntimeException error = assertThrows(RuntimeException.class) {
-            api.listRepositories('pt-token')
+            api.listRepositories('codeup.example.com', 'pt-token', 'org-id')
         }
         assertTrue(error.message.contains('响应码: 403'))
         assertTrue(error.message.contains('page: 1'))
-        assertTrue(error.message.contains('https://openapi-rdc.aliyuncs.com'))
+        assertTrue(error.message.contains('https://codeup.example.com'))
     }
 
     private static void stubGetRequest(Map<String, Object> captured, HttpUtils.HttpResponse response) {

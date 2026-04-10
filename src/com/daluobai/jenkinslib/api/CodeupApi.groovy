@@ -75,18 +75,23 @@ class CodeupApi implements Serializable {
     }
 
     List<Map<String, Object>> listRepositories(String token) {
-        return listRepositories(DEFAULT_DOMAIN, token)
+        throw new IllegalArgumentException("organizationId空的")
     }
 
-    List<Map<String, Object>> listRepositories(String domain, String token) {
+    List<Map<String, Object>> listRepositories(String token, String organizationId) {
+        return listRepositories(DEFAULT_DOMAIN, token, organizationId)
+    }
+
+    List<Map<String, Object>> listRepositories(String domain, String token, String organizationId) {
         AssertUtils.notBlank(domain, "domain空的")
         AssertUtils.notBlank(token, "token空的")
+        AssertUtils.notBlank(organizationId, "organizationId空的")
 
         List<Map<String, Object>> repositories = []
         int page = 1
 
         while (true) {
-            def response = doGetRepositories(domain, token, page, DEFAULT_PAGE_SIZE)
+            def response = doGetRepositories(domain, token, page, DEFAULT_PAGE_SIZE, organizationId)
             if (!response.isOk()) {
                 throw new RuntimeException("查询Codeup仓库列表失败，domain: ${normalizeDomain(domain)}, page: ${page}, 响应码: ${response.getStatus()}")
             }
@@ -120,8 +125,8 @@ class CodeupApi implements Serializable {
                 .execute()
     }
 
-    private def doGetRepositories(String domain, String token, int page, int perPage) {
-        String url = buildRepositoriesUrl(domain, page, perPage)
+    private def doGetRepositories(String domain, String token, int page, int perPage, String organizationId) {
+        String url = buildRepositoriesUrl(domain, page, perPage, organizationId)
         return HttpUtils.HttpRequest.get(url)
                 .header("x-yunxiao-token", token)
                 .timeout(30000)
@@ -141,9 +146,10 @@ class CodeupApi implements Serializable {
         return "${normalizedDomain}/oapi/v1/codeup/repositories/${encodedRepositoryId}/files/${encodedFilePath}?ref=${encodedRef}"
     }
 
-    private static String buildRepositoriesUrl(String domain, int page, int perPage) {
+    private static String buildRepositoriesUrl(String domain, int page, int perPage, String organizationId) {
         String normalizedDomain = normalizeDomain(domain)
-        return "${normalizedDomain}/oapi/v1/codeup/organizations/repositories?page=${page}&perPage=${perPage}"
+        String encodedOrganizationId = encodePathSegment(organizationId)
+        return "${normalizedDomain}/oapi/v1/codeup/organizations/${encodedOrganizationId}/repositories?page=${page}&perPage=${perPage}"
     }
 
     private static String normalizeDomain(String domain) {
