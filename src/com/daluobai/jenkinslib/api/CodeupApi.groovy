@@ -74,6 +74,30 @@ class CodeupApi implements Serializable {
         return contentStr
     }
 
+    List<Map<String, Object>> listFiles(String token, String repositoryId, String path, String ref, String type) {
+        return listFiles(DEFAULT_DOMAIN, token, repositoryId, path, ref, type, null)
+    }
+
+    List<Map<String, Object>> listFiles(String domain, String token, String repositoryId, String path, String ref, String type) {
+        return listFiles(domain, token, repositoryId, path, ref, type, null)
+    }
+
+    List<Map<String, Object>> listFiles(String domain, String token, String repositoryId, String path, String ref, String type, String organizationId) {
+        AssertUtils.notBlank(domain, "domain空的")
+        AssertUtils.notBlank(token, "token空的")
+        AssertUtils.notBlank(repositoryId, "repositoryId空的")
+
+        def response = doGetFiles(domain, token, repositoryId, path, ref, type, organizationId)
+        if (!response.isOk()) {
+            throw new RuntimeException("查询Codeup文件树失败，响应码: ${response.getStatus()}")
+        }
+
+        List<Object> responseJson = JsonUtils.parseArray(response.body())
+        return responseJson.collect { Object item ->
+            return (Map<String, Object>) item
+        }
+    }
+
     List<Map<String, Object>> listRepositories(String token) {
         throw new IllegalArgumentException("organizationId空的")
     }
@@ -133,6 +157,14 @@ class CodeupApi implements Serializable {
                 .execute()
     }
 
+    private def doGetFiles(String domain, String token, String repositoryId, String path, String ref, String type, String organizationId) {
+        String url = buildFilesTreeUrl(domain, repositoryId, path, ref, type, organizationId)
+        return HttpUtils.HttpRequest.get(url)
+                .header("x-yunxiao-token", token)
+                .timeout(30000)
+                .execute()
+    }
+
     private static String buildFileUrl(String domain, String repositoryId, String filePath, String ref, String organizationId) {
         String normalizedDomain = normalizeDomain(domain)
         String encodedRepositoryId = encodePathSegment(repositoryId)
@@ -152,6 +184,33 @@ class CodeupApi implements Serializable {
         return "${normalizedDomain}/oapi/v1/codeup/organizations/${encodedOrganizationId}/repositories?page=${page}&perPage=${perPage}"
     }
 
+    private static String buildFilesTreeUrl(String domain, String repositoryId, String path, String ref, String type, String organizationId) {
+        String normalizedDomain = normalizeDomain(domain)
+        String encodedRepositoryId = encodePathSegment(repositoryId)
+        String baseUrl
+        if (StrUtils.isNotBlank(organizationId)) {
+            String encodedOrganizationId = encodePathSegment(organizationId)
+            baseUrl = "${normalizedDomain}/oapi/v1/codeup/organizations/${encodedOrganizationId}/repositories/${encodedRepositoryId}/files/tree"
+        } else {
+            baseUrl = "${normalizedDomain}/oapi/v1/codeup/repositories/${encodedRepositoryId}/files/tree"
+        }
+
+        List<String> queryParams = []
+        if (StrUtils.isNotBlank(path)) {
+            queryParams.add("path=${encodeQueryParam(path)}")
+        }
+        if (StrUtils.isNotBlank(ref)) {
+            queryParams.add("ref=${encodeQueryParam(ref)}")
+        }
+        if (StrUtils.isNotBlank(type)) {
+            queryParams.add("type=${encodeQueryParam(type)}")
+        }
+        if (queryParams.isEmpty()) {
+            return baseUrl
+        }
+        return "${baseUrl}?${queryParams.join('&')}"
+    }
+
     private static String normalizeDomain(String domain) {
         String normalized = domain.trim()
         if (normalized.endsWith("/")) {
@@ -164,6 +223,10 @@ class CodeupApi implements Serializable {
     }
 
     private static String encodePathSegment(String value) {
+        return URLEncoder.encode(value, "UTF-8").replace("+", "%20")
+    }
+
+    private static String encodeQueryParam(String value) {
         return URLEncoder.encode(value, "UTF-8").replace("+", "%20")
     }
 }

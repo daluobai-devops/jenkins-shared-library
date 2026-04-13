@@ -137,6 +137,67 @@ class CodeupApiTest {
     }
 
     @Test
+    void listFilesReturnsRegionEditionFileTree() {
+        Map<String, Object> captured = [:]
+        stubGetRequest(captured, new HttpUtils.HttpResponse(HttpURLConnection.HTTP_OK, buildFilesJson([
+                [id: '1', name: 'main.java', path: 'src/main.java', type: 'blob'],
+                [id: '2', name: 'test', path: 'src/test', type: 'tree']
+        ])))
+
+        CodeupApi api = new CodeupApi(null)
+
+        List<Map<String, Object>> files = api.listFiles('pt-token', 'group/demo', 'src/main test', 'feature/test', 'DIRECT')
+
+        assertEquals(2, files.size())
+        assertEquals('main.java', files[0].name)
+        assertEquals('blob', files[0].type)
+        assertEquals('https://openapi-rdc.aliyuncs.com/oapi/v1/codeup/repositories/group%2Fdemo/files/tree?path=src%2Fmain%20test&ref=feature%2Ftest&type=DIRECT', captured.url)
+        assertEquals('pt-token', captured.headers['x-yunxiao-token'])
+    }
+
+    @Test
+    void listFilesSupportsCenterEditionWhenOrganizationIdProvided() {
+        Map<String, Object> captured = [:]
+        stubGetRequest(captured, new HttpUtils.HttpResponse(HttpURLConnection.HTTP_OK, buildFilesJson([
+                [id: '1', name: 'demo.txt', path: 'src/demo.txt', type: 'blob']
+        ])))
+
+        CodeupApi api = new CodeupApi(null)
+
+        List<Map<String, Object>> files = api.listFiles('codeup.example.com', 'pt-token', 'group/demo', 'src', 'master', 'RECURSIVE', 'org-id')
+
+        assertEquals(1, files.size())
+        assertEquals('demo.txt', files[0].name)
+        assertEquals('https://codeup.example.com/oapi/v1/codeup/organizations/org-id/repositories/group%2Fdemo/files/tree?path=src&ref=master&type=RECURSIVE', captured.url)
+    }
+
+    @Test
+    void listFilesOmitsBlankQueryParameters() {
+        Map<String, Object> captured = [:]
+        stubGetRequest(captured, new HttpUtils.HttpResponse(HttpURLConnection.HTTP_OK, buildFilesJson([])))
+
+        CodeupApi api = new CodeupApi(null)
+
+        List<Map<String, Object>> files = api.listFiles('codeup.example.com/', 'pt-token', 'group/demo', '', null, '  ')
+
+        assertNotNull(files)
+        assertTrue(files.isEmpty())
+        assertEquals('https://codeup.example.com/oapi/v1/codeup/repositories/group%2Fdemo/files/tree', captured.url)
+    }
+
+    @Test
+    void listFilesThrowsWhenResponseIsUnexpected() {
+        stubGetRequest([:], new HttpUtils.HttpResponse(HttpURLConnection.HTTP_FORBIDDEN, '{"message":"forbidden"}'))
+
+        CodeupApi api = new CodeupApi(null)
+
+        RuntimeException error = assertThrows(RuntimeException.class) {
+            api.listFiles('pt-token', 'group/demo', 'src', 'master', 'DIRECT')
+        }
+        assertTrue(error.message.contains('响应码: 403'))
+    }
+
+    @Test
     void listRepositoriesRequiresOrganizationIdWhenUsingDefaultDomain() {
         CodeupApi api = new CodeupApi(null)
 
@@ -277,6 +338,10 @@ class CodeupApiTest {
             ]
         }
         return JsonUtils.toJsonStr(repositories)
+    }
+
+    private static String buildFilesJson(List<Map<String, Object>> files) {
+        return JsonUtils.toJsonStr(files)
     }
 
     static class FakeHttpRequest {
