@@ -116,6 +116,74 @@ class DispatchCodeupRepositoriesVarTest {
     }
 
     @Test
+    void dispatchCodeupRepositoriesFiltersByAllowedRepositoryNames() {
+        stubCodeupApi(
+                [[id: '1', name: 'repo-a', path: 'group/service-a'], [id: '2', name: 'repo-b', path: 'group/service-b']],
+                [
+                        '1': [[name: 'Jenkinsfile.groovy', path: 'Jenkinsfile.groovy', type: 'blob']],
+                        '2': [[name: 'Jenkinsfile.groovy', path: 'ci/Jenkinsfile.groovy', type: 'blob']]
+                ],
+                [
+                        '1:Jenkinsfile.groovy': """
+                                def customConfig = [SHARE_PARAM: [appName: 'repo-a']]
+                                deployJavaWeb(customConfig)
+                                """.stripIndent(),
+                        '2:ci/Jenkinsfile.groovy': """
+                                def customConfig = [SHARE_PARAM: [appName: 'repo-b']]
+                                deployJavaWeb(customConfig)
+                                """.stripIndent()
+                ]
+        )
+
+        GroovyShell shell = new GroovyShell(CodeupApi.class.classLoader)
+        Script script = shell.parse(new File('vars/dispatchCodeupRepositories.groovy'))
+        List<Map<String, Object>> dispatchedConfigs = []
+        script.metaClass.echo = { Object message -> }
+        script.metaClass.deployJavaWeb = { Map customConfig -> dispatchedConfigs.add(customConfig) }
+
+        Map result = (Map) script.invokeMethod('call', [[token: 'pt-token', organizationId: 'org-id', allowedRepositoryNames: ['repo-b']]] as Object[])
+
+        assertEquals(2, result.scannedRepositories)
+        assertEquals(1, result.scannedFiles)
+        assertEquals(1, result.dispatched)
+        assertTrue(result.rejected.isEmpty())
+        assertTrue(result.failed.isEmpty())
+        assertEquals(1, dispatchedConfigs.size())
+        assertEquals('repo-b', dispatchedConfigs[0].SHARE_PARAM.appName)
+    }
+
+    @Test
+    void dispatchCodeupRepositoriesSkipsAllWhenAllowedRepositoryNamesIsEmpty() {
+        stubCodeupApi(
+                [[id: '1', name: 'repo-a']],
+                [
+                        '1': [[name: 'Jenkinsfile.groovy', path: 'Jenkinsfile.groovy', type: 'blob']]
+                ],
+                [
+                        '1:Jenkinsfile.groovy': """
+                                def customConfig = [SHARE_PARAM: [appName: 'repo-a']]
+                                deployJavaWeb(customConfig)
+                                """.stripIndent()
+                ]
+        )
+
+        GroovyShell shell = new GroovyShell(CodeupApi.class.classLoader)
+        Script script = shell.parse(new File('vars/dispatchCodeupRepositories.groovy'))
+        int dispatchCount = 0
+        script.metaClass.echo = { Object message -> }
+        script.metaClass.deployJavaWeb = { Map customConfig -> dispatchCount++ }
+
+        Map result = (Map) script.invokeMethod('call', [[token: 'pt-token', organizationId: 'org-id', allowedRepositoryNames: []]] as Object[])
+
+        assertEquals(1, result.scannedRepositories)
+        assertEquals(0, result.scannedFiles)
+        assertEquals(0, result.dispatched)
+        assertEquals(0, dispatchCount)
+        assertTrue(result.rejected.isEmpty())
+        assertTrue(result.failed.isEmpty())
+    }
+
+    @Test
     void dispatchCodeupRepositoriesSupportsDryRun() {
         stubCodeupApi(
                 [[id: '1', name: 'repo-a']],

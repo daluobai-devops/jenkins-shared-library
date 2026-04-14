@@ -103,3 +103,19 @@ jenkins介绍和学习(Jenkins中文社区Rick):https://www.bilibili.com/video/B
 使用 Groovy 沙盒
 
 流水线>定义>Pipeline script填入configdemo/deployJavaWeb.groovy
+
+# 六、dispatchCodeupRepositories 使用示例
+
+下面示例只处理指定仓库名称的 Jenkinsfile.groovy。
+
+```groovy
+@Library('jenkins-shared-library') _
+
+dispatchCodeupRepositories(
+    token: 'pt-token',
+    organizationId: 'org-id',
+    allowedRepositoryNames: ['repo-a', 'repo-b']
+)
+```
+
+`allowedRepositoryNames` 可选，按 Codeup 返回的 `repository.name` 过滤；不传时处理全部仓库，传空集合时全部跳过。

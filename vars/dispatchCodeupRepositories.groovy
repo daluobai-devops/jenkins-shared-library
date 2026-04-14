@@ -2,6 +2,11 @@ import com.daluobai.jenkinslib.api.CodeupApi
 import com.daluobai.jenkinslib.codeup.JenkinsfileInvocationParser
 import com.daluobai.jenkinslib.utils.AssertUtils
 
+/**
+ * 扫描 Codeup 仓库中的 Jenkinsfile.groovy，并执行允许的方法。
+ * allowedRepositoryNames 可选，必须是仓库名称集合（按 Codeup 返回的 repository.name 过滤）；
+ * 不传时处理全部仓库，传空集合时全部跳过。
+ */
 def call(Map config = [:]) {
     AssertUtils.notBlank(config.token?.toString(), 'token空的')
     AssertUtils.notBlank(config.organizationId?.toString(), 'organizationId空的')
@@ -16,6 +21,16 @@ def call(Map config = [:]) {
     Set<String> allowedMethods = ((config.allowedMethods ?: ['deployJavaWeb']) as Collection).collect { Object item ->
         return item.toString()
     } as Set<String>
+    boolean hasAllowedRepositoryNames = config.containsKey('allowedRepositoryNames')
+    Set<String> allowedRepositoryNames = null
+    if (hasAllowedRepositoryNames) {
+        if (!(config.allowedRepositoryNames instanceof Collection)) {
+            throw new IllegalArgumentException('allowedRepositoryNames必须是集合')
+        }
+        allowedRepositoryNames = ((Collection) config.allowedRepositoryNames).collect { Object item ->
+            return item?.toString()
+        } as Set<String>
+    }
 
     def whitelist = [
             deployJavaWeb: { Map customConfig -> deployJavaWeb(customConfig) }
@@ -40,7 +55,17 @@ def call(Map config = [:]) {
     List<Map<String, Object>> repositories = codeupApi.listRepositories(domain, token, organizationId)
     summary.scannedRepositories = repositories.size()
 
-    repositories.each { Map<String, Object> repository ->
+    repositories.findAll { Map<String, Object> repository ->
+        if (!hasAllowedRepositoryNames) {
+            return true
+        }
+        String repositoryName = repository.name?.toString()
+        boolean allowed = allowedRepositoryNames.contains(repositoryName)
+        if (!allowed) {
+            echo "Codeup仓库不在allowedRepositoryNames中，跳过。repositoryName=${repositoryName}"
+        }
+        return allowed
+    }.each { Map<String, Object> repository ->
         processRepository(repository, codeupApi, parser, whitelist, allowedMethods, domain, token, organizationId, ref, dryRun, summary)
     }
 
