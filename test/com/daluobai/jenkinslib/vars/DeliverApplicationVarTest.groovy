@@ -9,6 +9,7 @@ import com.daluobai.jenkinslib.delivery.InMemorySourceRepositoryAdapter
 import groovy.lang.Binding
 import groovy.lang.GroovyShell
 import org.junit.jupiter.api.Test
+import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
 
 import static org.junit.jupiter.api.Assertions.assertEquals
 import static org.junit.jupiter.api.Assertions.assertFalse
@@ -233,6 +234,22 @@ class DeliverApplicationVarTest {
 
         assertEquals('cleanup failure', failure.message)
         assertEquals('FAILED', failure.deliveryResult.status)
+    }
+
+    @Test
+    void replacementEntryPreservesJenkinsInterruptionAndStillCleansWorkspace() {
+        InMemoryDeliveryStageAdapter stages = new InMemoryDeliveryStageAdapter()
+        stages.buildFailure = new FlowInterruptedException([])
+        Map delivery = baseJavaDelivery()
+        delivery.source.reference = 'main'
+
+        assertThrows(FlowInterruptedException.class) {
+            loadEntry(runtimeFor(stages)).invokeMethod('call', [[
+                    primary: [DELIVERY: delivery], execution: [id: 'replacement-abort']
+            ]] as Object[])
+        }
+
+        assertEquals('cleanup', stages.events.last())
     }
 
     @Test

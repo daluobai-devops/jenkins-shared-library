@@ -103,7 +103,7 @@ class ApplicationDeliveryService implements Serializable {
             }
         }
         if (primaryFailure != null) {
-            if (preserveFailureType) {
+            if (preserveFailureType || primaryFailure.class.name == 'org.jenkinsci.plugins.workflow.steps.FlowInterruptedException') {
                 throw primaryFailure
             }
             throw new DeliveryExecutionException(primaryFailure, result)

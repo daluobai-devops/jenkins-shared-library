@@ -4,7 +4,7 @@ class InMemoryDeliveryStageAdapter implements DeliveryStageAdapter {
     final List<String> events = []
     Map buildArtifact = [path: 'build/application.jar', fileName: 'application.jar', checksum: 'sha256:test']
     Closure beforeBuild = { -> }
-    RuntimeException buildFailure
+    Throwable buildFailure
     String deploymentFailureNode
     RuntimeException cleanupFailure
     final Map<String, RuntimeException> notificationFailures = [:]
