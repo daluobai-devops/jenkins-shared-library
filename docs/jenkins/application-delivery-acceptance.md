@@ -22,16 +22,33 @@
 
 ## 执行结果
 
-状态：待执行。
+状态：已完成（2026-07-28）。
 
-本地前置验证（2026-07-28）：`gradlew clean test --no-daemon` 通过，26 个测试套件、119 个测试、0 失败；该结果覆盖配置契约、预检零副作用、固定源码版本、产物身份、执行取代状态、两阶段仓库分发及旧入口回归，但不替代 Jenkins CPS/插件运行时验收。
+本地前置验证：`gradlew clean test --no-daemon` 通过，26 个测试套件、120 个测试、0 失败。
 
-当前阻塞：测试 Jenkins 浏览器会话要求登录，项目凭据台账仅登记 API Token，未登记对应用户名。
+### 主场景验收
 
-执行后记录 Job Build URL、结果、时间以及各 stage 的证据；不得复制凭据或完整敏感日志。
+- Build：[test #47](https://jenkins.nanjingzhengshang.com/job/test/47/)
+- 结果：`SUCCESS`
+- 共享库版本：`a97743283fd13710f1c62ec283d12a55f00a3930`（Gitee `test`）
+- 执行节点：外层 Pipeline 使用 `app-jgzly-app02`；旧入口保持历史 `buildNode` 选择行为，本次解析到 `master`。
+- 阶段证据：`legacy-web`、`legacy-java`、`replacement-entry`、`dispatch-dry-run`、`rejected-preflight` 全部完成。
+- 统一入口断言固定源码版本为 `acceptance-sha`，并通过 `directArtifactHandoff=true` 观察到 `deploy:app-jgzly-app02`；使用内存 adapter，不执行真实部署。
+- 分发 dry-run 断言完整预检通过且没有交付副作用；拒绝场景断言 `TEARDOWN` 在预检阶段失败且 stage event 为空。
+- Jenkins 成功加载共享库、完成 CPS 执行和公开入口调用；SCM 访问仅显示 Jenkins 凭据别名 `ssh-git`，未输出凭据内容。
+
+### 终止与清理验收
+
+- Build：[test #46](https://jenkins.nanjingzhengshang.com/job/test/46/)
+- 结果：`ABORTED`
+- 共享库版本：`5375fb15e27be7b2abe4c5b51d3ceb6fa10e26cf`
+- 在 `abort-delivery` 的可控 `sleep` 期间从 Jenkins UI 执行 Stop。
+- Console 依次记录 `ABORT_ACCEPTANCE_BUILD_STARTED`、`Aborted by admin`、`ABORT_ACCEPTANCE_CLEANUP_EXECUTED` 和 `Finished: ABORTED`，证明中断保留原异常类型且 finally 清理已执行。
+
+验收结束后已恢复 Job 原 Pipeline 脚本，并逐字校验恢复内容一致。
 
 ## 已知限制
 
-- 本地 Groovy 测试不能替代 CPS 与插件运行时验收。
-- 内存 adapter 场景验证 seam 和序列化，不验证真实 Codeup 网络、真实 Maven/NPM 构建或生产部署。
-- 中止场景需要在 `replacement-entry` stage 运行时从 Jenkins UI 触发一次 Stop，并确认 `ABORTED` 与清理日志；它不应触发部署。
+- 内存 adapter 场景验证交付 seam、CPS 调用和直接产物交接契约，不验证真实 Codeup 网络、真实 Maven/NPM 构建或生产部署。
+- 本次未向生产环境部署，也未使用真实应用凭据。
+- 并发执行取代的状态转换由本地协调器测试覆盖；测试 Jenkins 覆盖了真实 UI Stop、`FlowInterruptedException`、清理顺序和 `ABORTED` 状态。
