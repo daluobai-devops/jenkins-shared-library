@@ -70,9 +70,13 @@ git -C "\$probe_dir" cat-file -e "FETCH_HEAD:${directory}"
     }
 
     private def withSourceCredentials(Map source, Closure action) {
-        if (source.credentialsId && steps.metaClass.respondsTo(steps, 'sshagent', Map, Closure)) {
-            return steps.sshagent(credentials: [source.credentialsId.toString()]) {
-                action.call()
+        if (source.credentialsId) {
+            try {
+                return steps.sshagent(credentials: [source.credentialsId.toString()]) {
+                    action.call()
+                }
+            } catch (MissingMethodException ignored) {
+                // 没有安装 ssh-agent 插件时保留匿名/宿主机 SSH 的历史回退行为。
             }
         }
         return action.call()
