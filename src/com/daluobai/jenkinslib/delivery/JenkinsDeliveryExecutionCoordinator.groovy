@@ -29,11 +29,6 @@ class JenkinsDeliveryExecutionCoordinator implements DeliveryExecutionCoordinato
             }
             notifySupersession(effectiveConfig, previous, execution)
         }
-        try {
-            steps.milestone(ordinal: (execution.number ?: steps.env.BUILD_NUMBER ?: 1) as int)
-        } catch (MissingMethodException ignored) {
-            // milestone插件不是统一交付入口的硬依赖。
-        }
     }
 
     @Override
