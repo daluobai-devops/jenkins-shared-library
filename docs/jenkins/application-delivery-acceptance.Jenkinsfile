@@ -49,7 +49,10 @@ node('app-jgzly-app02') {
                 stages: [
                     build: [enabled: true, strategy: 'MAVEN', config: [:]],
                     storage: [enabled: false],
-                    deploy: [enabled: false]
+                    deploy: [
+                        enabled: true, strategy: 'JAVA_SERVICE', nodes: ['app-jgzly-app02'],
+                        directArtifactHandoff: true, readiness: [], config: [:]
+                    ]
                 ],
                 notification: [enabled: false]
             ]],
@@ -57,7 +60,8 @@ node('app-jgzly-app02') {
         ], runtime)
         assert result.status == 'SUCCESS'
         assert result.resolvedSourceRevision == 'acceptance-sha'
-        assert stages.events == ['initialize', 'build:JAVA:MAVEN:acceptance-sha', 'cleanup']
+        assert result.deploymentNodes == ['app-jgzly-app02']
+        assert stages.events == ['initialize', 'build:JAVA:MAVEN:acceptance-sha', 'deploy:app-jgzly-app02', 'cleanup']
     }
 
     stage('dispatch-dry-run') {
