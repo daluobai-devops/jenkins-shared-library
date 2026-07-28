@@ -35,7 +35,8 @@ class JenkinsDeliveryExecutionCoordinator implements DeliveryExecutionCoordinato
     void afterExecution(Map execution, Map result) {
         if (steps.currentBuild != null) {
             steps.currentBuild.description = JsonOutput.toJson(result)
-            steps.currentBuild.result = result.status == 'SUCCESS' ? 'SUCCESS' : 'FAILURE'
+            steps.currentBuild.result = result.status == 'SUCCESS' ? 'SUCCESS' :
+                    (result.status == 'ABORTED' ? 'ABORTED' : 'FAILURE')
         }
     }
 
