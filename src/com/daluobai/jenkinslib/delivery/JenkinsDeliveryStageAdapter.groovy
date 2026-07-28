@@ -107,6 +107,8 @@ class JenkinsDeliveryStageAdapter implements DeliveryStageAdapter {
         Map legacy = strategyConfig(effectiveConfig, preflight)
         legacy.SHARE_PARAM.archiveName = artifact.fileName
         Map deploymentConfig = new LinkedHashMap((deploy.config ?: [:]) as Map)
+        Map javaServiceConfig = strategyDeploymentConfig(deploymentConfig, 'stepsJavaWebDeployToService')
+        Map tomcatConfig = strategyDeploymentConfig(deploymentConfig, 'stepsTomcatDeploy')
         if (effectiveConfig.DELIVERY.stages.storage?.enabled != true && deploy.directArtifactHandoff == true) {
             steps.stash(name: 'appPackage', includes: artifact.path.toString(), useDefaultExcludes: false)
         }
@@ -125,16 +127,27 @@ class JenkinsDeliveryStageAdapter implements DeliveryStageAdapter {
         }
         if (delivery.application.type == 'JAVA') {
             if (deploy.strategy == 'TOMCAT') {
-                deploymentConfig.stepsTomcatDeploy = (deploymentConfig.stepsTomcatDeploy ?: [:]) + [enable: true]
-                deploymentConfig.stepsJavaWebDeployToService = (deploymentConfig.stepsJavaWebDeployToService ?: [:]) + [enable: false]
+                deploymentConfig.stepsTomcatDeploy = tomcatConfig + [enable: true]
+                deploymentConfig.stepsJavaWebDeployToService = javaServiceConfig + [enable: false]
             } else {
-                deploymentConfig.stepsJavaWebDeployToService = (deploymentConfig.stepsJavaWebDeployToService ?: [:]) + [enable: true]
-                deploymentConfig.stepsTomcatDeploy = (deploymentConfig.stepsTomcatDeploy ?: [:]) + [enable: false]
+                deploymentConfig.stepsJavaWebDeployToService = javaServiceConfig + [enable: true]
+                deploymentConfig.stepsTomcatDeploy = tomcatConfig + [enable: false]
             }
             new StepsDeploy(steps).deploy(deploymentConfig, legacy)
         } else {
             new StepsWeb(steps).deploy(deploymentConfig, legacy)
         }
+    }
+
+    static Map strategyDeploymentConfig(Map deploymentConfig, String legacyKey) {
+        Object legacyConfig = deploymentConfig[legacyKey]
+        if (legacyConfig instanceof Map) {
+            return new LinkedHashMap(legacyConfig as Map)
+        }
+        Map strategyConfig = new LinkedHashMap(deploymentConfig)
+        strategyConfig.remove('stepsJavaWebDeployToService')
+        strategyConfig.remove('stepsTomcatDeploy')
+        return strategyConfig
     }
 
     @Override
