@@ -19,6 +19,26 @@ import static org.junit.jupiter.api.Assertions.assertTrue
 class DeliverApplicationVarTest {
 
     @Test
+    void replacementEntryAllocatesDefaultBuildNodeInternally() {
+        List<String> allocatedNodes = []
+        Script script = loadEntry(runtimeFor(new InMemoryDeliveryStageAdapter()))
+        script.metaClass.node = { String label, Closure body ->
+            allocatedNodes.add(label)
+            body.call()
+        }
+
+        Map delivery = baseJavaDelivery()
+        delivery.source.reference = 'main'
+        Map result = script.invokeMethod('call', [[
+                primary  : [DELIVERY: delivery],
+                execution: [id: 'default-build-node']
+        ]] as Object[]) as Map
+
+        assertEquals('SUCCESS', result.status)
+        assertEquals(['buildNode'], allocatedNodes)
+    }
+
+    @Test
     void replacementEntryBuildsJavaFromPinnedRevisionAndReturnsTraceableResult() {
         InMemorySourceRepositoryAdapter source = new InMemorySourceRepositoryAdapter([
                 'git@example/app.git': [main: 'abc123']
@@ -403,6 +423,7 @@ class DeliverApplicationVarTest {
         Script script = new GroovyShell(DeliveryRuntime.class.classLoader, binding)
                 .parse(new File('vars/deliverApplication.groovy'))
         script.metaClass.echo = { Object ignored -> }
+        script.metaClass.node = { String ignored, Closure body -> body.call() }
         return script
     }
 

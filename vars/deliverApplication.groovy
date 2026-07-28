@@ -9,10 +9,12 @@ def call(Map request) {
     if (request?.legacyCompatibility == true || request?.legacyNoop == true) {
         throw new IllegalArgumentException('替代入口不接受旧入口兼容标志')
     }
-    DeliveryRuntime runtime = binding.hasVariable('deliveryRuntime') && binding.getVariable('deliveryRuntime') instanceof DeliveryRuntime
-            ? binding.getVariable('deliveryRuntime') as DeliveryRuntime
-            : DeliveryRuntimeFactory.forJenkins(this)
-    return new ApplicationDeliveryService(runtime).deliver(request ?: [:])
+    return node('buildNode') {
+        DeliveryRuntime runtime = binding.hasVariable('deliveryRuntime') && binding.getVariable('deliveryRuntime') instanceof DeliveryRuntime
+                ? binding.getVariable('deliveryRuntime') as DeliveryRuntime
+                : DeliveryRuntimeFactory.forJenkins(this)
+        return new ApplicationDeliveryService(runtime).deliver(request ?: [:])
+    }
 }
 
 /** 测试 Jenkins 与本地契约测试使用的显式 runtime seam。 */

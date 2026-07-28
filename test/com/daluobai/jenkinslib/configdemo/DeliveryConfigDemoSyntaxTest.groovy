@@ -21,6 +21,7 @@ class DeliveryConfigDemoSyntaxTest {
                     .findAll { String line -> !line.trim().startsWith('//') }
                     .join('\n')
             assertFalse(executableSource.contains('DEPLOY_PIPELINE'))
+            assertFalse(executableSource.contains("node('buildNode')"))
 
             String compilableSource = source.replaceFirst(
                     /@Library\('jenkins-shared-library'\) _/,

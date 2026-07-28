@@ -142,9 +142,8 @@ def deliveryConfig = [
         ]
 ]
 
-// 构建阶段运行在构建节点；部署阶段会自动切换到 deploy.nodes 指定的节点。
-node('buildNode') {
-    stage('deliver demo-web') {
-        deliverApplication(deliveryConfig)
-    }
+// deliverApplication 内部默认在 buildNode 节点构建；
+// 部署阶段会自动切换到 deploy.nodes 指定的节点。
+stage('deliver demo-web') {
+    deliverApplication(deliveryConfig)
 }
