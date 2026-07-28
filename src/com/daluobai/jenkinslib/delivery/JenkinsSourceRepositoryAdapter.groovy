@@ -72,11 +72,18 @@ git -C "\$probe_dir" cat-file -e "FETCH_HEAD:${directory}"
     private def withSourceCredentials(Map source, Closure action) {
         if (source.credentialsId) {
             try {
-                return steps.sshagent(credentials: [source.credentialsId.toString()]) {
-                    action.call()
+                return steps.withCredentials([steps.sshUserPrivateKey(
+                        credentialsId: source.credentialsId.toString(),
+                        keyFileVariable: 'DELIVERY_SOURCE_SSH_KEY'
+                )]) {
+                    steps.withEnv([
+                            "GIT_SSH_COMMAND=ssh -i '${steps.env.DELIVERY_SOURCE_SSH_KEY}' -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new"
+                    ]) {
+                        action.call()
+                    }
                 }
-            } catch (MissingMethodException ignored) {
-                // 没有安装 ssh-agent 插件时保留匿名/宿主机 SSH 的历史回退行为。
+            } catch (MissingMethodException | NoSuchMethodError ignored) {
+                // 没有安装 Credentials Binding 插件时保留匿名/宿主机 SSH 的历史回退行为。
             }
         }
         return action.call()
