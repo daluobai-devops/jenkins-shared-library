@@ -336,6 +336,78 @@ class DispatchCodeupRepositoriesVarTest {
         assertTrue(result.rejected[0].reason.contains('allowedCommandValues'))
     }
 
+    @Test
+    void dispatchCodeupRepositoriesDispatchesExplicitlyAuthorizedRemoteCommand() {
+        stubCodeupApi(
+                [[id: '1', name: 'repo-a']],
+                ['1': [[name: 'Jenkinsfile.groovy', path: 'Jenkinsfile.groovy', type: 'blob']]],
+                ['1:Jenkinsfile.groovy': """
+                        def customConfig = [DEPLOY_PIPELINE: [stepsBuildNpm: [buildCMD: 'npm run build']]]
+                        deployWeb(customConfig)
+                        """.stripIndent()]
+        )
+
+        GroovyShell shell = new GroovyShell(CodeupApi.class.classLoader)
+        Script script = shell.parse(new File('vars/dispatchCodeupRepositories.groovy'))
+        List<Map<String, Object>> dispatchedConfigs = []
+        script.metaClass.echo = { Object message -> }
+        script.metaClass.deployWeb = { Map customConfig -> dispatchedConfigs.add(customConfig) }
+
+        Map result = (Map) script.invokeMethod('call', [[
+                token                 : 'pt-token',
+                organizationId        : 'org-id',
+                allowedRepositoryNames: ['repo-a'],
+                allowedCommandValues  : ['npm run build']
+        ]] as Object[])
+
+        assertEquals(1, result.dispatched)
+        assertTrue(result.rejected.isEmpty())
+        assertTrue(result.failed.isEmpty())
+        assertEquals('npm run build', dispatchedConfigs[0].DEPLOY_PIPELINE.stepsBuildNpm.buildCMD)
+    }
+
+    @Test
+    void dispatchCodeupRepositoriesFailsAtEndAfterContinuingOtherRepositories() {
+        stubCodeupApi(
+                [[id: '1', name: 'repo-a'], [id: '2', name: 'repo-b']],
+                [
+                        '1': [[name: 'Jenkinsfile.groovy', path: 'Jenkinsfile.groovy', type: 'blob']],
+                        '2': [[name: 'Jenkinsfile.groovy', path: 'Jenkinsfile.groovy', type: 'blob']]
+                ],
+                [
+                        '1:Jenkinsfile.groovy': """
+                                def customConfig = [DEPLOY_PIPELINE: [stepsBuildNpm: [buildCMD: 'curl attacker.example']]]
+                                deployWeb(customConfig)
+                                """.stripIndent(),
+                        '2:Jenkinsfile.groovy': """
+                                def customConfig = [SHARE_PARAM: [appName: 'repo-b']]
+                                deployJavaWeb(customConfig)
+                                """.stripIndent()
+                ]
+        )
+
+        GroovyShell shell = new GroovyShell(CodeupApi.class.classLoader)
+        Script script = shell.parse(new File('vars/dispatchCodeupRepositories.groovy'))
+        List<Map<String, Object>> dispatchedConfigs = []
+        script.metaClass.echo = { Object message -> }
+        script.metaClass.error = { Object message -> throw new IllegalStateException(message.toString()) }
+        script.metaClass.deployJavaWeb = { Map customConfig -> dispatchedConfigs.add(customConfig) }
+
+        IllegalStateException failure = assertThrows(IllegalStateException.class) {
+            script.invokeMethod('call', [[
+                    token                 : 'pt-token',
+                    organizationId        : 'org-id',
+                    allowedRepositoryNames: ['repo-a', 'repo-b'],
+                    failAtEnd             : true
+            ]] as Object[])
+        }
+
+        assertEquals(1, dispatchedConfigs.size())
+        assertEquals('repo-b', dispatchedConfigs[0].SHARE_PARAM.appName)
+        assertTrue(failure.message.contains('失败: 0'))
+        assertTrue(failure.message.contains('拒绝: 1'))
+    }
+
     private static void stubCodeupApi(List<Map<String, Object>> repositories,
                                       Map<String, List<Map<String, Object>>> filesByRepositoryId,
                                       Map<String, String> contentsByRepositoryAndPath,
