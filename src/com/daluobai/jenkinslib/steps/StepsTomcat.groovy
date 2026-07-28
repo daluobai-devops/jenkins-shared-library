@@ -27,6 +27,10 @@ class StepsTomcat implements Serializable {
 
     //发布
     def deploy(Map parameterMap) {
+        return deploy(parameterMap, steps.globalParameterMap as Map)
+    }
+
+    def deploy(Map parameterMap, Map effectiveConfig) {
         steps.echo "开始部署Tomcat应用"
         AssertUtils.notEmpty(parameterMap,"参数为空")
         def enable = parameterMap.enable
@@ -37,7 +41,7 @@ class StepsTomcat implements Serializable {
         def tomcatHome = parameterMap.tomcatHome
         def deployPath = parameterMap.deployPath
         def command = parameterMap.command
-        def globalParameterMap = steps.globalParameterMap
+        def globalParameterMap = effectiveConfig
         def appName = globalParameterMap.SHARE_PARAM.appName
         def archiveName = globalParameterMap.SHARE_PARAM.archiveName
         //获取文件名后缀

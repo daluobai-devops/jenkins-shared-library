@@ -28,12 +28,17 @@ class StepsDeploy implements Serializable {
 
     //发布
     def deploy(Map parameterMap) {
+        return deploy(parameterMap, steps.globalParameterMap as Map)
+    }
+
+    // 当前交付 implementation 显式传入有效配置；单参数入口仅供旧调用兼容。
+    def deploy(Map parameterMap, Map effectiveConfig) {
         steps.echo "开始执行Java Web部署编排"
         AssertUtils.notEmpty(parameterMap, "参数为空")
         def labels = parameterMap.labels
         def readinessProbeMap = parameterMap.readinessProbe
         def afterRunCMD = parameterMap.afterRunCMD
-        def globalParameterMap = steps.globalParameterMap
+        def globalParameterMap = effectiveConfig
         AssertUtils.notEmpty(labels, "labels为空")
         if (globalParameterMap.DEPLOY_PIPELINE?.stepsStorage?.jenkinsStash?.enable != true) {
             steps.error '文件部署要求DEPLOY_PIPELINE.stepsStorage.jenkinsStash.enable=true'
@@ -62,12 +67,14 @@ class StepsDeploy implements Serializable {
                 steps.echo "开始发布:${nodeDeployNode}"
                 steps.node(nodeDeployNode) {
                     if (javaDeployEnabled) {
-                        stepsJavaWeb.deploy(javaDeployConfig)
+                        stepsJavaWeb.deploy(javaDeployConfig, globalParameterMap)
                     } else {
-                        stepsTomcat.deploy(tomcatDeployConfig)
+                        stepsTomcat.deploy(tomcatDeployConfig, globalParameterMap)
                     }
                     //健康检查
-                    if (readinessProbeMap != null) {
+                    if (parameterMap.readinessSequence instanceof Collection) {
+                        verifyReadinessInOrder(parameterMap.readinessSequence as Collection)
+                    } else if (readinessProbeMap != null) {
                         def healthAll = true
                         if (healthAll && ObjUtils.isNotEmpty(readinessProbeMap.tcp) && (readinessProbeMap.tcp.enable == null || readinessProbeMap.tcp.enable)) {
                             def healthCheck = endpointUtils.healthCheckWithLocalTCPPort(readinessProbeMap.tcp.port, readinessProbeMap.period, readinessProbeMap.failureThreshold)
@@ -102,6 +109,30 @@ class StepsDeploy implements Serializable {
                         steps.sh "${afterRunCMD}"
                     }
                 }
+            }
+        }
+    }
+
+    private void verifyReadinessInOrder(Collection checks) {
+        checks.each { Object rawCheck ->
+            Map check = rawCheck as Map
+            Map config = (check.config ?: [:]) as Map
+            boolean ready
+            if (check.type == 'TCP') {
+                ready = endpointUtils.healthCheckWithLocalTCPPort(config.port, config.period, config.failureThreshold)
+            } else if (check.type == 'HTTP') {
+                ready = endpointUtils.healthCheckWithHttp(
+                        "http://localhost:${config.port}${config.path}", config.timeout, config.period, config.failureThreshold
+                )
+            } else if (check.type == 'COMMAND') {
+                ready = endpointUtils.healthCheckWithCMD(config.command, config.timeout, config.period, config.failureThreshold)
+            } else {
+                steps.error "不支持的就绪验证: ${check.type}"
+                return
+            }
+            steps.echo "就绪验证${check.type}结束，${ready}"
+            if (!ready) {
+                steps.error '服务未就绪'
             }
         }
     }

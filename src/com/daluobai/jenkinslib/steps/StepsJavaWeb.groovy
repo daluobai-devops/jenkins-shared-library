@@ -29,10 +29,14 @@ class StepsJavaWeb implements Serializable {
 
     //发布
     def deploy(Map parameterMap) {
+        return deploy(parameterMap, steps.globalParameterMap as Map)
+    }
+
+    def deploy(Map parameterMap, Map effectiveConfig) {
         steps.echo "开始部署Java服务"
         AssertUtils.notEmpty(parameterMap,"参数为空")
         def pathRoot = parameterMap.pathRoot
-        def globalParameterMap = steps.globalParameterMap
+        def globalParameterMap = effectiveConfig
         def appName = globalParameterMap.SHARE_PARAM.appName
         def archiveName = globalParameterMap.SHARE_PARAM.archiveName
         //获取文件名后缀
@@ -63,10 +67,10 @@ class StepsJavaWeb implements Serializable {
         if (manageBySystemctl && systemctlRe == 0) {
             steps.echo "通过systemctl重启"
             //systemctl重启
-            reStartBySystemctl(parameterMap)
+            reStartBySystemctl(parameterMap, globalParameterMap)
         } else {
             steps.echo "通过shell重启"
-            reStartByShell(parameterMap)
+            reStartByShell(parameterMap, globalParameterMap)
         }
     }
 
@@ -76,8 +80,12 @@ class StepsJavaWeb implements Serializable {
      * @return
      */
     def reStartBySystemctl(Map parameterMap){
+        return reStartBySystemctl(parameterMap, steps.globalParameterMap as Map)
+    }
+
+    def reStartBySystemctl(Map parameterMap, Map effectiveConfig){
         AssertUtils.notEmpty(parameterMap,"参数为空")
-        def globalParameterMap = steps.globalParameterMap
+        def globalParameterMap = effectiveConfig
         def appName = globalParameterMap.SHARE_PARAM.appName
         def archiveName = globalParameterMap.SHARE_PARAM.archiveName
         def labels = parameterMap.labels
@@ -109,8 +117,12 @@ class StepsJavaWeb implements Serializable {
     }
 
     def reStartByShell(Map parameterMap){
+        return reStartByShell(parameterMap, steps.globalParameterMap as Map)
+    }
+
+    def reStartByShell(Map parameterMap, Map effectiveConfig){
         AssertUtils.notEmpty(parameterMap,"参数为空")
-        def globalParameterMap = steps.globalParameterMap
+        def globalParameterMap = effectiveConfig
         def appName = globalParameterMap.SHARE_PARAM.appName
         def archiveName = globalParameterMap.SHARE_PARAM.archiveName
         def labels = parameterMap.labels

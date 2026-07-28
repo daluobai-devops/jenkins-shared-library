@@ -38,6 +38,30 @@ class StepsDeployTest {
         }
     }
 
+    @Test
+    void deployRunsConfiguredReadinessOrderAndStopsAtFirstFailure() {
+        StepsDeploy deploy = new StepsDeploy(new FakeSteps())
+        deploy.stepsJenkins = new FakeStepsJenkins()
+        deploy.stepsJavaWeb = new FakeDeployer()
+        deploy.stepsTomcat = new FakeDeployer()
+        deploy.endpointUtils = new FakeEndpointUtils()
+
+        assertThrows(IllegalStateException.class) {
+            deploy.deploy([
+                    labels: ['deploy-node'],
+                    stepsJavaWebDeployToService: [enable: true],
+                    stepsTomcatDeploy: [enable: false],
+                    readinessSequence: [
+                            [type: 'HTTP', config: [port: 8080, path: '/ready']],
+                            [type: 'TCP', config: [port: 8080]],
+                            [type: 'COMMAND', config: [command: 'true']]
+                    ]
+            ])
+        }
+
+        assertEquals(['HTTP', 'TCP'], deploy.endpointUtils.events)
+    }
+
     static class FakeSteps {
         Map globalParameterMap = [
                 SHARE_PARAM: [appName: 'app', archiveName: 'app.jar'],
@@ -57,5 +81,25 @@ class StepsDeployTest {
     static class FakeDeployer {
         int calls
         void deploy(Map ignored) { calls++ }
+        void deploy(Map ignored, Map effectiveConfig) { calls++ }
+    }
+
+    static class FakeEndpointUtils {
+        List<String> events = []
+
+        boolean healthCheckWithHttp(Object... ignored) {
+            events.add('HTTP')
+            return true
+        }
+
+        boolean healthCheckWithLocalTCPPort(Object... ignored) {
+            events.add('TCP')
+            return false
+        }
+
+        boolean healthCheckWithCMD(Object... ignored) {
+            events.add('COMMAND')
+            return true
+        }
     }
 }

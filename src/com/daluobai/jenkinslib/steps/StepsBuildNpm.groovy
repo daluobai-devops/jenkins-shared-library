@@ -47,6 +47,8 @@ class StepsBuildNpm implements Serializable {
         def pathPackage = "package"
         //docker-代码目录
         def pathCode = "code"
+        String sourceDirectory = StrUtils.isNotBlank(configSteps.sourceDirectory) ? configSteps.sourceDirectory.toString() : "."
+        String sourceRoot = sourceDirectory == "." ? "${pathBase}/${pathCode}/${pathCode}" : "${pathBase}/${pathCode}/${pathCode}/${sourceDirectory}"
         //存放临时sshkey的目录
         def pathSSHKey = "sshkey"
 
@@ -85,9 +87,9 @@ class StepsBuildNpm implements Serializable {
                         fi
                     """ : ":"
             String archiveCommand = configStepsStorage.archiveType == "ZIP" ? """
-                        cd ${pathBase}/${pathCode}/${pathCode}/dist
+                        cd '${sourceRoot}/dist'
                         zip -r ${pathBase}/${pathPackage}/app.zip .
-                    """ : "tar -czvf ${pathBase}/${pathPackage}/app.tar.gz -C ${pathBase}/${pathCode}/${pathCode}/dist ."
+                    """ : "tar -czvf '${pathBase}/${pathPackage}/app.tar.gz' -C '${sourceRoot}/dist' ."
             //这里默认会把工作空间挂载到容器中的${steps.env.WORKSPACE}目录
             mavenImage.inside("--entrypoint '' -v npm-repo:${dockerModulesPath}") {
                 if (isSshGitUrl(configSteps.gitUrl?.toString())) {
@@ -113,13 +115,13 @@ class StepsBuildNpm implements Serializable {
                 }
                 steps.sh """
                         #! /bin/sh -e
-                        cd ${pathBase}/${pathCode}/${pathCode}
+                        cd '${sourceRoot}'
                         git log --pretty=format:"%h -%an,%ar : %s" -1
                         git config core.ignorecase false
                         ${restoreNodeModulesCMD}
                         ${configSteps.buildCMD}
                         ${persistNodeModulesCMD}
-                        ls -al ${pathBase}/${pathCode}/${pathCode}/dist
+                        ls -al '${sourceRoot}/dist'
                         ${archiveCommand}
                     """
             }

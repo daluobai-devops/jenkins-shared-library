@@ -137,6 +137,19 @@ class CodeupApiTest {
     }
 
     @Test
+    void getFileRecordReturnsDecodedContentAndActualCommitRevision() {
+        stubGetRequest([:], new HttpUtils.HttpResponse(HttpURLConnection.HTTP_OK,
+                '{"encoding":"base64","content":"aGVsbG8=","lastCommitId":"abc123"}'))
+
+        Map record = new CodeupApi(null).getFileRecord(
+                'openapi-rdc.aliyuncs.com', 'pt-token', '2813489', 'app.txt', 'master', null)
+
+        assertTrue(record.exists)
+        assertEquals('hello', record.content)
+        assertEquals('abc123', record.revision)
+    }
+
+    @Test
     void listFilesReturnsRegionEditionFileTree() {
         Map<String, Object> captured = [:]
         stubGetRequest(captured, new HttpUtils.HttpResponse(HttpURLConnection.HTTP_OK, buildFilesJson([

@@ -80,9 +80,11 @@ class StepsBuildMaven implements Serializable {
             boolean hasSubModule = StrUtils.isNotBlank(configSteps.subModule?.toString())
             def mvnCMDSubMod = hasSubModule ? "-pl ${configSteps.subModule} -am -amd" : ""
             def mvnCMDActiveProfile = StrUtils.isNotEmpty(configSteps.activeProfile) ? "-P ${configSteps.activeProfile}" : ""
+            String sourceDirectory = StrUtils.isNotBlank(configSteps.sourceDirectory) ? configSteps.sourceDirectory.toString() : "."
+            String sourceRoot = sourceDirectory == "." ? "${pathBase}/${pathCode}/${pathCode}" : "${pathBase}/${pathCode}/${pathCode}/${sourceDirectory}"
             def targetPath = hasSubModule ?
-                    "${pathBase}/${pathCode}/${pathCode}/${configSteps.subModule}/target" :
-                    "${pathBase}/${pathCode}/${pathCode}/target"
+                    "${sourceRoot}/${configSteps.subModule}/target" :
+                    "${sourceRoot}/target"
 
             //这里默认会把工作空间挂载到容器中的${steps.env.WORKSPACE}目录
             mavenImage.inside("--entrypoint '' -v maven-repo:/root/.m2/repository") {
@@ -113,12 +115,12 @@ class StepsBuildMaven implements Serializable {
                 }
                 steps.sh """
                         #! /bin/sh -e
-                        cd ${pathBase}/${pathCode}/${pathCode}
+                        cd '${sourceRoot}'
                         git log --pretty=format:"%h -%an,%ar : %s" -1
                         git config core.ignorecase false
                         mvn -Dmaven.test.skip=${configSteps.skipTest} ${configSteps.lifecycle} -Dmaven.compile.fork=true -U -B ${mvnCMDSubMod} ${mvnCMDActiveProfile}
-                        ls -al ${targetPath}
-                        cp -r ${targetPath}/* ${pathBase}/${pathPackage}/
+                        ls -al '${targetPath}'
+                        cp -r '${targetPath}'/* '${pathBase}/${pathPackage}/'
                     """
             }
         }

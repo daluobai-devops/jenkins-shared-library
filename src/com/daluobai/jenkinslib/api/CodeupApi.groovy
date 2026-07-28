@@ -52,9 +52,14 @@ class CodeupApi implements Serializable {
     }
 
     String getFileContent(String domain, String token, String repositoryId, String filePath, String ref, String organizationId) {
+        Map record = getFileRecord(domain, token, repositoryId, filePath, ref, organizationId)
+        return record.exists == true ? record.content as String : null
+    }
+
+    Map getFileRecord(String domain, String token, String repositoryId, String filePath, String ref, String organizationId) {
         def response = doGetFile(domain, token, repositoryId, filePath, ref, organizationId)
         if (response.getStatus() == HttpURLConnection.HTTP_NOT_FOUND) {
-            return null
+            return [exists: false]
         }
         if (!response.isOk()) {
             throw new RuntimeException("查询Codeup文件内容失败，响应码: ${response.getStatus()}")
@@ -62,16 +67,15 @@ class CodeupApi implements Serializable {
 
         Map<String, Object> responseJson = JsonUtils.parseObj(response.body())
         Object content = responseJson.get("content")
-        if (content == null) {
-            return null
-        }
-
-        String contentStr = content.toString()
+        String contentStr = content?.toString()
         String encoding = responseJson.get("encoding")?.toString()
-        if (StrUtils.equalsIgnoreCase(encoding, "base64")) {
-            return new String(Base64.decoder.decode(contentStr), StandardCharsets.UTF_8)
+        if (contentStr != null && StrUtils.equalsIgnoreCase(encoding, "base64")) {
+            contentStr = new String(Base64.decoder.decode(contentStr), StandardCharsets.UTF_8)
         }
-        return contentStr
+        String revision = ['commitId', 'lastCommitId', 'last_commit_id', 'revision']
+                .collect { String key -> responseJson.get(key)?.toString() }
+                .find { String value -> StrUtils.isNotBlank(value) }
+        return [exists: true, content: contentStr, revision: revision]
     }
 
     List<Map<String, Object>> listFiles(String token, String repositoryId, String path, String ref, String type) {

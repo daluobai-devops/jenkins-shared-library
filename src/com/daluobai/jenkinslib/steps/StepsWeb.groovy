@@ -24,12 +24,17 @@ class StepsWeb implements Serializable {
 
     //发布
     def deploy(Map parameterMap) {
+        return deploy(parameterMap, steps.globalParameterMap as Map)
+    }
+
+    // 当前交付 implementation 显式传入有效配置；单参数入口仅供旧调用兼容。
+    def deploy(Map parameterMap, Map effectiveConfig) {
         steps.echo '开始部署Web静态资源'
         AssertUtils.notNull(parameterMap, '参数为空')
         AssertUtils.notEmpty(parameterMap, '参数为空')
         def labels = parameterMap.labels
         String pathRoot = parameterMap.pathRoot?.toString()
-        Map globalParameterMap = steps.globalParameterMap as Map
+        Map globalParameterMap = effectiveConfig
         String appName = globalParameterMap?.SHARE_PARAM?.appName?.toString()
         String archiveName = globalParameterMap?.SHARE_PARAM?.archiveName?.toString()
         Map configStepsStorage = globalParameterMap?.DEPLOY_PIPELINE?.stepsStorage as Map

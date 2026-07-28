@@ -74,6 +74,25 @@ class StepsBuildNpmTest {
         assertFalse(steps.shScripts.any { it.contains('app.zip ./dist') })
     }
 
+    @Test
+    void buildRunsAndPackagesFromConfiguredSourceDirectory() {
+        FakeSteps steps = new FakeSteps()
+        StepsBuildNpm build = new StepsBuildNpm(steps)
+        build.stepsGit = new FakeStepsGit()
+
+        build.build([
+                DEFAULT_CONFIG: [docker: [registry: [domain: 'docker.io']]], SHARE_PARAM: [:],
+                DEPLOY_PIPELINE: [
+                        stepsBuildNpm: [gitUrl: 'https://example/app.git', gitBranch: 'abc123',
+                                        sourceDirectory: 'frontend/app', buildCMD: 'npm run build'],
+                        stepsStorage: [archiveType: 'TAR']
+                ]
+        ])
+
+        assertTrue(steps.shScripts.any { it.contains("cd '/workspace/code/code/frontend/app'") })
+        assertTrue(steps.shScripts.any { it.contains("-C '/workspace/code/code/frontend/app/dist' .") })
+    }
+
     static class FakeSteps {
         Map env = [WORKSPACE: '/workspace']
         Map currentBuild = [projectName: 'web-job']
