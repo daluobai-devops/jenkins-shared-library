@@ -129,10 +129,26 @@ class LegacyDeliveryConfigAdapter implements Serializable {
         if (!probes) {
             return []
         }
+        Map sharedConfig = [:]
+        if (probes.containsKey('period')) {
+            sharedConfig.period = probes.period
+        }
+        if (probes.containsKey('failureThreshold')) {
+            sharedConfig.failureThreshold = probes.failureThreshold
+        }
         List<Map> result = []
-        if (enabled(probes.tcp as Map)) result.add([type: 'TCP', config: probes.tcp])
-        if (enabled(probes.http as Map)) result.add([type: 'HTTP', config: probes.http])
-        if (enabled(probes.cmd as Map)) result.add([type: 'COMMAND', config: probes.cmd])
+        addReadiness(result, 'TCP', probes.tcp, sharedConfig)
+        addReadiness(result, 'HTTP', probes.http, sharedConfig)
+        addReadiness(result, 'COMMAND', probes.cmd, sharedConfig)
         return result
+    }
+
+    private static void addReadiness(List<Map> result, String type, Object rawProbe, Map sharedConfig) {
+        if (!(rawProbe instanceof Map) || !enabled(rawProbe as Map)) {
+            return
+        }
+        Map effectiveProbeConfig = MapUtils.deepCopy(sharedConfig)
+        effectiveProbeConfig.putAll(MapUtils.deepCopy(rawProbe as Map))
+        result.add([type: type, config: effectiveProbeConfig])
     }
 }
