@@ -89,8 +89,13 @@ class LegacyDeliveryConfigAdapter implements Serializable {
         Map build = (config.DEPLOY_PIPELINE?.stepsBuildNpm ?: [:]) as Map
         Map storage = (config.DEPLOY_PIPELINE?.stepsStorage ?: [:]) as Map
         Map deploy = (config.DEPLOY_PIPELINE?.stepsJavaWebDeployToWebServer ?: [:]) as Map
+        Map artifactsByType = [
+                TAR: [path: 'package/app.tar.gz', fileName: 'app.tar.gz'],
+                ZIP: [path: 'package/app.zip', fileName: 'app.zip']
+        ]
+        Map artifact = artifactsByType[storage.archiveType?.toString()?.toUpperCase(Locale.ROOT)] ?: [:]
         return common(config, 'WEB', [
-                build  : [enabled: enabled(build), strategy: 'NPM', config: build],
+                build  : [enabled: enabled(build), strategy: 'NPM', artifact: artifact, config: build],
                 storage: [enabled: enabled(storage), target: [type: 'JENKINS_STASH'], config: storage],
                 deploy : [
                         enabled              : enabled(deploy),
