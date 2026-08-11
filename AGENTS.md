@@ -4,6 +4,13 @@
 - 兼容处理应集中在配置读取或解析入口，统一将旧配置转换为当前内部结构后，再交给后续实现处理。
 - 实现层应只依赖转换后的统一配置结构；除非入口转换无法合理处理，否则不要在具体实现中散落旧配置的兼容判断和分支。
 
+## Jenkins 配置生成技能同步
+
+- 每次修改本仓库代码后，必须同步检查 `C:\Users\wuzhao\.agents\skills\wuzhao-jenkins-generate-config`。
+- 代码变更影响 Jenkinsfile 入口、配置结构、默认值、兼容规则、校验规则、构建或部署策略、凭据语义、生成结果时，必须在同一任务中同步修改该技能的 `SKILL.md`、相关 `references/`、生成器脚本和对应测试，使技能行为与仓库当前实现一致。
+- 代码变更不影响该技能契约时，不为制造变更而改写技能内容；仍须运行技能现有测试与结构校验，并在最终结果中明确说明已检查且无需同步内容。
+- 代码和技能同步完成后，使用 `conda run -n public python -m unittest test_generate_config.py` 验证生成器测试，并使用 `skill-creator` 的 `quick_validate.py` 验证技能结构；任一校验失败都不能把同步工作视为完成。
+
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
