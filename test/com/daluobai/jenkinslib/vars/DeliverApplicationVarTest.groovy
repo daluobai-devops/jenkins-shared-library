@@ -6,6 +6,7 @@ import com.daluobai.jenkinslib.delivery.InMemoryArtifactStore
 import com.daluobai.jenkinslib.delivery.InMemoryDeliveryExecutionCoordinator
 import com.daluobai.jenkinslib.delivery.InMemoryDeliveryStageAdapter
 import com.daluobai.jenkinslib.delivery.InMemorySourceRepositoryAdapter
+import com.daluobai.jenkinslib.utils.MapUtils
 import groovy.lang.Binding
 import groovy.lang.GroovyShell
 import org.junit.jupiter.api.Test
@@ -17,6 +18,170 @@ import static org.junit.jupiter.api.Assertions.assertThrows
 import static org.junit.jupiter.api.Assertions.assertTrue
 
 class DeliverApplicationVarTest {
+
+    @Test
+    void replacementEntryLoadsSharedLibraryDefaultsBeforeCallerLayers() {
+        Map delivery = baseJavaDelivery()
+        delivery.remove('targetEnvironment')
+        Script script = loadEntry(
+                runtimeFor(new InMemoryDeliveryStageAdapter()),
+                '{"DELIVERY":{"targetEnvironment":"built-in"}}'
+        )
+
+        Map result = script.invokeMethod('call', [[
+                primary  : [DELIVERY: delivery],
+                execution: [id: 'built-in-defaults']
+        ]] as Object[]) as Map
+
+        assertEquals('SUCCESS', result.status)
+        assertEquals('built-in', result.targetEnvironment)
+        assertEquals('config/delivery-defaults.json', result.configurationProvenance.sharedLibraryDefaults)
+        assertEquals(['defaults', 'extension', 'primary', 'overrides'], result.configurationSources)
+    }
+
+    @Test
+    void replacementEntryRejectsNonMapSharedLibraryDefaultsBeforeDeliverySideEffects() {
+        InMemoryDeliveryStageAdapter stages = new InMemoryDeliveryStageAdapter()
+
+        IllegalArgumentException failure = assertThrows(IllegalArgumentException.class) {
+            loadEntry(runtimeFor(stages), '[]').invokeMethod('call', [[
+                    primary: [DELIVERY: baseJavaDelivery()]
+            ]] as Object[])
+        }
+
+        assertTrue(failure.message.contains('共享库默认配置根节点必须是Map'))
+        assertTrue(stages.events.isEmpty())
+    }
+
+    @Test
+    void replacementEntryAppliesSharedGitCredentialToSshSource() {
+        String repository = 'git@example.com:team/app.git'
+        RecordingSourceRepositoryAdapter source = new RecordingSourceRepositoryAdapter([
+                (repository): [main: 'abc123']
+        ], [
+                (repository + '@abc123'): ['services/app']
+        ])
+        Script script = loadEntry(
+                new DeliveryRuntime(source, new InMemoryDeliveryStageAdapter(), new InMemoryArtifactStore(), new InMemoryDeliveryExecutionCoordinator()),
+                '{"DEFAULT_CONFIG":{"git":{"credentialsId":"shared-ssh"}}}'
+        )
+        Map delivery = baseJavaDelivery()
+        delivery.source.repository = repository
+        delivery.source.reference = 'main'
+
+        script.invokeMethod('call', [[
+                primary  : [DELIVERY: delivery],
+                execution: [id: 'default-source-credential']
+        ]] as Object[])
+
+        assertEquals('shared-ssh', source.resolvedSources.first().credentialsId)
+    }
+
+    @Test
+    void replacementEntryTreatsEmptyCredentialAsInheritance() {
+        RecordingSourceRepositoryAdapter source = recordingSourceRepository()
+        Map defaults = [DELIVERY: baseJavaDelivery()]
+        defaults.DELIVERY.source.credentialsId = 'caller-ssh'
+        Map primary = [DELIVERY: [
+                application: [id: 'empty-inherits'],
+                source     : [credentialsId: '']
+        ]]
+
+        loadEntry(new DeliveryRuntime(
+                source, new InMemoryDeliveryStageAdapter(), new InMemoryArtifactStore(), new InMemoryDeliveryExecutionCoordinator()
+        )).invokeMethod('call', [[
+                defaults : defaults,
+                primary  : primary,
+                execution: [id: 'empty-inherits']
+        ]] as Object[])
+
+        assertEquals('caller-ssh', source.resolvedSources.first().credentialsId)
+    }
+
+    @Test
+    void replacementEntryClearsInheritedCredentialWithExplicitMarker() {
+        RecordingSourceRepositoryAdapter source = recordingSourceRepository()
+        Map defaults = [DELIVERY: baseJavaDelivery()]
+        defaults.DELIVERY.source.credentialsId = 'caller-ssh'
+
+        loadEntry(new DeliveryRuntime(
+                source, new InMemoryDeliveryStageAdapter(), new InMemoryArtifactStore(), new InMemoryDeliveryExecutionCoordinator()
+        )).invokeMethod('call', [[
+                defaults : defaults,
+                primary  : [DELIVERY: [
+                        application: [id: 'credential-cleared'],
+                        source     : [credentialsId: '-']
+                ]],
+                execution: [id: 'credential-cleared']
+        ]] as Object[])
+
+        assertFalse(source.resolvedSources.first().containsKey('credentialsId'))
+    }
+
+    @Test
+    void replacementEntryRejectsNullCredentialInEveryLayerBeforeMerge() {
+        RecordingSourceRepositoryAdapter source = recordingSourceRepository()
+        Map defaults = [DELIVERY: baseJavaDelivery()]
+        defaults.DELIVERY.source.credentialsId = null
+
+        IllegalArgumentException failure = assertThrows(IllegalArgumentException.class) {
+            loadEntry(new DeliveryRuntime(
+                    source, new InMemoryDeliveryStageAdapter(), new InMemoryArtifactStore(), new InMemoryDeliveryExecutionCoordinator()
+            )).invokeMethod('call', [[
+                    defaults : defaults,
+                    primary  : [DELIVERY: [
+                            application: [id: 'null-rejected'],
+                            source     : [credentialsId: 'valid-higher-layer']
+                    ]],
+                    execution: [id: 'null-rejected']
+            ]] as Object[])
+        }
+
+        assertTrue(failure.message.contains('credentialsId不能为null'))
+        assertTrue(source.resolvedSources.isEmpty())
+    }
+
+    @Test
+    void replacementEntryDoesNotApplySshDefaultToPublicHttpsSource() {
+        String repository = 'https://example.com/team/app.git'
+        RecordingSourceRepositoryAdapter source = new RecordingSourceRepositoryAdapter([
+                (repository): [main: 'abc123']
+        ], [
+                (repository + '@abc123'): ['services/app']
+        ])
+        Map delivery = baseJavaDelivery()
+        delivery.source.repository = repository
+        delivery.source.reference = 'main'
+
+        loadEntry(new DeliveryRuntime(
+                source, new InMemoryDeliveryStageAdapter(), new InMemoryArtifactStore(), new InMemoryDeliveryExecutionCoordinator()
+        ), '{"DEFAULT_CONFIG":{"git":{"credentialsId":"shared-ssh"}}}').invokeMethod('call', [[
+                primary  : [DELIVERY: delivery],
+                execution: [id: 'public-https']
+        ]] as Object[])
+
+        assertFalse(source.resolvedSources.first().containsKey('credentialsId'))
+    }
+
+    @Test
+    void replacementEntryRejectsUnsupportedPrivateHttpsCredentialBeforeSourceAccess() {
+        RecordingSourceRepositoryAdapter source = recordingSourceRepository()
+        Map delivery = baseJavaDelivery()
+        delivery.source.repository = 'https://example.com/team/private-app.git'
+        delivery.source.credentialsId = 'https-token'
+
+        IllegalArgumentException failure = assertThrows(IllegalArgumentException.class) {
+            loadEntry(new DeliveryRuntime(
+                    source, new InMemoryDeliveryStageAdapter(), new InMemoryArtifactStore(), new InMemoryDeliveryExecutionCoordinator()
+            )).invokeMethod('call', [[
+                    primary  : [DELIVERY: delivery],
+                    execution: [id: 'private-https']
+            ]] as Object[])
+        }
+
+        assertTrue(failure.message.contains('HTTPS私有仓库认证暂不支持'))
+        assertTrue(source.resolvedSources.isEmpty())
+    }
 
     @Test
     void replacementEntryAllocatesDefaultBuildNodeInternally() {
@@ -415,7 +580,7 @@ class DeliverApplicationVarTest {
         assertEquals('FAILED', failure.deliveryResult.status)
     }
 
-    private static Script loadEntry(DeliveryRuntime runtime) {
+    private static Script loadEntry(DeliveryRuntime runtime, String sharedLibraryDefaults = '{"DEFAULT_CONFIG":{}}') {
         Binding binding = new Binding([
                 deliveryRuntime: runtime,
                 currentBuild   : [number: 42, fullDisplayName: 'delivery #42']
@@ -424,6 +589,10 @@ class DeliverApplicationVarTest {
                 .parse(new File('vars/deliverApplication.groovy'))
         script.metaClass.echo = { Object ignored -> }
         script.metaClass.node = { String ignored, Closure body -> body.call() }
+        script.metaClass.libraryResource = { String path ->
+            assertEquals('config/delivery-defaults.json', path)
+            return sharedLibraryDefaults
+        }
         return script
     }
 
@@ -440,6 +609,29 @@ class DeliverApplicationVarTest {
                 'git@example/app.git@abc123': ['services/app'],
                 'git@example/app.git@dev456': ['services/app']
         ])
+    }
+
+    private static RecordingSourceRepositoryAdapter recordingSourceRepository() {
+        return new RecordingSourceRepositoryAdapter([
+                'git@example/app.git': [main: 'abc123', develop: 'dev456']
+        ], [
+                'git@example/app.git@abc123': ['services/app'],
+                'git@example/app.git@dev456': ['services/app']
+        ])
+    }
+
+    private static class RecordingSourceRepositoryAdapter extends InMemorySourceRepositoryAdapter {
+        final List<Map> resolvedSources = []
+
+        RecordingSourceRepositoryAdapter(Map revisions, Map directories) {
+            super(revisions, directories)
+        }
+
+        @Override
+        String resolveRevision(Map source) {
+            resolvedSources.add(MapUtils.deepCopy(source) as Map)
+            return super.resolveRevision(source)
+        }
     }
 
     private static Map baseJavaDelivery() {

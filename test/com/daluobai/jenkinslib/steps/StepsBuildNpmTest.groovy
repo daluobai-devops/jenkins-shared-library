@@ -9,6 +9,34 @@ import static org.junit.jupiter.api.Assertions.assertTrue
 class StepsBuildNpmTest {
 
     @Test
+    void buildFromSourceUsesUnifiedWorkingCopyWithoutCheckout() {
+        FakeSteps steps = new FakeSteps()
+        StepsBuildNpm build = new StepsBuildNpm(steps)
+        FakeStepsGit stepsGit = new FakeStepsGit()
+        build.stepsGit = stepsGit
+
+        build.buildFromSource([
+                DEFAULT_CONFIG : [docker: [registry: [domain: 'docker.io']]],
+                SHARE_PARAM    : [:],
+                DEPLOY_PIPELINE: [
+                        stepsBuildNpm: [
+                                gitUrl: 'git@example.com:team/web.git', gitBranch: 'abc123',
+                                sourceDirectory: 'frontend/app', buildCMD: 'npm ci && npm run build',
+                                credentialsId: 'resolved-ssh'
+                        ],
+                        stepsStorage : [archiveType: 'ZIP']
+                ]
+        ], 'source')
+
+        assertTrue(steps.checkoutCalls.isEmpty())
+        assertTrue(steps.dirCalls.isEmpty())
+        assertEquals(0, stepsGit.saveKeyCalls)
+        assertTrue(steps.shScripts.any { it.contains("cd '/workspace/source/frontend/app'") })
+        assertTrue(steps.shScripts.any { it.contains("cd '/workspace/source/frontend/app/dist'") })
+        assertFalse(steps.shScripts.any { it.contains('/workspace/code/code') })
+    }
+
+    @Test
     void buildChecksOutSourceWithJenkinsChangelogBeforeRunningNpmBuild() {
         FakeSteps steps = new FakeSteps()
         StepsBuildNpm stepsBuildNpm = new StepsBuildNpm(steps)

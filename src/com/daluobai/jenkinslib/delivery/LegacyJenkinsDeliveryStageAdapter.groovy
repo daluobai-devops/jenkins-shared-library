@@ -24,7 +24,7 @@ class LegacyJenkinsDeliveryStageAdapter implements DeliveryStageAdapter {
 
     @Override
     Map build(Map effectiveConfig, Map preflight) {
-        return delegate.build(effectiveConfig, preflight)
+        return delegate.buildLegacy(effectiveConfig, preflight)
     }
 
     @Override

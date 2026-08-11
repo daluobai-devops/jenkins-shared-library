@@ -9,6 +9,29 @@ import static org.junit.jupiter.api.Assertions.assertTrue
 class StepsBuildMavenTest {
 
     @Test
+    void buildFromSourceUsesUnifiedWorkingCopyWithoutCheckout() {
+        FakeSteps steps = new FakeSteps()
+        StepsBuildMaven build = new StepsBuildMaven(steps)
+        FakeStepsGit stepsGit = new FakeStepsGit()
+        build.stepsGit = stepsGit
+
+        build.buildFromSource([
+                DEFAULT_CONFIG : [docker: [registry: [domain: 'docker.io']]],
+                SHARE_PARAM    : [:],
+                DEPLOY_PIPELINE: [stepsBuild: [stepsBuildMaven: [
+                        gitUrl: 'git@example.com:team/service.git', gitBranch: 'abc123',
+                        sourceDirectory: 'services/app', lifecycle: 'clean package', skipTest: true,
+                        credentialsId: 'resolved-ssh'
+                ]]]
+        ], 'source')
+
+        assertTrue(steps.checkoutCalls.isEmpty())
+        assertTrue(steps.dirCalls.isEmpty())
+        assertTrue(steps.shScripts.any { it.contains("cd '/workspace/source/services/app'") })
+        assertFalse(steps.shScripts.any { it.contains('/workspace/code/code') })
+    }
+
+    @Test
     void buildChecksOutSourceWithJenkinsChangelogBeforeRunningMavenBuild() {
         FakeSteps steps = new FakeSteps()
         StepsBuildMaven stepsBuildMaven = new StepsBuildMaven(steps)

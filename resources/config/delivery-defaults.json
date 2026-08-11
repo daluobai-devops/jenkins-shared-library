@@ -1,0 +1,16 @@
+{
+  "DEFAULT_CONFIG": {
+    "docker": {
+      "registry": {
+        "domain": "docker.io",
+        "credentialsId": ""
+      }
+    },
+    "git": {
+      "credentialsId": "ssh-git"
+    },
+    "agent": {
+      "credentialsId": "ssh-jenkins"
+    }
+  }
+}

@@ -24,6 +24,16 @@ class StepsBuildMaven implements Serializable {
 
     //构建
     def build(Map configMap) {
+        return buildInternal(configMap, null)
+    }
+
+    // 当前统一交付入口：构建已经由源码适配器检出的唯一工作副本。
+    def buildFromSource(Map configMap, String workingCopyRoot = 'source') {
+        AssertUtils.notBlank(workingCopyRoot, 'workingCopyRoot为空')
+        return buildInternal(configMap, workingCopyRoot)
+    }
+
+    private def buildInternal(Map configMap, String workingCopyRoot) {
         //默认配置
         def configDefault = configMap["DEFAULT_CONFIG"]//默认配置
         //共享配置
@@ -34,8 +44,10 @@ class StepsBuildMaven implements Serializable {
         AssertUtils.notNull(configDefault, "DEFAULT_CONFIG为空")
         AssertUtils.notNull(configShare, "SHARE_PARAM为空")
         AssertUtils.notNull(configSteps, "DEPLOY_PIPELINE.stepsBuildMaven为空")
-        AssertUtils.notBlank(configSteps.gitUrl?.toString(), "gitUrl为空")
-        AssertUtils.notBlank(configSteps.gitBranch?.toString(), "gitBranch为空")
+        if (workingCopyRoot == null) {
+            AssertUtils.notBlank(configSteps.gitUrl?.toString(), "gitUrl为空")
+            AssertUtils.notBlank(configSteps.gitBranch?.toString(), "gitBranch为空")
+        }
         AssertUtils.notBlank(configSteps.lifecycle?.toString(), "lifecycle为空")
 
         def pathBase = "${steps.env.WORKSPACE}"
@@ -59,8 +71,10 @@ class StepsBuildMaven implements Serializable {
 
 
         steps.sh "mkdir -p ${steps.env.WORKSPACE}/${pathPackage}"
-        steps.sh "mkdir -p ${steps.env.WORKSPACE}/${pathCode}"
-        steps.sh "mkdir -p ${steps.env.WORKSPACE}/${pathSSHKey}"
+        if (workingCopyRoot == null) {
+            steps.sh "mkdir -p ${steps.env.WORKSPACE}/${pathCode}"
+            steps.sh "mkdir -p ${steps.env.WORKSPACE}/${pathSSHKey}"
+        }
 
         def dockerBuildImage = StrUtils.isNotBlank(configSteps.dockerBuildImage) ? configSteps.dockerBuildImage : "registry.cn-hangzhou.aliyuncs.com/wuzhaozhongguo/build-maven:3-jdk8"
         def dockerBuildImageUrl = "${dockerBuildImage}"
@@ -81,14 +95,15 @@ class StepsBuildMaven implements Serializable {
             def mvnCMDSubMod = hasSubModule ? "-pl ${configSteps.subModule} -am -amd" : ""
             def mvnCMDActiveProfile = StrUtils.isNotEmpty(configSteps.activeProfile) ? "-P ${configSteps.activeProfile}" : ""
             String sourceDirectory = StrUtils.isNotBlank(configSteps.sourceDirectory) ? configSteps.sourceDirectory.toString() : "."
-            String sourceRoot = sourceDirectory == "." ? "${pathBase}/${pathCode}/${pathCode}" : "${pathBase}/${pathCode}/${pathCode}/${sourceDirectory}"
+            String repositoryRoot = workingCopyRoot == null ? "${pathBase}/${pathCode}/${pathCode}" : "${pathBase}/${workingCopyRoot}"
+            String sourceRoot = sourceDirectory == "." ? repositoryRoot : "${repositoryRoot}/${sourceDirectory}"
             def targetPath = hasSubModule ?
                     "${sourceRoot}/${configSteps.subModule}/target" :
                     "${sourceRoot}/target"
 
             //这里默认会把工作空间挂载到容器中的${steps.env.WORKSPACE}目录
             mavenImage.inside("--entrypoint '' -v maven-repo:/root/.m2/repository") {
-                if (isSshGitUrl(configSteps.gitUrl?.toString())) {
+                if (workingCopyRoot == null && isSshGitUrl(configSteps.gitUrl?.toString())) {
                     String credentialsId = StrUtils.isNotBlank(configSteps.credentialsId) ? configSteps.credentialsId : "ssh-git"
                     stepsGit.saveJenkinsSSHKey(credentialsId,"${steps.env.WORKSPACE}/${pathSSHKey}/ssh-git")
                     stepsGit.sshKeyscan("${configSteps.gitUrl}", "~/.ssh/known_hosts")
@@ -97,21 +112,23 @@ class StepsBuildMaven implements Serializable {
                 if (StrUtils.isNotBlank(settingsXmlStr)){
                     fileUtils.writeFileBySH("~/.m2/settings.xml", settingsXmlStr)
                 }
-                steps.sh """
+                if (workingCopyRoot == null) {
+                    steps.sh """
                         #! /bin/sh -e
                         rm -rf ${pathBase}/${pathCode}/${pathCode}
                         mkdir -p ${pathBase}/${pathPackage} && mkdir -p ${pathBase}/${pathCode}/${pathCode}
                         git config --global http.version HTTP/1.1
                     """
-                // 使用 Jenkins checkout 才会写入 currentBuild.changeSets，构建记录的 Changes 页面才能显示项目提交历史。
-                // checkout 目录保持为 code/code，避免影响后续 Maven 构建和 target 产物复制路径。
-                steps.dir("${pathBase}/${pathCode}/${pathCode}") {
-                    steps.checkout(changelog: true, poll: false, scm: [
-                            $class           : 'GitSCM',
-                            branches         : [[name: "${configSteps.gitBranch}".toString()]],
-                            userRemoteConfigs: [gitUserRemoteConfig(configSteps)],
-                            extensions       : [[$class: 'CleanBeforeCheckout']]
-                    ])
+                    // 使用 Jenkins checkout 才会写入 currentBuild.changeSets，构建记录的 Changes 页面才能显示项目提交历史。
+                    // checkout 目录保持为 code/code，避免影响旧入口后续 Maven 构建和 target 产物复制路径。
+                    steps.dir("${pathBase}/${pathCode}/${pathCode}") {
+                        steps.checkout(changelog: true, poll: false, scm: [
+                                $class           : 'GitSCM',
+                                branches         : [[name: "${configSteps.gitBranch}".toString()]],
+                                userRemoteConfigs: [gitUserRemoteConfig(configSteps)],
+                                extensions       : [[$class: 'CleanBeforeCheckout']]
+                        ])
+                    }
                 }
                 steps.sh """
                         #! /bin/sh -e

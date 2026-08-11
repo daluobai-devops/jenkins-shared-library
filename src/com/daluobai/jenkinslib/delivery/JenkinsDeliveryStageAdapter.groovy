@@ -30,13 +30,23 @@ class JenkinsDeliveryStageAdapter implements DeliveryStageAdapter {
 
     @Override
     Map build(Map effectiveConfig, Map preflight) {
+        return buildInternal(effectiveConfig, preflight, true)
+    }
+
+    Map buildLegacy(Map effectiveConfig, Map preflight) {
+        return buildInternal(effectiveConfig, preflight, false)
+    }
+
+    private Map buildInternal(Map effectiveConfig, Map preflight, boolean preparedSource) {
         Map legacy = strategyConfig(effectiveConfig, preflight)
         Map delivery = effectiveConfig.DELIVERY as Map
         Closure buildAction = {
             if (delivery.application.type == 'JAVA') {
-                new StepsBuildMaven(steps).build(legacy)
+                StepsBuildMaven builder = new StepsBuildMaven(steps)
+                preparedSource ? builder.buildFromSource(legacy, 'source') : builder.build(legacy)
             } else {
-                new StepsBuildNpm(steps).build(legacy)
+                StepsBuildNpm builder = new StepsBuildNpm(steps)
+                preparedSource ? builder.buildFromSource(legacy, 'source') : builder.build(legacy)
             }
         }
         buildAction.call()

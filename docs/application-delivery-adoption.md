@@ -2,7 +2,7 @@
 
 ## 入口选择
 
-- 新接入使用 `deliverApplication`。它只接受 `defaults`、`extension`、`primary`、`overrides` 四层当前统一配置，固定优先级从左到右递增。
+- 新接入使用 `deliverApplication`。它自动加载 `config/delivery-defaults.json`，再接受调用方的 `defaults`、`extension`、`primary`、`overrides` 四层当前统一配置；固定优先级为“内置默认 < 调用方默认覆盖 < 扩展 < 主配置 < 执行覆盖”。
 - 既有 Web Job 继续使用 `deployWeb`；既有 Java Job 继续使用 `deployJavaWeb`。两者长期接受此前合法的旧配置，并在入口一次性转换后委托统一交付实现。
 - 既有 Codeup 分发 Job 继续使用 `dispatchCodeupRepositories`。仓库授权、递归发现、受限声明、预检、继续执行和汇总由统一分发模块完成。
 
@@ -21,8 +21,7 @@ deliverApplication([
         source: [
             repository: 'git@example.com:team/orders.git',
             reference: 'main',
-            directory: 'services/orders',
-            credentialsId: 'ssh-git'
+            directory: 'services/orders'
         ],
         stages: [
             build: [
@@ -42,11 +41,14 @@ deliverApplication([
 
 替代入口拒绝 `DEPLOY_PIPELINE`、旧入口兼容标志以及显式的 `SERVICE`、`TEARDOWN` 等未实现操作模式。
 
+内置默认文件缺失、JSON 格式错误或根节点不是对象时，新入口立即失败。SSH/SCP 风格仓库在没有显式源码凭据时继承内置 `ssh-git`；HTTP/HTTPS 仓库不自动附加 SSH 凭据，HTTPS 私有仓库认证当前不支持。凭据别名字段缺失或为空字符串表示继承，精确值 `-` 表示清除继承值，`null` 属于无效配置。
+
 ## 阶段与错误语义
 
 - 合法组合：仅构建、构建加单目标存储、构建加可达产物部署、构建加存储加部署。
 - 完整预检先于工作区初始化、构建、存储、部署和交付通知。预检失败不产生这些副作用。
 - 源码分支、Tag 或 Commit 在预检中解析为固定 Commit SHA；构建使用该 SHA。
+- 新入口只检出一个 `source/` 源码工作副本，Maven/NPM 从 `source/<source.directory>` 构建；旧入口仍保持原有自检出目录和行为。
 - Web 部署只接受 ZIP/TAR，要求部署节点和目标目录；Java 部署只能选择一个策略。
 - Java 节点串行处理；节点部署或按配置顺序执行的就绪验证首次失败后停止。
 - 主交付失败优先于通知和清理失败。通知失败只记录告警；没有主失败时，清理失败使交付失败。

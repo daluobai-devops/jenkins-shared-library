@@ -6,30 +6,11 @@
 // 请按实际环境替换应用名、源码仓库、分支、构建命令、发布节点和发布目录。
 //
 // 配置合并优先级（从低到高）：
-// defaults < extension < primary < overrides
+// 内置 config/delivery-defaults.json < defaults < extension < primary < overrides
 // 新入口只接受当前统一配置，不接受 DEPLOY_PIPELINE、SHARE_PARAM、CONFIG_EXTEND 等旧结构。
 def deliveryConfig = [
-        // 全局默认值，适合放 Jenkins 环境中通用的基础配置。
-        defaults : [
-                DEFAULT_CONFIG: [
-                        docker: [
-                                registry: [
-                                        // 构建镜像仓库域名。
-                                        domain       : 'docker.io',
-                                        // 私有镜像仓库的 Jenkins Credentials ID；公开仓库可留空。
-                                        credentialsId: ''
-                                ]
-                        ],
-                        git  : [
-                                // SSH Git 仓库默认使用的 Jenkins Credentials ID。
-                                credentialsId: 'ssh-git'
-                        ],
-                        agent: [
-                                // Jenkins 发布节点使用的 SSH Credentials ID。
-                                credentialsId: 'ssh-jenkins'
-                        ]
-                ]
-        ],
+        // 调用方默认覆盖层；共享库会先自动加载内置默认配置。没有覆盖项时可留空。
+        defaults : [:],
 
         // 扩展层：可放置团队或项目级公共配置，优先级高于 defaults。
         // 不需要扩展配置时保留空 DELIVERY 即可。
@@ -57,9 +38,8 @@ def deliveryConfig = [
                                 // 源码分支、Tag 或 Commit；预检阶段会解析并固定为 Commit SHA。
                                 reference    : 'master',
                                 // 仓库内构建目录，必须是安全的相对路径；仓库根目录填写 "."。
-                                directory    : '.',
-                                // 私有仓库的 Jenkins Credentials ID；公开 HTTPS 仓库可留空。
-                                credentialsId: ''
+                                directory    : '.'
+                                // 公开 HTTPS 仓库无需凭据；当前新入口不支持 HTTPS 私有仓库认证。
                         ],
 
                         stages           : [
