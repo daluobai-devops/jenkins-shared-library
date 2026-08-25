@@ -49,6 +49,7 @@ deliverApplication([
 - 完整预检先于工作区初始化、构建、存储、部署和交付通知。预检失败不产生这些副作用。
 - 源码分支、Tag 或 Commit 在预检中解析为固定 Commit SHA；构建使用该 SHA。
 - 新入口只检出一个 `source/` 源码工作副本，Maven/NPM 从 `source/<source.directory>` 构建；旧入口仍保持原有自检出目录和行为。
+- 新入口的 Maven `subModule` 相对 `source.directory` 解析；从仓库根聚合构建时使用 `directory: '.'` 和仓库相对模块路径，避免重复目录前缀。
 - Web 部署只接受 ZIP/TAR，要求部署节点和目标目录；Java 部署只能选择一个策略。
 - Java 节点串行处理；节点部署或按配置顺序执行的就绪验证首次失败后停止。
 - 主交付失败优先于通知和清理失败。通知失败只记录告警；没有主失败时，清理失败使交付失败。

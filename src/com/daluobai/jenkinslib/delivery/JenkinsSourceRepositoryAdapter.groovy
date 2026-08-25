@@ -28,14 +28,14 @@ git -C "\$probe_dir" rev-parse FETCH_HEAD
     boolean directoryExists(Map source, String revision) {
         String repository = shellQuote(source.repository?.toString())
         String pinnedRevision = shellQuote(revision)
-        String directory = shellQuote(source.directory?.toString())
+        String objectName = shellQuote("FETCH_HEAD:${source.directory}")
         String command = """
 set -eu
 probe_dir=\$(mktemp -d)
 trap 'rm -rf "\$probe_dir"' EXIT
 git -C "\$probe_dir" init -q
 git -C "\$probe_dir" fetch -q --depth=1 ${repository} ${pinnedRevision}
-git -C "\$probe_dir" cat-file -e "FETCH_HEAD:${directory}"
+git -C "\$probe_dir" cat-file -e ${objectName}
 """.stripIndent()
         if (source.directory?.toString() == '.') {
             return true

@@ -37,7 +37,7 @@ def deliveryConfig = [
                                 repository   : 'git@gitee.com:example/demo-java.git',
                                 // 源码分支、Tag 或 Commit；预检阶段会解析并固定为 Commit SHA。
                                 reference    : 'main',
-                                // 仓库内构建目录，必须是安全的相对路径；仓库根目录填写 "."。
+                                // Maven 执行根目录，必须是安全的仓库内相对路径；从仓库根聚合构建时填写 "."。
                                 directory    : '.'
                                 // SSH 地址未配置凭据时自动继承内置 ssh-git；填写 "-" 可显式清除。
                         ],
@@ -55,7 +55,7 @@ def deliveryConfig = [
                                                 fileName: 'app.jar'
                                         ],
                                         config  : [
-                                                // Maven 子模块路径。
+                                                // 相对 source.directory 的 Maven 子模块路径，不要重复该目录前缀。
                                                 // 配置后会按该模块及其依赖构建；单模块项目可删除此项。
                                                 subModule        : 'demo-web/demo-admin',
                                                 // 是否跳过测试，对应 Maven 跳过测试参数。
